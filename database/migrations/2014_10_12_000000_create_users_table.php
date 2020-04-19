@@ -23,9 +23,9 @@ class CreateUsersTable extends Migration
         });
 
         Schema::table('users', function($table) {
-            $table->bigInteger('discord_id')->unsigned();
+            $table->bigInteger('discord_id')->after('admin')->unsigned();
             $table->foreign('discord_id')->references('id')->on('discord_o_auths');
-            $table->bigInteger('stripe_id')->unsigned();
+            $table->bigInteger('stripe_id')->after('discord_id')->unsigned();
             $table->foreign('stripe_id')->references('id')->on('stripe_connects');
         });
     }
