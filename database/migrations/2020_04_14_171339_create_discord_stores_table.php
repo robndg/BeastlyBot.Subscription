@@ -13,23 +13,15 @@ class CreateDiscordStoresTable extends Migration
      */
     public function up()
     {
-        Schema::create('discord_stores', function (Blueprint $table) {
-            $table->engine = "InnoDB";
-            $table->id();
+        Schema::create('store_discord_servers', function (Blueprint $table) {
+            $table->bigInteger('guild_id')->unique();
             $table->string('url')->unique();
             $table->boolean('testing')->default(false);
             $table->longText('description')->nullable();
             $table->boolean('refunds_enabled')->default(true);
             $table->integer('refunds_days')->default(7);
             $table->integer('refunds_terms')->default(1);
-            $table->timestamps();
         });
-
-        Schema::table('discord_stores', function($table) {
-            $table->bigInteger('owner_id')->unsigned();
-            $table->foreign('owner_id')->references('id')->on('users')->onDelete('cascade');
-        });
-
     }
 
     /**
@@ -39,6 +31,6 @@ class CreateDiscordStoresTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('discord_stores');
+        Schema::dropIfExists('store_discord_servers');
     }
 }

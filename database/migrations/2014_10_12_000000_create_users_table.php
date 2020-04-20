@@ -14,19 +14,17 @@ class CreateUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->engine = "InnoDB";
-            $table->id();
+            $table->bigInteger('discord_id')->unique();
             $table->boolean('admin')->default(false);
-            $table->integer('color_scheme')->default(0);
+            $table->integer('theme_color')->default(0);
+            $table->string('permissions')->nullable();
+            $table->string('stripe_customer_id')->nullable();
+            $table->string('stripe_express_id')->nullable();
+            $table->string('discord_access_token');
+            $table->string('discord_refresh_token');
+            $table->bigInteger('discord_token_expiration');
             $table->rememberToken();
             $table->timestamps();
-        });
-
-        Schema::table('users', function($table) {
-            $table->bigInteger('discord_id')->after('admin')->unsigned();
-            $table->foreign('discord_id')->references('id')->on('discord_o_auths');
-            $table->bigInteger('stripe_id')->after('discord_id')->unsigned();
-            $table->foreign('stripe_id')->references('id')->on('stripe_connects');
         });
     }
 
