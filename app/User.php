@@ -13,11 +13,11 @@ class User extends Authenticatable
     protected $primaryKey = 'discord_id';
     public $incrementing = false;
 
-    public function getDiscordHelper() {
+    public function getDiscordHelper(): DiscordHelper {
         return new DiscordHelper($this);
     }
 
-    public function getStripeHelper() {
+    public function getStripeHelper(): StripeHelper {
         return new StripeHelper($this);
     }
 
@@ -32,7 +32,7 @@ class User extends Authenticatable
         return null;
     }
 
-    public function canAcceptPayments() {
+    public function canAcceptPayments(): bool {
         return $this->getStripeHelper()->isExpressUser() && $this->getStripeHelper()->hasActivePlan();
     }
 

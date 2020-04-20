@@ -12,11 +12,11 @@ class DiscordHelper
 
     private $user;
 
-    public function __construct($user){
+    public function __construct(User $user){
         $this->user = $user;
     }
 
-    public function cache() {
+    public function cache(): void {
         $data = $this->getDiscordData();
         $username = $data['username'] . ' #' . $data['discriminator'];
         $avatar_url = "https://cdn.discordapp.com/avatars/" . $this->user->discord_id . "/" . $this->getDiscordData()['avatar'] . ".png";
@@ -26,21 +26,21 @@ class DiscordHelper
         Cache::put('discord_avatar_' . $this->user->discord_id, $avatar_url, 60 * $minutes_to_cache);
     }
 
-    public function getAvatar() {
+    public function getAvatar(): string {
         if(!Cache::has('discord_username_' . $this->user->discord_id)) {
             $this->cache();
         }
         return Cache::get('discord_avatar_' . $this->user->discord_id, 'https://i.imgur.com/qbVxZbJ.png');
     }
 
-    public function getUsername() {
+    public function getUsername(): string {
         if(!Cache::has('discord_username_' . $this->user->discord_id)) {
             $this->cache();
         }
         return Cache::get('discord_username_' . $this->user->discord_id);
     }
 
-    public function getEmail() {
+    public function getEmail(): string {
         if(!Cache::has('discord_username_' . $this->user->discord_id)) {
             $this->cache();
         }
@@ -56,7 +56,7 @@ class DiscordHelper
         return $guilds;
     }
 
-    public function ownsGuild($guild_id) {
+    public function ownsGuild($guild_id): bool {
         if(Session::has('owner_' . $guild_id)) return Session::get('owner_' . $guild_id);
 
         foreach($this->getGuilds() as $guild) {
@@ -76,12 +76,12 @@ class DiscordHelper
     }
 
       // TODO: Have to get new token or whatver it's not working properly so we are getting 401 Unauthent
-    private function getDiscordAccessToken() {
+    private function getDiscordAccessToken(): AccessToken {
         $token = new AccessToken(['access_token' => $this->user->discord_access_token, 'refresh_token' => $this->user->discord_refresh_token, 'expires_in' => $this->user->discord_token_expiration]);
         return $token;
     }
 
-    private function getDiscordProvider() {
+    private function getDiscordProvider(): Discord {
         return new Discord([
             'clientId' => env('DISCORD_CLIENT_ID'),
             'clientSecret' => env('DISCORD_SECRET'),

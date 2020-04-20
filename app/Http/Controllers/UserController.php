@@ -82,156 +82,31 @@ class UserController extends Controller {
         }
     }
 
-    public function checkoutExpressPlan(Request $request) {
-        $promotion_code = $request['promotion_code'];
-        $plan = $request['monthly'] == 'true' ? env('MONTHLY_PLAN') : env('YEARLY_PLAN');
-        $stripe_helper = auth()->user()->getStripeHelper();
-
-        // make sure they have linked their stripe acount
-        if (!$stripe_helper->isExpressUser()) return response()->json(['success' => false, 'msg' => 'Please connect or create your stripe account.']);
-        // make sure they do not already have an active express plan with us
-        if ($stripe_helper->hasActivePlan()) return response()->json(['success' => false, 'msg' => 'You already have an active live plan.']);
-        // this is pretty useless, but it's making sure they have a valid stripe Customer account with us, not Express. That way we can bill their Customer account
-        if ($stripe_helper->getStripeEmail() == null) return response()->json(['success' => false, 'msg' => 'You do not have a linked stripe account.']);
-
-        // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-        // Try to grab the price for the plan/duration clicked on
-        // *PS: This shouldn't happen as the frontend code doesn't allow them to select a duration that isn't available
-        try {
-            $plan = \Stripe\Plan::retrieve($plan);
-        } catch (InvalidRequestException $e) {
-            if (env('APP_DEBUG')) Log::error($e);
-            return response()->json(['success' => false, 'msg' => 'Could not find plan ID.']);
-        }
-        // This is where all the main logic happens for the checkout process, above is mostly the setup
-        try {
-            $customer = $stripe_helper->getCustomerAccount();
-            // Here we create the Stripe checkout session with all the details
-            $session = \Stripe\Checkout\Session::create([
-                'payment_method_types' => ['card'],
-                'subscription_data' => [
-                    'items' => [[
-                        'plan' => $plan->id
-                    ]]
-                ],
-                'success_url' => env('APP_URL') . '/buy-plan-success',
-                'cancel_url' => env('APP_URL') . '/buy-plan-cancel',
-                'customer' => $customer->id,
-            ]);
-            // store the checkout ID in the customers CheckoutSession
-            Session::put('checkout_id', $session->id);
-            return response()->json(['success' => true, 'msg' => $session->id]);
-        } catch (InvalidRequestException $e) {
-            if (env('APP_DEBUG')) Log::error($e);
-            return response()->json(['success' => false, 'msg' => 'This role is not enabled by the owner for purchase.']);
-        }
-    }
-
-    public function checkoutExpressPlanSuccess() {
-        // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-
-        try {
-            // Grab the checkout session ID from the @process method
-            $session = \Stripe\Checkout\Session::retrieve(Session::get('checkout_id'));
-
-            $user = User::where('id', auth()->user()->id)->get()[0];
-            $user->plan_sub_id = $session->subscription;
-            $user->save();
-
-
-            Log::info($session->subscription . ' ' . $user->plan_sub_id);
-
-            // Go ahead and remove the session from the database
-            // if (\App\CheckoutSession::where('id', $session->id)->exists()) \App\CheckoutSession::where('id', $session->id)->delete();
-
-            // remove from user session
-            Session::remove('checkout_id');
-            // get the stripe customer object
-            $customer = \Stripe\Customer::retrieve(auth()->user()->stripe_customer_id);
-            if($customer->discount != null) {
-                // get the coupon code used at checkout
-                $coupon_code = $customer->discount->coupon->id;
-                // check if the coupon lasts longer than once
-                if ($customer->discount->coupon->duration !== 'once') {
-                    // update the subscription to have the coupon
-                    \Stripe\Subscription::update($session->subscription,
-                        ['coupon' => $coupon_code]
-                    );
-                }
-            }
-        } catch (\Exception $e) {
-            if (env('APP_DEBUG')) Log::error($e);
-        }
-
-        // remove the coupon from the customer
-        \Stripe\Customer::update(
-            auth()->user()->stripe_customer_id,
-            ['coupon' => '']
-        );
-
-       // \Stripe\Account::update(
-       //     auth()->user()->stripe_express_id,
-        //    ['charges_enabled' => 'true']
-        //);
-
-        Session::put('alert', ['type' => 'success', 'msg' => 'Payment successful!']);
-
-        return redirect('/servers?click-first=true');
-    }
-
-    public function checkoutExpressPlanFailure() {
-        Session::put('alert', ['type' => 'info', 'msg' => 'Payment cancelled.']);
-
-        // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-
-        try {
-            // remove the coupon from the customer
-            \Stripe\Customer::update(
-                auth()->user()->stripe_customer_id,
-                ['coupon' => '']
-            );
-
-            // get the session
-            $session = \Stripe\Checkout\Session::retrieve(Session::get('checkout_id'));
-
-            // Go ahead and remove the session from the database
-            // if (\App\CheckoutSession::where('id', $session->id)->exists()) \App\CheckoutSession::where('id', $session->id)->delete();
-
-            // remove from user session
-            Session::remove('checkout_id');
-        } catch (\Exception $e) {
-            if (env('APP_DEBUG')) Log::error($e);
-        }
-
-        return redirect('/account/settings');
-    }
-
+    // TODO: working on changePlan
     public function changePlan(Request $request) {
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
         \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-        $plan = $request['plan'];
+        $plan_id = $request['plan'];
 
         try {
-            $subscription = \Stripe\Subscription::retrieve(auth()->user()->plan_sub_id);
 
-            $plan_id = $subscription->items->data[0]->plan->id;
+            $stripe_helper = auth()->user()->getStripeHelper();
 
-            if ($plan === $plan_id) {
+            if ($stripe_helper->isSubscribedToPlan($plan_id)) 
                 return response()->json(['success' => false, 'msg' => 'You are already subscribed to that plan.']);
-            }
+
+            $subscription = $stripe_helper->getSubscriptionForProduct($plan_id);
+
 
             try {
-            \Stripe\Subscription::update(auth()->user()->plan_sub_id, [
+            \Stripe\Subscription::update($subscription->id, [
                 'prorate' => true,
                 'collection_method' => 'charge_automatically',
                 'cancel_at_period_end' => false,
                 'items' => [
                     [
                         'id' => $subscription->items->data[0]->id,
-                        'plan' => $plan,
+                        'plan' => $plan_id,
                     ],
                 ],
             ]);

@@ -60,7 +60,6 @@ require_once __DIR__ . "/section/help.php";
  */
 Route::group(['middleware' => ['auth', 'web']], function () {
     Route::get('/slide-help-creating-a-promotion', function () {
-        auth()->user()->getStripeHelper();
         return view('slide/help/slide-help-creating-a-promotion');
     });
 

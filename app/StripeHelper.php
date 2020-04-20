@@ -5,13 +5,14 @@ namespace App;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
 use Stripe\Exception\ApiErrorException;
+use Stripe\Subscription;
 
 class StripeHelper
 {
 
     private $user;
 
-    public function __construct($user){
+    public function __construct(User $user){
         $this->user = $user;
     }
 
@@ -26,24 +27,42 @@ class StripeHelper
         return $stripe_subs;
     }
 
-    public function isSubscribedToRole($guild_id, $role_id) {
-        // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-        $customer = \Stripe\Customer::retrieve($this->user->stripe_customer_id);
-
-        foreach ($customer->subscriptions as $subscription) {
-            if ($subscription->items->data[0]->plan->product == $guild_id . '_' . $role_id) return true;
+    public function isSubscribedToProduct(string $id): bool {
+        foreach ($this->getSubscriptions() as $subscription) {
+            if ($subscription->items->data[0]->plan->product == $id) return true;
         }
 
         return false;
     }
 
-    public function getStripeEmail() {
+    public function getSubscriptionForProduct(string $id): \Stripe\Subscription {
+        foreach ($this->getSubscriptions() as $subscription) {
+            if ($subscription->items->data[0]->plan->product == $id) return $subscription;
+        }
+        return null;
+    }
+
+    public function isSubscribedToPlan(string $id): bool {
+        foreach ($this->getSubscriptions() as $subscription) {
+            if ($subscription->items->data[0]->plan->id == $id) return true;
+        }
+
+        return false;
+    }
+
+    public function getSubscriptionForPlan(string $id): \Stripe\Subscription {
+        foreach ($this->getSubscriptions() as $subscription) {
+            if ($subscription->items->data[0]->plan->id == $id) return $subscription;
+        }
+        return null;
+    }
+
+    public function getStripeEmail(): string {
         if (Session::has('stripe_email')) return Session::get('stripe_email');
         \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
         try {
-            Session::put('stripe_email', getCustomerAccount()->email);
+            Session::put('stripe_email', $this->getCustomerAccount()->email);
             return Session::get('stripe_email');
         } catch (ApiErrorException $e) {
         }
@@ -51,7 +70,7 @@ class StripeHelper
         return null;
     }
 
-    public function getCustomerAccount() {
+    public function getCustomerAccount(): \Stripe\Customer {
         \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
         try {
             return \Stripe\Customer::retrieve($this->user->stripe_customer_id);
@@ -60,21 +79,21 @@ class StripeHelper
         return null;
     }
 
-    public function hasActivePlan() {
+    public function hasActivePlan(): bool {
         return $this->getActivePlan() != null;
     }
 
-    public function isSubscriptionMonthly() {
+    public function isSubscriptionMonthly(): bool {
         $active_plan = $this->getActivePlan();
         return $active_plan !== null && $active_plan->id == env('MONTHLY_PLAN');
     }
 
-    public function isSubscriptionYearly() {
+    public function isSubscriptionYearly(): bool {
         $active_plan = $this->getActivePlan();
         return $active_plan !== null && $active_plan->id == env('YEARLY_PLAN');
     }
 
-    public function getActivePlan() {
+    public function getActivePlan(): \Stripe\Subscription {
         foreach($this->getSubscriptions() as $subscription) {
             if ($subscription->items->data[0]->plan->id === env('MONTHLY_PLAN') ||
             $subscription->items->data[0]->plan->id === env('YEARLY_PLAN'))  return $subscription;
@@ -83,7 +102,7 @@ class StripeHelper
         return null;
     }
 
-    public function isExpressUser() {
+    public function isExpressUser(): bool {
         return $this->user->stripe_express_id !== null;
     }
 
@@ -96,12 +115,12 @@ class StripeHelper
         return Cache::get('balance_' . $this->user->stripe_express_id, 0);
     }
 
-    public function getLoginURL() {
+    public function getLoginURL(): string {
         \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
         return $this->isExpressUser() ? \Stripe\Account::createLoginLink($this->user->stripe_express_id)->url : null;
     }
 
-    public static function getAccountFromStripeConnect($code) {
+    public static function getAccountFromStripeConnect(string $code): \Stripe\Account {
         $token_request_body = array(
             'client_secret' => env('STRIPE_SECRET'),
             'grant_type' => 'authorization_code',
