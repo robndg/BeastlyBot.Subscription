@@ -12,4 +12,13 @@ class PayoutHelper
      * the Express users account automatically from the bot
      */
 
+     /**
+      * How it needs to be done. Funds are in Express accounts balance
+      * We set payout delay to desired amount in .env file
+      * They can't pull out any money until payout delay in days is passed
+      * Stripe will check daily so they can do daily payouts
+      * --------
+      * This is way better because it allows Stripe to automatically handle all of this for us.. WAY BETTER.
+      */
+
 }
