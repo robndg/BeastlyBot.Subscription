@@ -16,7 +16,7 @@ class CreateDiscordStoresTable extends Migration
         Schema::create('store_discord_servers', function (Blueprint $table) {
             $table->bigInteger('guild_id')->unique();
             $table->string('url')->unique();
-            $table->boolean('testing')->default(false);
+            $table->boolean('live')->default(false);
             $table->longText('description')->nullable();
             $table->boolean('refunds_enabled')->default(true);
             $table->integer('refunds_days')->default(7);

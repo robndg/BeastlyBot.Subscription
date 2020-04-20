@@ -10,9 +10,6 @@ class User extends Authenticatable
 {
     use Notifiable;
 
-    protected $primaryKey = 'discord_id';
-    public $incrementing = false;
-
     public function getDiscordHelper(): DiscordHelper {
         return new DiscordHelper($this);
     }

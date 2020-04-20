@@ -14,6 +14,7 @@ class CreateUsersTable extends Migration
     public function up()
     {
         Schema::create('users', function (Blueprint $table) {
+            $table->id();
             $table->bigInteger('discord_id')->unique();
             $table->boolean('admin')->default(false);
             $table->integer('theme_color')->default(0);
