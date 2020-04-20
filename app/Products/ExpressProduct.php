@@ -78,4 +78,9 @@ class ExpressProduct extends Product
         }
     }
 
+    public function getApplicationFee(): float
+    {
+        return 1.5;
+    }
+
 }

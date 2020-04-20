@@ -51,4 +51,9 @@ class DiscordRoleProduct extends Product
         return redirect('/shop/' . $this->guild_id);
     }
 
+    public function getApplicationFee(): float
+    {
+        return 5.0;
+    }
+
 }

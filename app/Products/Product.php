@@ -30,6 +30,8 @@ abstract class Product
 
     abstract public function checkoutCancel();
 
+    abstract public function getApplicationFee(): float;
+
     public function getCallbackSuccessURL(): string {
         $data = $this->getCallbackParams();
         $data['success'] = true;
