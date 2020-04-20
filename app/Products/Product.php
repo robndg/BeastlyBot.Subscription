@@ -52,4 +52,10 @@ abstract class Product
         return $this->stripe_plan_obj;
     }
 
+    public function getExpressOwnerID(): string {
+        if($this->stripe_product_obj != null) 
+            return $this->stripe_product_obj->metadata['owner_express_id'];
+        return null;
+    }
+
 }

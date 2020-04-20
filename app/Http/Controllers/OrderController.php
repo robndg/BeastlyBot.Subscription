@@ -45,8 +45,7 @@ class OrderController extends Controller {
         }
 
         $stripe_customer = auth()->user()->getStripeHelper()->getCustomerAccount();
-
-        $session = \Stripe\Checkout\Session::create([
+        $checkout_data = [
             'payment_method_types' => ['card'],
             'subscription_data' => [
                 'items' => [[
@@ -57,7 +56,11 @@ class OrderController extends Controller {
             'success_url' => $product->getCallbackSuccessURL(),
             'cancel_url' => $product->getCallbackCancelURL(),
             'customer' => $stripe_customer->id,
-        ]);
+        ];
+
+        if($product->getExpressOwnerID() != null) $checkout_data['payment_intent_data'] = ['on_behalf_of' => $product->getExpressOwnerID()];
+        
+        $session = \Stripe\Checkout\Session::create($checkout_data);
 
         // store the checkout ID in the customers CheckoutSession
         Session::put('checkout_id', $session->id);

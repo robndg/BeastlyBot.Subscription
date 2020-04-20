@@ -5,12 +5,7 @@ namespace App\Http\Controllers;
 use App\AlertHelper;
 use App\StripeHelper;
 use App\User;
-use DateTime;
-use DateTimeZone;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Session;
-use Stripe\Exception\InvalidRequestException;
 
 class UserController extends Controller {
 
@@ -18,12 +13,12 @@ class UserController extends Controller {
         $this->middleware('auth');
     }
 
-    public static function getViewWithInvoices($view, $invoices) {
+    public static function getViewWithInvoices(string $view, int $num_of_invoices) {
         $stripe_helper = auth()->user()->getStripeHelper();
 
         // get last 100 most recent invoices for this customer
         $invoices = \Stripe\Invoice::all([
-            'limit' => $invoices,
+            'limit' => $num_of_invoices,
             'customer' => auth()->user()->stripe_customer_id
         ]);
 
@@ -37,7 +32,7 @@ class UserController extends Controller {
         return view($view)->with('stripe_login_link', $stripe_helper->getLoginURL())->with('invoices', $invoices_array);
     }
 
-    public static function getViewWithSubscriptions($view) {
+    public static function getViewWithSubscriptions(string $view) {
         $stripe_helper = auth()->user()->getStripeHelper();
         $subscriptions = array();
         foreach ($stripe_helper->getSubscriptions() as $subscription) $subscriptions[$subscription->id] = $subscription->toArray();
@@ -70,7 +65,8 @@ class UserController extends Controller {
                 ['settings' =>
                     ['payouts' =>
                         [ 'schedule' =>
-                            ['delay_days' => 7]
+                            ['delay_days' => env('STRIPE_PAYOUT_DELAY_DAYS'),
+                            'interval' => 'daily']
                         ]
                     ]
                 ]
@@ -82,7 +78,7 @@ class UserController extends Controller {
         }
     }
 
-    public function getPayoutSlide($stripe_express_id) {
+    public function getPayoutSlide(string $stripe_express_id) {
 
         if (auth()->user()->stripe_express_id != $stripe_express_id && !auth()->user()->admin) return response()->json(['success' => false, 'msg' => 'You do not own this Stripe account.']);
 
