@@ -79,24 +79,19 @@ class StripeHelper
         return null;
     }
 
-    public function hasActivePlan(): bool {
-        return $this->getActivePlan() != null;
-    }
-
     public function isSubscriptionMonthly(): bool {
-        $active_plan = $this->getActivePlan();
+        $active_plan = $this->getExpressSubscription();
         return $active_plan !== null && $active_plan->id == env('MONTHLY_PLAN');
     }
 
     public function isSubscriptionYearly(): bool {
-        $active_plan = $this->getActivePlan();
+        $active_plan = $this->getExpressSubscription();
         return $active_plan !== null && $active_plan->id == env('YEARLY_PLAN');
     }
 
-    public function getActivePlan(): \Stripe\Subscription {
+    public function getExpressSubscription(): \Stripe\Subscription {
         foreach($this->getSubscriptions() as $subscription) {
-            if ($subscription->items->data[0]->plan->id === env('MONTHLY_PLAN') ||
-            $subscription->items->data[0]->plan->id === env('YEARLY_PLAN'))  return $subscription;
+            if ($subscription->items->data[0]->plan->product === env('EXPRESS_PROD_ID'))  return $subscription;
         }
 
         return null;
@@ -104,6 +99,10 @@ class StripeHelper
 
     public function isExpressUser(): bool {
         return $this->user->stripe_express_id !== null;
+    }
+
+    public function hasExpressPlan(): bool {
+        return $this->getExpressSubscription() != null;
     }
 
     public function getBalance() {

@@ -22,8 +22,6 @@ class DiscordRoleProduct extends Product
     }
   
     public function validate(): void {
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-
         if(! DiscordStore::where('guild_id', $this->guild_id)->exists())
             throw new ProductMsgException('Discord store not found in database.');
 

@@ -21,9 +21,13 @@ class User extends Authenticatable
         return new StripeHelper($this);
     }
 
+    public function hasStripeAccount(): bool {
+        return $this->getStripeHelper()->getCustomerAccount() != null;
+    }
+
     public function getPlanExpiration() {
         try {
-            $subscription = $this->getStripeHelper()->getActivePlan();
+            $subscription = $this->getStripeHelper()->getExpressSubscription();
             if($subscription == null || $subscription->status != 'active') return null;
             return $subscription->current_period_end;
         }catch(Exception $e) {
@@ -33,7 +37,7 @@ class User extends Authenticatable
     }
 
     public function canAcceptPayments(): bool {
-        return $this->getStripeHelper()->isExpressUser() && $this->getStripeHelper()->hasActivePlan();
+        return $this->getStripeHelper()->isExpressUser() && $this->getStripeHelper()->hasExpressPlan();
     }
 
 }

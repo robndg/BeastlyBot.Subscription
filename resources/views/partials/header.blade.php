@@ -112,11 +112,11 @@
                         </a>
                     </li> -->
                     <li class="site-menu-category">SHOP
-                        @if(!auth()->user()->getStripeHelper()->hasActivePlan() && auth()->user()->stripe_express_id !== null)
+                        @if(!auth()->user()->getStripeHelper()->hasExpressPlan() && auth()->user()->stripe_express_id !== null)
                         <a href="#" class="site-menu-badge" data-toggle="modal" data-target="#partnerPricingModal">
                             <span class="badge badge-pill badge-success text-capitalize mt-10 responsive-hide">Go Live</span>
                         </a>
-                        @elseif(auth()->user()->getStripeHelper()->hasActivePlan())
+                        @elseif(auth()->user()->getStripeHelper()->hasExpressPlan())
                         <a href="#" class="site-menu-badge" data-toggle="slidePanel" data-url="/slide-payout">
                             <span class="badge badge-pill badge-primary text-capitalize mt-10">Payout</span>
                         </a>

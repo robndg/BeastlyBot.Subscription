@@ -20,10 +20,7 @@ class OrderController extends Controller {
     }
 
     public function setup(Request $request) {
-        $stripe_customer = auth()->user()->getStripeHelper()->getCustomerAccount();
-
-        // If the customer does not exist we have to cancel the order as we won't have a stripe account to charge
-        if ($stripe_customer === null || $stripe_customer->email === null || $stripe_customer->email === '') 
+        if (! auth()->user()->hasStripeAccount()) 
             return response()->json(['success' => false, 'msg' => 'You do not have a linked stripe account.']);
 
         try {
@@ -32,7 +29,7 @@ class OrderController extends Controller {
                     $product = new DiscordRoleProduct($request['guild_id'], $request['role_id'], $request['billing_cycle']);
                 break;
                 case "express":
-                    $product = new ExpressProduct('express', null, $request['plan_id']);
+                    $product = new ExpressProduct(null, $request['plan_id']);
                 break;
                 default:
                     throw new ProductMsgException('Could not find product by that type.');
@@ -46,6 +43,8 @@ class OrderController extends Controller {
             if(env('APP_DEBUG')) Log::error($e);
             return response()->json(['success' => false, 'msg' => 'Product or plan does not exist.']);
         }
+
+        $stripe_customer = auth()->user()->getStripeHelper()->getCustomerAccount();
 
         $session = \Stripe\Checkout\Session::create([
             'payment_method_types' => ['card'],
@@ -73,13 +72,19 @@ class OrderController extends Controller {
         else
             AlertHelper::alertInfo('Payment cancelled.');
 
+        // If the customer does not exist we have to cancel the order as we won't have a stripe account to charge
+        if (! auth()->user()->hasStripeAccount())  {
+            AlertHelper::alertError('You do not have a linked stripe account.');
+            return redirect('/dashboard');
+        }
+
         try {
             switch (\request('product_type')) {
                 case "discord":
                     $product = new DiscordRoleProduct(\request('guild_id'), \request('role_id'), \request('billing_cycle'));
                 break;
                 case "express":
-                    $product = new ExpressProduct('express', null, \request('plan_id'));
+                    $product = new ExpressProduct(null, \request('plan_id'));
                 break;
                 default:
                     throw new ProductMsgException('Could not find product by that type.');
@@ -94,6 +99,26 @@ class OrderController extends Controller {
 
         Session::remove('checkout_id');
         return $success ? $product->checkoutSuccess() : $product->checkoutCancel();
+    }
+
+    public function changePlan(Request $request) {
+        try {
+            switch ($request['product_type']) {
+                case "express":
+                    $product = new ExpressProduct(null, $request['plan_id']);
+                break;
+                default:
+                    throw new ProductMsgException('Could not find product by that type.');
+                break;
+            }
+
+            return $product->changePlan($request['plan_id']);
+        } catch(ProductMsgException $e) {
+            return response()->json(['success' => false, 'msg' => $e->getMessage()]);
+        } catch(InvalidRequestException $e) {
+            if(env('APP_DEBUG')) Log::error($e);
+            return response()->json(['success' => false, 'msg' => 'Product or plan does not exist.']);
+        }
     }
 
 }

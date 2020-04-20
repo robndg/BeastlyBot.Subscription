@@ -22,6 +22,8 @@ abstract class Product
 
     abstract public function validate(): void;
 
+    abstract public function changePlan(string $new_plan_id);
+
     abstract public function getCallbackParams(): array;
 
     abstract public function checkoutSuccess();

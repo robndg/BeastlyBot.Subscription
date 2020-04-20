@@ -82,50 +82,6 @@ class UserController extends Controller {
         }
     }
 
-    // TODO: working on changePlan
-    public function changePlan(Request $request) {
-        // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-        $plan_id = $request['plan'];
-
-        try {
-
-            $stripe_helper = auth()->user()->getStripeHelper();
-
-            if ($stripe_helper->isSubscribedToPlan($plan_id)) 
-                return response()->json(['success' => false, 'msg' => 'You are already subscribed to that plan.']);
-
-            $subscription = $stripe_helper->getSubscriptionForProduct($plan_id);
-
-
-            try {
-            \Stripe\Subscription::update($subscription->id, [
-                'prorate' => true,
-                'collection_method' => 'charge_automatically',
-                'cancel_at_period_end' => false,
-                'items' => [
-                    [
-                        'id' => $subscription->items->data[0]->id,
-                        'plan' => $plan_id,
-                    ],
-                ],
-            ]);
-
-            $invoice = \Stripe\Invoice::upcoming(["customer" => auth()->user()->stripe_customer_id]);
-            } catch(\Exception $e) {
-                return $this->buyPlan($request);
-            }
-
-            // TODO: Somehow send the user the invoice in a sweet alert so they can pay it immediately.
-        } catch (\Exception $e) {
-            if (env('APP_DEBUG')) Log::error($e);
-            return response()->json(['success' => false, 'msg' => $e->getMessage()]);
-        }
-
-        return response()->json(['success' => true, 'msg' => 'Plan changed. You were billed automatically.',
-            'invoice_url' => $invoice->invoice_pdf]);
-    }
-
     public function getPayoutSlide($stripe_express_id) {
 
         if (auth()->user()->stripe_express_id != $stripe_express_id && !auth()->user()->admin) return response()->json(['success' => false, 'msg' => 'You do not own this Stripe account.']);
