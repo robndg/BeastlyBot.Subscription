@@ -48,6 +48,7 @@ class OrderController extends Controller {
         $checkout_data = [
             'payment_method_types' => ['card'],
             'subscription_data' => [
+                'application_fee_amount' => $product->getApplicationFee(),
                 'items' => [[
                     'plan' => $product->getStripePlan()->id,
                     'quantity' => '1'
@@ -58,6 +59,7 @@ class OrderController extends Controller {
             'customer' => $stripe_customer->id,
         ];
 
+        // This may have to go in the second argument of Session::create
         if($product->getExpressOwnerID() != null) $checkout_data['payment_intent_data'] = ['on_behalf_of' => $product->getExpressOwnerID()];
         
         $session = \Stripe\Checkout\Session::create($checkout_data);
