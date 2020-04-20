@@ -109,7 +109,7 @@
                                         <a href="/dashboard"
                                            class="btn-common mt-sm-25">Go to dashboard</a>
                                     @else
-                                        <a href="https://discordapp.com/api/oauth2/authorize?client_id=590725202489638913&redirect_uri={{ env('DISCORD_AUTH_REDIRECT') }}&response_type=code&scope=identify%20email%20guilds%20guilds.join"
+                                        <a href="https://discordapp.com/api/oauth2/authorize?client_id={{ env('DISCORD_CLIENT_ID') }}&redirect_uri={{ env('DISCORD_AUTH_REDIRECT') }}&response_type=code&scope=identify%20email%20guilds%20guilds.join"
                                            class="btn-common mt-sm-25">Login with Discord</a>
                                     @endauth
                                 </div>
