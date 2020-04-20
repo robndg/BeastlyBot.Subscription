@@ -51,7 +51,6 @@ Route::get('/slide-help-creating-a-promotion', function () {
     return view('slide/help/slide-help-creating-a-promotion');
 });
 
-require_once __DIR__ . "/stripe.php";
 require_once __DIR__ . "/section/site.php";
 require_once __DIR__ . "/section/auth.php";
 require_once __DIR__ . "/section/help.php";
