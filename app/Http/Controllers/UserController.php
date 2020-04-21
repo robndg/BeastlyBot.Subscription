@@ -13,6 +13,18 @@ class UserController extends Controller {
         $this->middleware('auth');
     }
 
+    public function getDashboard() {
+        $stripe_helper = auth()->user()->getStripeHelper();
+
+    // get all active subscriptions for user and put into cleaned up array
+    $subscriptions = array();
+    foreach ($stripe_helper->getSubscriptions() as $subscription) {
+        $subscriptions[$subscription->id] = $subscription->toArray();
+    }
+
+    return view('dashboard')->with('subscriptions', $subscriptions)->with('balance', $stripe_helper->getBalance());
+    }
+
     public static function getViewWithInvoices(string $view, int $num_of_invoices) {
         $stripe_helper = auth()->user()->getStripeHelper();
 

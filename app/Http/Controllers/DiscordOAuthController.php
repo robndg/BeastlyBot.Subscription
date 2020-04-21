@@ -17,36 +17,31 @@ class DiscordOAuthController extends Controller {
     }
 
     public function connect() {
-
         if (!\request()->exists('code')) {
             // AlertHelper::alertDanger('Failed to connect Discord account!');
             return redirect('/');
         }
-
+        
         $provider = self::getProvider();
-
+        $user = null;
         try {
             // generate an access token with the oauth2 code provided by Discord
             $token = $provider->getAccessToken('authorization_code', [
                 'code' => \request('code'),
             ]);
-
             // grab the discord user from the access token generated above
             $discord_user = $provider->getResourceOwner($token);
 
-            $user = null;
 
             // Check if a user already exists in our DB with the discord user.id of the logged in oauth2 user
             if (DiscordOAuth::where('discord_id', $discord_user->getId())->exists()) {
                 $user = DiscordOAuth::where('discord_id', $discord_user->getId())->first()->user();
                 auth()->login($user);
             }
-
             // if the user does not exists we need to create the user and log them in
             if ($user === null) {
                 $user = new User();
                 $user->save();
-
                 $oauth = new DiscordOAuth
                 ([
                     'user_id' => $user->id,
@@ -55,8 +50,7 @@ class DiscordOAuthController extends Controller {
                     'refresh_token' => $token->getRefreshToken(), 
                     'token_expiration' => $token->getExpires()
                 ]);
-                $user->DiscordOAuth->save($oauth);
-
+                $user->DiscordOAuth()->save($oauth);
                 auth()->login($user);
             } else {
                 // if the user does exist we just update their tokens
@@ -67,7 +61,6 @@ class DiscordOAuthController extends Controller {
             }
             // if the authenticated user does not have a strip account we need to create one for them
             if (! StripeConnect::where('user_id', $user->id)->exists()) {
-                Log::info("HERE");
                 // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
                 \Stripe\Stripe::setApiKey(BeastlyConfig::get('STRIPE_SECRET'));
 
@@ -91,10 +84,11 @@ class DiscordOAuthController extends Controller {
                 }
 
                 $connect = new StripeConnect(['user_id' => $user->id, 'customer_id' => $stripe_account->id]);
-                $user->StripeConnect->save($connect);
+                $user->StripeConnect()->save($connect);
             }
         } catch (IdentityProviderException $e) {
             if (env('APP_DEBUG')) Log::error($e);
+            if($user != null) $user->delete();
         }
 
         return redirect()->intended('/dashboard');
