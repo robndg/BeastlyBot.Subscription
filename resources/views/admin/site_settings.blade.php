@@ -12,9 +12,6 @@
         </ol>
         <div class="page-header-actions">
             <div class="input-group">
-                <form action="/admin/update_settings_defaults" method="post">
-                    <button type="submit" class="btn btn-primary">Load Defaults</button>
-                </form>
                 <input type="text" class="form-control" name="SecurityCheck" id="passcode" placeholder="Enter Unlock Code">
             </div>
         </div>
