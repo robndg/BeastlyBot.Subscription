@@ -73,7 +73,7 @@ Route::group(['middleware' => ['auth', 'web']], function () {
             return view('/slide/slide-account-subscription-settings')->with('subscription', $sub)->with('latest_invoice', $latest_invoice)->with('role_name', $role_name)
             ->with('guild_name', $guild_name)->with('role_color', $role_color)->with('days_passed', $days);
         } catch(\Exception $e) {
-            if (BeastlyConfig::get('APP_DEBUG')) Log::error($e);
+            if (env('APP_DEBUG')) Log::error($e);
             AlertHelper::alertError('Error!');
         }
 
@@ -101,7 +101,7 @@ Route::group(['middleware' => ['auth', 'web']], function () {
             $user->mode = $request['mode'] == '1';
             $user->save();
         } catch (\Exception $e) {
-            if (BeastlyConfig::get('APP_DEBUG')) Log::error($e);
+            if (env('APP_DEBUG')) Log::error($e);
         }
 
         return response()->json(['success' => true]);

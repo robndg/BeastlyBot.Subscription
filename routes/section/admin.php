@@ -11,6 +11,11 @@ Route::group(['middleware' => ['App\Http\Middleware\AdminMiddleware']], function
 
     Route::view('/admin/site/settings', 'admin.site_settings');
 
+    Route::post('/admin/update_settings_defaults', function() {
+        BeastlyConfig::setDefaultValues();
+        return redirect('/admin/site/settings');
+    });
+
     Route::post('/admin/update_settings', 'AdminController@setSiteConfigValue');
 
     Route::get('/admin/shop/owners', 'AdminController@listShopOwners');

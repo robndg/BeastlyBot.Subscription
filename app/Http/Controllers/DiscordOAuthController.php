@@ -94,7 +94,7 @@ class DiscordOAuthController extends Controller {
                 $user->StripeConnect->save($connect);
             }
         } catch (IdentityProviderException $e) {
-            if (BeastlyConfig::get('APP_DEBUG')) Log::error($e);
+            if (env('APP_DEBUG')) Log::error($e);
         }
 
         return redirect()->intended('/dashboard');

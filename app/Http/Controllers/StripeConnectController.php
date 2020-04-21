@@ -21,7 +21,7 @@ class StripeConnectController extends Controller
 
         // if there is an error connecting to Stripe, abort and let user know
         if (isset($_GET['error'])) {
-            if (BeastlyConfig::get('APP_DEBUG')) Log::error($_GET['error']);
+            if (env('APP_DEBUG')) Log::error($_GET['error']);
             AlertHelper::alertError('Something went wrong! Open a support ticket.');
             return redirect('/dashboard');
         }

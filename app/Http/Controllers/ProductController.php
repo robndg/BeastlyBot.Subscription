@@ -32,7 +32,7 @@ class ProductController extends Controller {
         } catch(ProductMsgException $e) {
             return response()->json(['success' => false, 'msg' => $e->getMessage()]);
         } catch(\Stripe\Exception\ApiErrorException $e) {
-            if(BeastlyConfig::get('APP_DEBUG')) Log::error($e);
+            if(env('APP_DEBUG')) Log::error($e);
             return response()->json(['success' => false, 'msg' => $e->getError()->message]);
         }
     }
@@ -52,7 +52,7 @@ class ProductController extends Controller {
         } catch(ProductMsgException $e) {
             return response()->json(['success' => false, 'msg' => $e->getMessage()]);
         } catch(\Stripe\Exception\ApiErrorException $e) {
-            if(BeastlyConfig::get('APP_DEBUG')) Log::error($e);
+            if(env('APP_DEBUG')) Log::error($e);
             return response()->json(['success' => false, 'msg' => $e->getError()->message]);
         }
     }
@@ -72,7 +72,7 @@ class ProductController extends Controller {
         } catch(ProductMsgException $e) {
             return response()->json(['success' => false, 'msg' => $e->getMessage()]);
         } catch(\Stripe\Exception\ApiErrorException $e) {
-            if(BeastlyConfig::get('APP_DEBUG')) Log::error($e);
+            if(env('APP_DEBUG')) Log::error($e);
             return response()->json(['success' => false, 'msg' => $e->getError()->message]);
         }
     }

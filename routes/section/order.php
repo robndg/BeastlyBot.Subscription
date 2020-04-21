@@ -14,7 +14,7 @@ Route::get('/slide-invoice/{id}', function($id) {
         $invoice = \Stripe\Invoice::retrieve($id);
         return view('slide.slide-invoice')->with('invoice', $invoice);
     } catch (\Exception $e) {
-        if (BeastlyConfig::get('APP_DEBUG')) Log::error($e);
+        if (env('APP_DEBUG')) Log::error($e);
         return view('slide.slide-invoice')->with('invoice', null);
     }
 });

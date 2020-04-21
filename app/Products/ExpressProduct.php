@@ -74,7 +74,7 @@ class ExpressProduct extends Product
             $invoice = \Stripe\Invoice::upcoming(['customer' => $stripe_helper->getCustomerAccount()->id]);
             return response()->json(['success' => true, 'msg' => 'Plan changed. You were billed automatically.', 'invoice_url' => $invoice->invoice_pdf]);
         } catch(\Exception $e) {
-            if(BeastlyConfig::get('APP_DEBUG')) Log::error($e);
+            if(env('APP_DEBUG')) Log::error($e);
             return response()->json(['success' => false, 'msg' => 'Failed to change plan.']);
         }
     }
