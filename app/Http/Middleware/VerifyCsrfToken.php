@@ -13,6 +13,6 @@ class VerifyCsrfToken extends Middleware
      */
     protected $except = [
         // 'stripe_webhooks'
-        // '/admin/update_settings'
+        '/admin/update_settings'
     ];
 }

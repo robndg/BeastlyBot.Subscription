@@ -35,7 +35,7 @@ Route::group(['middleware' => ['auth', 'web']], function () {
 
     Route::view('/slide-notifications', '/slide/slide-notifications');
 
-    Route::get('/connect_stripe', 'UserController@connectStripe');
+    Route::get('/connect_stripe', 'StripeConnectController@connect');
 
     Route::get('/slide-payout/{id}', 'UserController@getPayoutSlide');
 

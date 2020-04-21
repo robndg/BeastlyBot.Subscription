@@ -22,6 +22,16 @@ class User extends Authenticatable
         return $this->getStripeHelper()->getCustomerAccount() != null;
     }
 
+    public function DiscordOAuth()
+    {
+        return $this->hasOne(DiscordOAuth::class);
+    }
+
+    public function StripeConnect()
+    {
+        return $this->hasOne(StripeConnect::class);
+    }
+
     public function getPlanExpiration() {
         try {
             $subscription = $this->getStripeHelper()->getExpressSubscription();

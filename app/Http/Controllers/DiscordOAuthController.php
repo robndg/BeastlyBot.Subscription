@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\DiscordOAuth;
+use App\StripeConnect;
 use App\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Session;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Wohali\OAuth2\Client\Provider\Discord;
 
@@ -37,30 +36,37 @@ class DiscordOAuthController extends Controller {
             $user = null;
 
             // Check if a user already exists in our DB with the discord user.id of the logged in oauth2 user
-            if (User::where('discord_id', $discord_user->getId())->exists()) {
-                $user = User::where('discord_id', $discord_user->getId())->get()[0];
+            if (DiscordOAuth::where('discord_id', $discord_user->getId())->exists()) {
+                $user = DiscordOAuth::where('discord_id', $discord_user->getId())->first()->user();
                 auth()->login($user);
             }
 
             // if the user does not exists we need to create the user and log them in
             if ($user === null) {
                 $user = new User();
-                $user->discord_id = $discord_user->getId();
-                $user->discord_access_token = $token->getToken();
-                $user->discord_refresh_token = $token->getRefreshToken();
-                $user->discord_token_expiration = $token->getExpires();
                 $user->save();
+
+                $oauth = new DiscordOAuth
+                ([
+                    'user_id' => $user->id,
+                    'discord_id' => $discord_user->getId(), 
+                    'access_token' => $token->getToken(), 
+                    'refresh_token' => $token->getRefreshToken(), 
+                    'token_expiration' => $token->getExpires()
+                ]);
+                $user->DiscordOAuth()->save($oauth);
+
                 auth()->login($user);
             } else {
                 // if the user does exist we just update their tokens
-                $user->discord_access_token = $token->getToken();
-                $user->discord_refresh_token = $token->getRefreshToken();
-                $user->discord_token_expiration = $token->getExpires();
-                $user->save();
+                $user->DiscordOAuth()->access_token = $token->getToken();
+                $user->DiscordOAuth()->refresh_token = $token->getRefreshToken();
+                $user->DiscordOAuth()->token_expiration = $token->getExpires();
+                $user->DiscordOAuth()->save();
             }
-
             // if the authenticated user does not have a strip account we need to create one for them
-            if (auth()->user()->stripe_customer_id === null) {
+            if (! StripeConnect::where('user_id', $user->id)->exists()) {
+                Log::info("HERE");
                 // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
                 \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
@@ -83,8 +89,8 @@ class DiscordOAuthController extends Controller {
                     \Stripe\Customer::update($stripe_account->id, ['metadata' => ['discord_id' => $discord_user->getId()]]);
                 }
 
-                $user->stripe_customer_id = $stripe_account->id;
-                $user->save();
+                $connect = new StripeConnect(['user_id' => $user->id, 'customer_id' => $stripe_account->id]);
+                $user->StripeConnect()->save($connect);
             }
         } catch (IdentityProviderException $e) {
             if (env('APP_DEBUG')) Log::error($e);
