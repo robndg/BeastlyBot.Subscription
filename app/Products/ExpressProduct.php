@@ -13,7 +13,7 @@ class ExpressProduct extends Product
         parent::__construct('express', $product_id, $plan_id);
     }
 
-    public function validate(): void
+    public function checkoutValidate(): void
     {
         $stripe_helper = auth()->user()->getStripeHelper();
 

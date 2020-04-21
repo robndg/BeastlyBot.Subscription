@@ -2,10 +2,9 @@
 
 namespace App\Products;
 
-use App\AlertHelper;
 use App\DiscordStore;
-use App\User;
 use Exception;
+use Illuminate\Http\Request;
 
 class DiscordRoleProduct extends Product
 {
@@ -21,7 +20,7 @@ class DiscordRoleProduct extends Product
         $this->billing_cycle = $billing_cycle;
     }
   
-    public function validate(): void {
+    public function checkoutValidate(): void {
         if(! DiscordStore::where('guild_id', $this->guild_id)->exists())
             throw new ProductMsgException('Discord store not found in database.');
 
@@ -35,20 +34,46 @@ class DiscordRoleProduct extends Product
         
     }
 
-    public function getCallbackParams(): array
-    {
-        return ['guild_id' => $this->guild_id, 'role_id' => $this->role_id, 'billing_cycle' => $this->billing_cycle];
-    }
-
     public function checkoutSuccess()
     {
-        // TODO: Create 'order' in Orders table for bot to use to init
         return redirect('/account/subscriptions');
     }
 
     public function checkoutCancel()
     {
         return redirect('/shop/' . $this->guild_id);
+    }
+
+    public function create(Request $request) {
+        $product_id = 'discord_' . $this->guild_id . '_' . $this->role_id;
+        
+        \Stripe\Product::create([
+            'name' => $request['name'],
+            'id' => $product_id,
+            'type' => 'service',
+            'metadata' => ['owner_id' => auth()->user()->StripeConnect()->express_id],
+        ]);
+
+        return response()->json(['success' => true, 'msg' => 'Product created!']);
+    }
+
+    // can't delete a product if there are any \Stripe\Plan's still with active \Stripe\Subscription's on them.
+    public function delete(Request $request) {
+        $product_id = 'discord_' . $this->guild_id . '_' . $this->role_id;
+
+        $product = \Stripe\Product::retrieve($product_id);
+        $product->delete();
+
+        return response()->json(['success' => true, 'msg' => 'Product deleted!']);
+    }
+
+    public function update(Request $request) {
+        
+    }
+
+    public function getCallbackParams(): array
+    {
+        return ['guild_id' => $this->guild_id, 'role_id' => $this->role_id, 'billing_cycle' => $this->billing_cycle];
     }
 
     public function getApplicationFee(): float

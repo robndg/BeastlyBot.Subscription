@@ -19,7 +19,7 @@ class CreateUsersTable extends Migration
             $table->boolean('admin')->default(false);
             $table->integer('theme_color')->default(0);
             $table->string('permissions')->nullable();
-            $table->rememberToken();
+            // $table->rememberToken();
             $table->timestamps();
         });
     }

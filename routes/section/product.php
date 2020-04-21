@@ -3,9 +3,17 @@
 use App\Shop;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/slide-product-purchase/{guild_id}/{role_id}', 'ProductController@getProductSlide');
+Route::get('/slide-product-purchase/{guild_id}/{role_id}', function($guild_id, $role_id) {
+    if(\request('affiliate_id') !== null) {
+        return view('slide.slide-product-purchase')->with('guild_id', $guild_id)->with('role_id', $role_id)->with('prices', self::getPricesForRole($guild_id, $role_id))->with('affiliate_id', \request('affiliate_id'));
+    }
+    return view('slide.slide-product-purchase')->with('guild_id', $guild_id)->with('role_id', $role_id)->with('special_id', null)->with('prices', self::getPricesForRole($guild_id, $role_id));
 
-Route::get('/slide-special-purchase/{guild_id}/{role_id}/{special_id}/{discord_id}', 'ProductController@getSpecialProductSlide');
+});
+
+Route::get('/slide-special-purchase/{guild_id}/{role_id}/{special_id}/{discord_id}', function($guild_id, $role_id, $special_id, $discord_id) {
+    return view('slide.slide-product-purchase')->with('guild_id', $guild_id)->with('role_id', $role_id)->with('special_id', $special_id)->with('prices', self::getPricesForSpecial($guild_id, $role_id, $discord_id));
+});
 
 Route::get('/product/{id}', function () {
     return view('subscribe-product');

@@ -2,6 +2,8 @@
 
 namespace App\Products;
 
+use Illuminate\Http\Request;
+
 abstract class Product 
 {
   
@@ -20,15 +22,21 @@ abstract class Product
         if (! $this->stripe_plan_obj->active) throw new ProductMsgException('Plan is not active.');
     }
 
-    abstract public function validate(): void;
-
-    abstract public function changePlan(string $new_plan_id);
-
-    abstract public function getCallbackParams(): array;
+    abstract public function checkoutValidate(): void;
 
     abstract public function checkoutSuccess();
 
     abstract public function checkoutCancel();
+
+    abstract public function changePlan(string $new_plan_id);
+
+    abstract public function create(Request $request);
+
+    abstract public function delete(Request $request);
+
+    abstract public function update(Request $request);
+
+    abstract public function getCallbackParams(): array;
 
     abstract public function getApplicationFee(): float;
 
@@ -56,7 +64,7 @@ abstract class Product
 
     public function getExpressOwnerID(): string {
         if($this->stripe_product_obj != null) 
-            return $this->stripe_product_obj->metadata['owner_express_id'];
+            return $this->stripe_product_obj->metadata['owner_id'];
         return null;
     }
 

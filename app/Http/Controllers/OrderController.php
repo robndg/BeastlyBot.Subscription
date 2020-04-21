@@ -36,12 +36,12 @@ class OrderController extends Controller {
                 break;
             }
 
-            $product->validate();
+            $product->checkoutValidate();
         } catch(ProductMsgException $e) {
             return response()->json(['success' => false, 'msg' => $e->getMessage()]);
-        } catch(InvalidRequestException $e) {
+        } catch(\Stripe\Exception\ApiErrorException $e) {
             if(env('APP_DEBUG')) Log::error($e);
-            return response()->json(['success' => false, 'msg' => 'Product or plan does not exist.']);
+            return response()->json(['success' => false, 'msg' => $e->getError()->message]);
         }
 
         $stripe_customer = auth()->user()->getStripeHelper()->getCustomerAccount();
@@ -97,9 +97,9 @@ class OrderController extends Controller {
             }
         } catch(ProductMsgException $e) {
             AlertHelper::alertWarning($e->getMessage());
-        } catch(InvalidRequestException $e) {
+        } catch(\Stripe\Exception\ApiErrorException $e) {
             if(env('APP_DEBUG')) Log::error($e);
-            AlertHelper::alertError($e->getMessage('Product or plan does not exist.'));
+            AlertHelper::alertWarning($e->getError()->message);
         }
 
         Session::remove('checkout_id');
@@ -120,9 +120,9 @@ class OrderController extends Controller {
             return $product->changePlan($request['plan_id']);
         } catch(ProductMsgException $e) {
             return response()->json(['success' => false, 'msg' => $e->getMessage()]);
-        } catch(InvalidRequestException $e) {
+        } catch(\Stripe\Exception\ApiErrorException $e) {
             if(env('APP_DEBUG')) Log::error($e);
-            return response()->json(['success' => false, 'msg' => 'Product or plan does not exist.']);
+            return response()->json(['success' => false, 'msg' => $e->getError()->message]);
         }
     }
 

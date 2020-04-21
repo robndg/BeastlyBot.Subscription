@@ -3,12 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Product;
+use App\Products\DiscordRoleProduct;
+use App\Products\ProductMsgException;
 use App\RoleDesc;
-use App\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
-use PayPal\Api\Plan;
 use Stripe\Exception\InvalidRequestException;
 
 class ProductController extends Controller {
@@ -17,21 +16,64 @@ class ProductController extends Controller {
         $this->middleware('auth');
     }
 
-    public function index() {
-        return view('home');
-    }
-
-    public function getProductSlide($guild_id, $role_id) {
-
-        if(\request('affiliate_id') !== null) {
-            return view('slide.slide-product-purchase')->with('guild_id', $guild_id)->with('role_id', $role_id)->with('prices', self::getPricesForRole($guild_id, $role_id))->with('affiliate_id', \request('affiliate_id'));
+    public function createProduct(Request $request) {
+        try {
+            switch ($request['product_type']) {
+                case "discord":
+                    $product = new DiscordRoleProduct($request['guild_id'], $request['role_id'], $request['billing_cycle']);
+                break;
+                default:
+                    throw new ProductMsgException('Could not find product by that type.');
+                break;
+            }
+            \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+            return $product->create($request);
+        } catch(ProductMsgException $e) {
+            return response()->json(['success' => false, 'msg' => $e->getMessage()]);
+        } catch(\Stripe\Exception\ApiErrorException $e) {
+            if(env('APP_DEBUG')) Log::error($e);
+            return response()->json(['success' => false, 'msg' => $e->getError()->message]);
         }
-        return view('slide.slide-product-purchase')->with('guild_id', $guild_id)->with('role_id', $role_id)->with('special_id', null)->with('prices', self::getPricesForRole($guild_id, $role_id));
     }
 
-    public function getSpecialProductSlide($guild_id, $role_id, $special_id, $discord_id) {
+    public function deleteProduct(Request $request) {
+        try {
+            switch ($request['product_type']) {
+                case "discord":
+                    $product = new DiscordRoleProduct($request['guild_id'], $request['role_id'], $request['billing_cycle']);
+                break;
+                default:
+                    throw new ProductMsgException('Could not find product by that type.');
+                break;
+            }
+            \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+            return $product->delete($request);
+        } catch(ProductMsgException $e) {
+            return response()->json(['success' => false, 'msg' => $e->getMessage()]);
+        } catch(\Stripe\Exception\ApiErrorException $e) {
+            if(env('APP_DEBUG')) Log::error($e);
+            return response()->json(['success' => false, 'msg' => $e->getError()->message]);
+        }
+    }
 
-        return view('slide.slide-product-purchase')->with('guild_id', $guild_id)->with('role_id', $role_id)->with('special_id', $special_id)->with('prices', self::getPricesForSpecial($guild_id, $role_id, $discord_id));
+    public function updateProduct(Request $request) {
+        try {
+            switch ($request['product_type']) {
+                case "discord":
+                    $product = new DiscordRoleProduct($request['guild_id'], $request['role_id'], $request['billing_cycle']);
+                break;
+                default:
+                    throw new ProductMsgException('Could not find product by that type.');
+                break;
+            }
+            \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+            return $product->update($request);
+        } catch(ProductMsgException $e) {
+            return response()->json(['success' => false, 'msg' => $e->getMessage()]);
+        } catch(\Stripe\Exception\ApiErrorException $e) {
+            if(env('APP_DEBUG')) Log::error($e);
+            return response()->json(['success' => false, 'msg' => $e->getError()->message]);
+        }
     }
 
     // TODO: Make sure guild_id and role_id are valid
