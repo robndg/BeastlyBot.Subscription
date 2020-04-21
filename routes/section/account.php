@@ -1,6 +1,7 @@
 <?php
 
 use App\AlertHelper;
+use App\BeastlyConfig;
 use App\DiscordHelper;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Log;
@@ -56,7 +57,7 @@ Route::group(['middleware' => ['auth', 'web']], function () {
     Route::get('/buy-plan-cancel', 'UserController@checkoutExpressPlanFailure');
 
     Route::get('/slide-account-subscription-settings/{sub_id}', function ($sub_id) {
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(BeastlyConfig::get('STRIPE_SECRET'));
 
         $role_name = \request('role_name');
         $guild_name = \request('guild_name');
@@ -72,7 +73,7 @@ Route::group(['middleware' => ['auth', 'web']], function () {
             return view('/slide/slide-account-subscription-settings')->with('subscription', $sub)->with('latest_invoice', $latest_invoice)->with('role_name', $role_name)
             ->with('guild_name', $guild_name)->with('role_color', $role_color)->with('days_passed', $days);
         } catch(\Exception $e) {
-            if (env('APP_DEBUG')) Log::error($e);
+            if (BeastlyConfig::get('APP_DEBUG')) Log::error($e);
             AlertHelper::alertError('Error!');
         }
 
@@ -100,7 +101,7 @@ Route::group(['middleware' => ['auth', 'web']], function () {
             $user->mode = $request['mode'] == '1';
             $user->save();
         } catch (\Exception $e) {
-            if (env('APP_DEBUG')) Log::error($e);
+            if (BeastlyConfig::get('APP_DEBUG')) Log::error($e);
         }
 
         return response()->json(['success' => true]);

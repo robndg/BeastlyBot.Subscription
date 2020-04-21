@@ -2,6 +2,7 @@
 
 namespace App\Products;
 
+use App\BeastlyConfig;
 use Illuminate\Http\Request;
 
 abstract class Product 
@@ -13,7 +14,7 @@ abstract class Product
     public function __construct(string $product_type, string $product_id = null, string $plan_id)
     {
         $this->product_type = $product_type;
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(BeastlyConfig::get('STRIPE_SECRET'));
         if($product_id !== null) {
             $this->stripe_product_obj = \Stripe\Product::retrieve($product_id);
             if (! $this->stripe_product_obj->active) throw new ProductMsgException('Product is not active.');
@@ -44,14 +45,14 @@ abstract class Product
         $data = $this->getCallbackParams();
         $data['success'] = true;
         $data['product_type'] = $this->product_type;
-        return env('APP_URL') . '/checkout?' . http_build_query($data);
+        return BeastlyConfig::get('APP_URL') . '/checkout?' . http_build_query($data);
     }
 
     public function getCallbackCancelURL(): string {
         $data = $this->getCallbackParams();
         $data['success'] = false;
         $data['product_type'] = $this->product_type;
-        return env('APP_URL') . '/checkout?' . http_build_query($data);
+        return BeastlyConfig::get('APP_URL') . '/checkout?' . http_build_query($data);
     }
 
     public function getStripeProduct(): \Stripe\Product {

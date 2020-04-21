@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\BeastlyConfig;
 use App\Product;
 use App\Products\DiscordRoleProduct;
 use App\Products\ProductMsgException;
@@ -26,12 +27,12 @@ class ProductController extends Controller {
                     throw new ProductMsgException('Could not find product by that type.');
                 break;
             }
-            \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+            \Stripe\Stripe::setApiKey(BeastlyConfig::get('STRIPE_SECRET'));
             return $product->create($request);
         } catch(ProductMsgException $e) {
             return response()->json(['success' => false, 'msg' => $e->getMessage()]);
         } catch(\Stripe\Exception\ApiErrorException $e) {
-            if(env('APP_DEBUG')) Log::error($e);
+            if(BeastlyConfig::get('APP_DEBUG')) Log::error($e);
             return response()->json(['success' => false, 'msg' => $e->getError()->message]);
         }
     }
@@ -46,12 +47,12 @@ class ProductController extends Controller {
                     throw new ProductMsgException('Could not find product by that type.');
                 break;
             }
-            \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+            \Stripe\Stripe::setApiKey(BeastlyConfig::get('STRIPE_SECRET'));
             return $product->delete($request);
         } catch(ProductMsgException $e) {
             return response()->json(['success' => false, 'msg' => $e->getMessage()]);
         } catch(\Stripe\Exception\ApiErrorException $e) {
-            if(env('APP_DEBUG')) Log::error($e);
+            if(BeastlyConfig::get('APP_DEBUG')) Log::error($e);
             return response()->json(['success' => false, 'msg' => $e->getError()->message]);
         }
     }
@@ -66,12 +67,12 @@ class ProductController extends Controller {
                     throw new ProductMsgException('Could not find product by that type.');
                 break;
             }
-            \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+            \Stripe\Stripe::setApiKey(BeastlyConfig::get('STRIPE_SECRET'));
             return $product->update($request);
         } catch(ProductMsgException $e) {
             return response()->json(['success' => false, 'msg' => $e->getMessage()]);
         } catch(\Stripe\Exception\ApiErrorException $e) {
-            if(env('APP_DEBUG')) Log::error($e);
+            if(BeastlyConfig::get('APP_DEBUG')) Log::error($e);
             return response()->json(['success' => false, 'msg' => $e->getError()->message]);
         }
     }
@@ -106,7 +107,7 @@ class ProductController extends Controller {
         }
 
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(BeastlyConfig::get('STRIPE_SECRET'));
         if(($prices[1] || $prices[3] || $prices[6] || $prices[12]) != 0){
             \Stripe\Product::update(
                 $guild_id . '_' . $role_id,

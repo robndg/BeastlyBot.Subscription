@@ -21,7 +21,7 @@
         <div class="panel-body container-fluid">
             <div class="row">
 
-                    @foreach(\App\BeastlyConfig::$keys as $key)
+                    @foreach(BeastlyConfig::$keys as $key)
                 
                         <div class="col-sm-12 col-md-6 col-lg-6">
                             <!-- Example Search -->
@@ -29,7 +29,7 @@
                                 <h4 class="example-title">{{str_replace('_', ' ', $key)}}</h4>
                                 <div class="form-group">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" name="{{ $key }}" id="key-{{ $key }}" value="{{ \App\BeastlyConfig::get($key) }}">
+                                    <input type="text" class="form-control" name="{{ $key }}" id="key-{{ $key }}" value="{{ BeastlyConfig::get($key) }}">
                                     <span class="input-group-btn">
                                         <button type="submit" class="btn btn-primary" data-name="{{ $key }}" onclick="setConfig('{{ $key }}');"><i class="icon wb-check" aria-hidden="true"></i></button>
                                     </span>

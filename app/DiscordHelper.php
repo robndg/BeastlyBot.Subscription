@@ -83,9 +83,9 @@ class DiscordHelper
 
     private function getDiscordProvider(): Discord {
         return new Discord([
-            'clientId' => env('DISCORD_CLIENT_ID'),
-            'clientSecret' => env('DISCORD_SECRET'),
-            'redirectUri' => env('DISCORD_AUTH_REDIRECT'),
+            'clientId' => BeastlyConfig::get('DISCORD_CLIENT_ID'),
+            'clientSecret' => BeastlyConfig::get('DISCORD_SECRET'),
+            'redirectUri' => BeastlyConfig::get('DISCORD_AUTH_REDIRECT'),
         ]);
     }
 

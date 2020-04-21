@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\AlertHelper;
+use App\BeastlyConfig;
 use App\Products\DiscordRoleProduct;
 use App\Products\ExpressProduct;
 use App\Products\ProductMsgException;
@@ -40,7 +41,7 @@ class OrderController extends Controller {
         } catch(ProductMsgException $e) {
             return response()->json(['success' => false, 'msg' => $e->getMessage()]);
         } catch(\Stripe\Exception\ApiErrorException $e) {
-            if(env('APP_DEBUG')) Log::error($e);
+            if(BeastlyConfig::get('APP_DEBUG')) Log::error($e);
             return response()->json(['success' => false, 'msg' => $e->getError()->message]);
         }
 
@@ -98,7 +99,7 @@ class OrderController extends Controller {
         } catch(ProductMsgException $e) {
             AlertHelper::alertWarning($e->getMessage());
         } catch(\Stripe\Exception\ApiErrorException $e) {
-            if(env('APP_DEBUG')) Log::error($e);
+            if(BeastlyConfig::get('APP_DEBUG')) Log::error($e);
             AlertHelper::alertWarning($e->getError()->message);
         }
 
@@ -121,7 +122,7 @@ class OrderController extends Controller {
         } catch(ProductMsgException $e) {
             return response()->json(['success' => false, 'msg' => $e->getMessage()]);
         } catch(\Stripe\Exception\ApiErrorException $e) {
-            if(env('APP_DEBUG')) Log::error($e);
+            if(BeastlyConfig::get('APP_DEBUG')) Log::error($e);
             return response()->json(['success' => false, 'msg' => $e->getError()->message]);
         }
     }

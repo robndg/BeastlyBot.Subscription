@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\BeastlyConfig;
 use App\DiscordOAuth;
 use App\StripeConnect;
 use App\User;
@@ -68,7 +69,7 @@ class DiscordOAuthController extends Controller {
             if (! StripeConnect::where('user_id', $user->id)->exists()) {
                 Log::info("HERE");
                 // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-                \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+                \Stripe\Stripe::setApiKey(BeastlyConfig::get('STRIPE_SECRET'));
 
                 $customers_with_email = \Stripe\Customer::all(['limit' => 1, 'email' => $discord_user->getEmail()]);
                 $stripe_account = null;
@@ -93,7 +94,7 @@ class DiscordOAuthController extends Controller {
                 $user->StripeConnect->save($connect);
             }
         } catch (IdentityProviderException $e) {
-            if (env('APP_DEBUG')) Log::error($e);
+            if (BeastlyConfig::get('APP_DEBUG')) Log::error($e);
         }
 
         return redirect()->intended('/dashboard');
@@ -105,9 +106,9 @@ class DiscordOAuthController extends Controller {
      */
     public static function getProvider() {
         return new Discord([
-            'clientId' => env('DISCORD_CLIENT_ID'),
-            'clientSecret' => env('DISCORD_SECRET'),
-            'redirectUri' => env('DISCORD_AUTH_REDIRECT'),
+            'clientId' => BeastlyConfig::get('DISCORD_CLIENT_ID'),
+            'clientSecret' => BeastlyConfig::get('DISCORD_SECRET'),
+            'redirectUri' => BeastlyConfig::get('DISCORD_AUTH_REDIRECT'),
         ]);
     }
 

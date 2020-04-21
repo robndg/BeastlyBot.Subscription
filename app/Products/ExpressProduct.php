@@ -3,6 +3,7 @@
 namespace App\Products;
 
 use App\AlertHelper;
+use App\BeastlyConfig;
 use Illuminate\Support\Facades\Log;
 
 class ExpressProduct extends Product
@@ -46,7 +47,7 @@ class ExpressProduct extends Product
     public function changePlan(string $new_plan_id)
     {
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(BeastlyConfig::get('STRIPE_SECRET'));
  
         $stripe_helper = auth()->user()->getStripeHelper();
 
@@ -73,7 +74,7 @@ class ExpressProduct extends Product
             $invoice = \Stripe\Invoice::upcoming(['customer' => $stripe_helper->getCustomerAccount()->id]);
             return response()->json(['success' => true, 'msg' => 'Plan changed. You were billed automatically.', 'invoice_url' => $invoice->invoice_pdf]);
         } catch(\Exception $e) {
-            if(env('APP_DEBUG')) Log::error($e);
+            if(BeastlyConfig::get('APP_DEBUG')) Log::error($e);
             return response()->json(['success' => false, 'msg' => 'Failed to change plan.']);
         }
     }
