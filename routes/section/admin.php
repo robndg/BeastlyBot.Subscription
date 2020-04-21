@@ -7,6 +7,9 @@ Route::group(['middleware' => ['App\Http\Middleware\AdminMiddleware']], function
     Route::get('/admin', function () {
         return view('admin/dash');
     });
+
+    Route::get('/admin/site/settings', 'AdminController@siteSettings');
+
     Route::get('/admin/shop/owners', 'AdminController@listShopOwners');
 
 
