@@ -19,11 +19,11 @@ class StripeHelper
     public function getSubscriptions() {
         \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
-        if(Session::has('subs_' . $this->user->DiscordOAuth()->discord_id)) return Session::get('subs_' . $this->user->DiscordOAuth()->discord_id);
+        if(Session::has('subs_' . $this->user->DiscordOAuth->discord_id)) return Session::get('subs_' . $this->user->DiscordOAuth->discord_id);
 
-        $stripe_subs = \Stripe\Subscription::all(['customer' => $this->user->StripeConnect()->customer_id, 'status' => 'active']);
+        $stripe_subs = \Stripe\Subscription::all(['customer' => $this->user->StripeConnect->customer_id, 'status' => 'active']);
 
-        Session::put('subs_' . $this->user->DiscordOAuth()->discord_id, $stripe_subs);
+        Session::put('subs_' . $this->user->DiscordOAuth->discord_id, $stripe_subs);
         return $stripe_subs;
     }
 
@@ -73,7 +73,7 @@ class StripeHelper
     public function getCustomerAccount(): \Stripe\Customer {
         \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
         try {
-            return \Stripe\Customer::retrieve($this->user->StripeConnect()->customer_id);
+            return \Stripe\Customer::retrieve($this->user->StripeConnect->customer_id);
         } catch (ApiErrorException $e) {
         }
         return null;
@@ -98,7 +98,7 @@ class StripeHelper
     }
 
     public function isExpressUser(): bool {
-        return $this->user->StripeConnect()->express_id !== null;
+        return $this->user->StripeConnect->express_id !== null;
     }
 
     public function hasExpressPlan(): bool {
@@ -106,17 +106,17 @@ class StripeHelper
     }
 
     public function getBalance() {
-        if(Cache::has('balance_' . $this->user->StripeConnect()->express_id)) return Cache::get('balance_' . $this->user->StripeConnect()->express_id, 0);
+        if(Cache::has('balance_' . $this->user->StripeConnect->express_id)) return Cache::get('balance_' . $this->user->StripeConnect->express_id, 0);
         $balance = \Stripe\Balance::retrieve(
-            ['stripe_account' => $this->user->StripeConnect()->express_id]
+            ['stripe_account' => $this->user->StripeConnect->express_id]
         );
-        Cache::put('balance_' . $this->user->StripeConnect()->express_id, $balance, 60 * 5); // 5 minutes
-        return Cache::get('balance_' . $this->user->StripeConnect()->express_id, 0);
+        Cache::put('balance_' . $this->user->StripeConnect->express_id, $balance, 60 * 5); // 5 minutes
+        return Cache::get('balance_' . $this->user->StripeConnect->express_id, 0);
     }
 
     public function getLoginURL(): string {
         \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-        return $this->isExpressUser() ? \Stripe\Account::createLoginLink($this->user->StripeConnect()->express_id)->url : null;
+        return $this->isExpressUser() ? \Stripe\Account::createLoginLink($this->user->StripeConnect->express_id)->url : null;
     }
 
     public static function getAccountFromStripeConnect(string $code): \Stripe\Account {

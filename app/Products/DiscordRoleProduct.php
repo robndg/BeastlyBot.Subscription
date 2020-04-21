@@ -51,7 +51,7 @@ class DiscordRoleProduct extends Product
             'name' => $request['name'],
             'id' => $product_id,
             'type' => 'service',
-            'metadata' => ['owner_id' => auth()->user()->StripeConnect()->express_id],
+            'metadata' => ['owner_id' => auth()->user()->StripeConnect->express_id],
         ]);
 
         return response()->json(['success' => true, 'msg' => 'Product created!']);

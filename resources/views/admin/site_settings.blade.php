@@ -12,7 +12,7 @@
         </ol>
         <div class="page-header-actions">
             <div class="input-group">
-                <input type="text" class="form-control" name="SecurityCheck" id="securityCheck" placeholder="Enter Unlock Code">
+                <input type="text" class="form-control" name="SecurityCheck" id="passcode" placeholder="Enter Unlock Code">
             </div>
         </div>
       </div>
@@ -21,17 +21,17 @@
         <div class="panel-body container-fluid">
             <div class="row">
 
-                    @foreach($site_settings as $site_setting)
+                    @foreach(\App\BeastlyConfig::$keys as $key)
                 
                         <div class="col-sm-12 col-md-6 col-lg-6">
                             <!-- Example Search -->
                             <div class="example-wrap">
-                                <h4 class="example-title">{{str_replace('_', ' ', $site_setting)}}</h4>
+                                <h4 class="example-title">{{str_replace('_', ' ', $key)}}</h4>
                                 <div class="form-group">
                                 <div class="input-group">
-                                    <input type="text" class="form-control" name="{{ $site_setting }}" value="asasdasdasdasd">
+                                    <input type="text" class="form-control" name="{{ $key }}" id="key-{{ $key }}" value="{{ \App\BeastlyConfig::get($key) }}">
                                     <span class="input-group-btn">
-                                        <button type="submit" class="btn btn-primary" data-name="{{ $site_setting }}"><i class="icon wb-check" aria-hidden="true"></i></button>
+                                        <button type="submit" class="btn btn-primary" data-name="{{ $key }}" onclick="setConfig('{{ $key }}');"><i class="icon wb-check" aria-hidden="true"></i></button>
                                     </span>
                                 </div>
                                 </div>
@@ -60,3 +60,37 @@ Script to send this to public function updateSiteSettings
 3) New Setting String (from value)
 
 ----->
+
+@section('scripts')
+<script type="text/javascript">
+    function setConfig(key) {
+        $.ajax({
+            url: `/admin/update_settings`,
+            type: 'POST',
+            data: {
+                key: key,
+                value: $(`#key-${key}`).val(),
+                unlock_code: $('#passcode').val(),
+                _token: '{{ csrf_token() }}'
+            },
+        }).done(function (msg) {
+            if(msg['success']) {
+                Toast.fire({
+                    title: 'Setting updated!',
+                    type: 'success',
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                });
+            } else {
+                Toast.fire({
+                    title: msg['msg'],
+                    type: 'error',
+                    showCancelButton: false,
+                    showConfirmButton: false,
+                });
+                //$('#partnerPricingModal').modal('show');
+            }
+        });
+    }
+</script>
+@endsection

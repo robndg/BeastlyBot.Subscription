@@ -1,5 +1,6 @@
 <?php
 
+use App\BeastlyConfig;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['App\Http\Middleware\AdminMiddleware']], function () {
@@ -8,7 +9,9 @@ Route::group(['middleware' => ['App\Http\Middleware\AdminMiddleware']], function
         return view('admin/dash');
     });
 
-    Route::get('/admin/site/settings', 'AdminController@siteSettings');
+    Route::view('/admin/site/settings', 'admin.site_settings');
+
+    Route::post('/admin/update_settings', 'AdminController@setSiteConfigValue');
 
     Route::get('/admin/shop/owners', 'AdminController@listShopOwners');
 

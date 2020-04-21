@@ -13,7 +13,7 @@ class CreateSiteConfigurationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('site_configurations', function (Blueprint $table) {
+        Schema::create('site_configuration', function (Blueprint $table) {
             $table->id();
             $table->string('STRIPE_KEY')->nullable();
             $table->string('STRIPE_SECRET')->nullable();
@@ -40,7 +40,7 @@ class CreateSiteConfigurationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('site_configurations');
+        Schema::dropIfExists('site_configuration');
     }
 
 }

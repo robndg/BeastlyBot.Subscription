@@ -15,19 +15,6 @@ use Illuminate\Support\Facades\Route;
 
 // Route::stripeWebhooks('stripe_webhooks');
 
-Route::view('/admin/site_settings', 'admin.site_settings');
-
-Route::post('/admin/update_settings', function() {
-    
-});
-
-Route::get('/admin/partners/list', function () {
-    return view('admin/partner_list');
-});
-Route::get('/admin/slide/user-view', function () {
-    return view('admin/slide/slide_user_view');
-});
-
 Route::get('/slide-account-type', function () {
     return view('/slide/slide-account-type');
 });

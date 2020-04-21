@@ -54,15 +54,15 @@ class DiscordOAuthController extends Controller {
                     'refresh_token' => $token->getRefreshToken(), 
                     'token_expiration' => $token->getExpires()
                 ]);
-                $user->DiscordOAuth()->save($oauth);
+                $user->DiscordOAuth->save($oauth);
 
                 auth()->login($user);
             } else {
                 // if the user does exist we just update their tokens
-                $user->DiscordOAuth()->access_token = $token->getToken();
-                $user->DiscordOAuth()->refresh_token = $token->getRefreshToken();
-                $user->DiscordOAuth()->token_expiration = $token->getExpires();
-                $user->DiscordOAuth()->save();
+                $user->DiscordOAuth->access_token = $token->getToken();
+                $user->DiscordOAuth->refresh_token = $token->getRefreshToken();
+                $user->DiscordOAuth->token_expiration = $token->getExpires();
+                $user->DiscordOAuth->save();
             }
             // if the authenticated user does not have a strip account we need to create one for them
             if (! StripeConnect::where('user_id', $user->id)->exists()) {
@@ -90,7 +90,7 @@ class DiscordOAuthController extends Controller {
                 }
 
                 $connect = new StripeConnect(['user_id' => $user->id, 'customer_id' => $stripe_account->id]);
-                $user->StripeConnect()->save($connect);
+                $user->StripeConnect->save($connect);
             }
         } catch (IdentityProviderException $e) {
             if (env('APP_DEBUG')) Log::error($e);

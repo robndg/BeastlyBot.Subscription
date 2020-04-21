@@ -19,32 +19,32 @@ class DiscordHelper
     public function cache(): void {
         $data = $this->getDiscordData();
         $username = $data['username'] . ' #' . $data['discriminator'];
-        $avatar_url = "https://cdn.discordapp.com/avatars/" . $this->user->DiscordOAuth()->discord_id . "/" . $this->getDiscordData()['avatar'] . ".png";
+        $avatar_url = "https://cdn.discordapp.com/avatars/" . $this->user->DiscordOAuth->discord_id . "/" . $this->getDiscordData()['avatar'] . ".png";
         $minutes_to_cache = 10;
-        Cache::put('discord_username_' . $this->user->DiscordOAuth()->discord_id, $username, 60 * $minutes_to_cache);
-        Cache::put('discord_email_' . $this->user->DiscordOAuth()->discord_id, $data['email'], 60 * $minutes_to_cache);
-        Cache::put('discord_avatar_' . $this->user->DiscordOAuth()->discord_id, $avatar_url, 60 * $minutes_to_cache);
+        Cache::put('discord_username_' . $this->user->DiscordOAuth->discord_id, $username, 60 * $minutes_to_cache);
+        Cache::put('discord_email_' . $this->user->DiscordOAuth->discord_id, $data['email'], 60 * $minutes_to_cache);
+        Cache::put('discord_avatar_' . $this->user->DiscordOAuth->discord_id, $avatar_url, 60 * $minutes_to_cache);
     }
 
     public function getAvatar(): string {
-        if(!Cache::has('discord_username_' . $this->user->DiscordOAuth()->discord_id)) {
+        if(!Cache::has('discord_username_' . $this->user->DiscordOAuth->discord_id)) {
             $this->cache();
         }
-        return Cache::get('discord_avatar_' . $this->user->DiscordOAuth()->discord_id, 'https://i.imgur.com/qbVxZbJ.png');
+        return Cache::get('discord_avatar_' . $this->user->DiscordOAuth->discord_id, 'https://i.imgur.com/qbVxZbJ.png');
     }
 
     public function getUsername(): string {
-        if(!Cache::has('discord_username_' . $this->user->DiscordOAuth()->discord_id)) {
+        if(!Cache::has('discord_username_' . $this->user->DiscordOAuth->discord_id)) {
             $this->cache();
         }
-        return Cache::get('discord_username_' . $this->user->DiscordOAuth()->discord_id);
+        return Cache::get('discord_username_' . $this->user->DiscordOAuth->discord_id);
     }
 
     public function getEmail(): string {
-        if(!Cache::has('discord_username_' . $this->user->DiscordOAuth()->discord_id)) {
+        if(!Cache::has('discord_username_' . $this->user->DiscordOAuth->discord_id)) {
             $this->cache();
         }
-        return Cache::get('discord_email_' . $this->user->DiscordOAuth()->discord_id);
+        return Cache::get('discord_email_' . $this->user->DiscordOAuth->discord_id);
     }
 
     public function getGuilds() {
@@ -77,7 +77,7 @@ class DiscordHelper
 
       // TODO: Have to get new token or whatver it's not working properly so we are getting 401 Unauthent
     private function getDiscordAccessToken(): AccessToken {
-        $token = new AccessToken(['access_token' => $this->user->DiscordOAuth()->access_token, 'refresh_token' => $this->user->DiscordOAuth()->refresh_token, 'expires_in' => $this->user->DiscordOAuth()->token_expiration]);
+        $token = new AccessToken(['access_token' => $this->user->DiscordOAuth->access_token, 'refresh_token' => $this->user->DiscordOAuth->refresh_token, 'expires_in' => $this->user->DiscordOAuth->token_expiration]);
         return $token;
     }
 

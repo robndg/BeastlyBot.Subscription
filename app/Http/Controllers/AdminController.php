@@ -2,6 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\BeastlyConfig;
+use Exception;
+use Illuminate\Http\Request;
+
 class AdminController extends Controller
 {
 
@@ -9,36 +13,23 @@ class AdminController extends Controller
         $this->middleware('auth');
     }
 
-    public function siteSettings() {
-
-        ## Prob get array from sql instead
-        $site_settings = ['STRIPE_KEY', 'STRIPE_SECRET', 'STRIPE_CLIENT_ID', 'STRIPE_WEBHOOK_SECRET', 'STRIPE_PAYOUT_DELAY', 'EXPESS_PROD_ID', 'MONTHLY_PLAN', 'YEARLY_PLAN', 'STRIPE_CONNECT_LINK', 'SHOP_URL', 'DISCORD_AUTH_REDIRECT', 'BOT_CONNECTION', 'DISCORD_CLIENT_ID', 'DISCORD_SECRET', 'DISCORD_BOT_LINK'];
-
-        return view('admin.site_settings')->with('site_settings', $site_settings);
-    }
-
-    public function updateSiteSettings(Request $request) {
-
+    public function setSiteConfigValue(Request $request) {
         ## Send the unlock key, setting name and new setting string
 
-        $req_unlock_key = $request['unlock_key'];
-        $req_update_name = $request['setting_name'];
-        $req_update_string = $request['setting_string'];
+        $req_unlock_code = $request['unlock_code'];
+        $req_update_name = $request['key'];
+        $req_update_string = $request['value'];
 
-        $security_key = "99CR%";
-
-        if($req_unlock_key != "99CR%") {
-            return response()->json(['success' => false, 'msg' => 'Incorrect Sucurity Key']);
-        }
-        
         ## Check if unlock key correct, then update DB
-        if ($request['unlock_key'] === "99CR%"){
-            $site_settings->$req_update_name = $req_update_string;
-            $site_settings->save();
+        try {
+        if ($req_unlock_code === "99CR%")
+            BeastlyConfig::set($req_update_name, $req_update_string);
+        else throw new Exception('Invalid passcode.');
+        } catch (Exception $e) {
+            return response()->json(['success' => false, 'msg' => $e->getMessage()]);
         }
 
         return response()->json(['success' => true]);
-
     }
 
     public function listShopOwners() {
