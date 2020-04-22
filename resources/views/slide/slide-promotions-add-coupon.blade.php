@@ -113,7 +113,7 @@
 
         var roles = [];
 
-        socket.emit('get_guilds', [socket_id, '{{ auth()->user()->discord_id }}']);
+        socket.emit('get_guilds', [socket_id, '{{ auth()->user()user()->DiscordOAuth->discord_id }}']);
 
         socket.on('res_guilds_' + socket_id, function (message) {
             Object.keys(message).forEach(function (key) {

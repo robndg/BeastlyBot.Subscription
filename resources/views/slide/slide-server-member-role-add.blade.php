@@ -1,7 +1,7 @@
 <header class="slidePanel-header">
   <div class="slidePanel-actions" aria-label="actions" role="group">
     <button type="button" class="btn btn-icon btn-pure btn-inverse actions-top icon wb-chevron-left"
-      aria-hidden="true" data-url="/slide-server-member/{{ $guild_id }}/{{ $user->discord_id }}" id="back-btn" data-toggle="slidePanel"></button>
+      aria-hidden="true" data-url="/slide-server-member/{{ $guild_id }}/{{ $useruser()->DiscordOAuth->discord_id }}" id="back-btn" data-toggle="slidePanel"></button>
   </div>
   <h1>Role Add</h1>
 </header>
@@ -50,7 +50,7 @@
                           <div class="input-group">
                               <select class="form-control" id="users_list">
                               <!-- maybe reload slide if new user selected -->
-                              <option value="{{ $user->discord_id }}" id="{{ $user->discord_id }}">{{ $user->getDiscordUsername() }}</option>
+                              <option value="{{ $useruser()->DiscordOAuth->discord_id }}" id="{{ $useruser()->DiscordOAuth->discord_id }}">{{ $user->getDiscordUsername() }}</option>
                               </select>
                           </div>
 
@@ -170,7 +170,7 @@
             url: '/server-member-role-add',
             type: 'POST',
             data: {
-                'discord_id': '{{ $user->discord_id }}',
+                'discord_id': '{{ $useruser()->DiscordOAuth->discord_id }}',
                 'role_id': add_role_id,
                 'role_name': add_role_name,
                 'guild_id': '{{ $guild_id }}',

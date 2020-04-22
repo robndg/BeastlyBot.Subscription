@@ -45,7 +45,6 @@ function start() {
     });
 
     io.on('connection', function (socket) {
-
         socket.on('toggle_role_activity', function(data) {
             var guild_id = data[1];
             var role_id = data[2];
@@ -187,6 +186,7 @@ function start() {
         socket.on('get_guilds', function (data) {
             var key = `guilds_${data[1]}`;
             var guilds = cache.get(key);
+
 
             if(guilds) {
                 io.emit('res_guilds_' + data[0], guilds);

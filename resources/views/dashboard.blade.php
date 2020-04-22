@@ -436,7 +436,7 @@
         $(document).ready(function () {
             var discord_username, discord_discriminator;
             socket.on('connect', function () {
-                socket.emit('get_user_data', [socket_id, '{{ auth()->user()->discord_id }}']);
+                socket.emit('get_user_data', [socket_id, '{{ auth()->user()->DiscordOAuth->discord_id }}']);
             });
             socket.on('res_user_data_' + socket_id, function (message) {
                 $('#avatarIconHeader').attr('src', message['avatar']);
@@ -619,7 +619,7 @@ $('#notifications_modal').on('hide.bs.modal', function() {
 <script type="text/javascript">
     var guild_id = null, role_id = null;
     $(document).ready(function () {
-        socket.emit('get_guilds', [socket_id, '{{ auth()->user()->discord_id }}']);
+        socket.emit('get_guilds', [socket_id, '{{ auth()->user()user()->DiscordOAuth->discord_id }}']);
 
         socket.on('res_guilds_' + socket_id, function (message) {
             $('#servers-table-side').empty();

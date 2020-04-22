@@ -2,7 +2,7 @@
     <div class="slidePanel-actions" aria-label="actions" role="group">
     @if($special)
     <button type="button" class="btn btn-icon btn-pure btn-inverse actions-top icon wb-chevron-right"
-        aria-hidden="true" data-url="/slide-server-member/{{ $guild_id }}/{{ $user->discord_id }}" id="back-btn" data-toggle="slidePanel"></button>
+        aria-hidden="true" data-url="/slide-server-member/{{ $guild_id }}/{{ $useruser()->DiscordOAuth->discord_id }}" id="back-btn" data-toggle="slidePanel"></button>
       @else
     <button type="button" class="btn btn-icon btn-pure btn-inverse slidePanel-close actions-top icon wb-close"
         aria-hidden="true"></button>

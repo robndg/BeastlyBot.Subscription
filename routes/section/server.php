@@ -41,7 +41,7 @@ Route::get('/slide-roles-prices/{guild_id}/{role_id}', 'ServerController@getSlid
 Route::get('/slide-server-member/{guild_id}/{user_id}', function ($guild_id, $user_id) {
     try {
         $user = User::where('discord_id', $user_id)->get()[0];
-        $discord_id = $user->discord_id;
+        $discord_id = $useruser()->DiscordOAuth->discord_id;
         $invoices_array = [];
         $subscriptions = array();
 
@@ -83,7 +83,7 @@ Route::get('/slide-server-member/{guild_id}/{user_id}', function ($guild_id, $us
                             if ($plan_guild_id === $guild_id) {
                                 $sub->all = $plan;
                                 $sub->role_id = $plan_role_id;
-                                //$sub->discord_id = $discord_id;
+                                //$subuser()->DiscordOAuth->discord_id = $discord_id;
                                 $sub->plan_special = $plan_special;
                                 $sub->plan_special_bool = $plan_special_bool;
                                 array_push($subscriptions, $sub);
@@ -122,7 +122,7 @@ Route::get('/slide-server-member/{guild_id}/{user_id}', function ($guild_id, $us
                     if ($plan_guild_id === $guild_id) {
                         #$other->all = $plan;
                         $other->role_id = $plan_role_id;
-                        //$sub->discord_id = $discord_id;
+                        //$subuser()->DiscordOAuth->discord_id = $discord_id;
                         $other->plan_special = $plan_special;
                         $other->plan_special_bool = $plan_special_bool;
                         array_push($other_plans, $other);
@@ -148,7 +148,7 @@ Route::get('/slide-server-member/{guild_id}/{user_id}', function ($guild_id, $us
                         if ($plan_guild_id === $guild_id) {
                             #$other->all = $plan;
                             $other->role_id = $plan_role_id;
-                            //$sub->discord_id = $discord_id;
+                            //$subuser()->DiscordOAuth->discord_id = $discord_id;
                             $other->plan_special = $plan_special;
                             $other->plan_special_bool = $plan_special_bool;
                             array_push($other_plans, $other);

@@ -120,7 +120,7 @@ $shop_url = App\Shop::where('id', $guild_id)->value('url');
 
         $(document).ready(function () {
         //$(window).on('load', function() { // speeds it up but breaks special
-            socket.emit('is_user_banned', [socket_id, '{{ $guild_id }}', '{{ auth()->user()->discord_id }}']);
+            socket.emit('is_user_banned', [socket_id, '{{ $guild_id }}', '{{ auth()->user()user()->DiscordOAuth->discord_id }}']);
 
             socket.on('res_user_banned_' + socket_id, function(msg) {
                 if(msg) {
@@ -207,8 +207,8 @@ $shop_url = App\Shop::where('id', $guild_id)->value('url');
                                 var guild_id = special_id.split('_')[0];
                                 var role_id = special_id.split('_')[1];
                                 var role_name = product_nickname.split('-')[0];
-                                //var link = `/slide-special-purchase/${guild_id}/${role_id}/${special_id}/{{ auth()->user()->discord_id }}`;
-                                var link = `/slide-special-purchase/${guild_id}/${role_id}/${special_id}/{{ auth()->user()->discord_id }}`;
+                                //var link = `/slide-special-purchase/${guild_id}/${role_id}/${special_id}/{{ auth()->user()user()->DiscordOAuth->discord_id }}`;
+                                var link = `/slide-special-purchase/${guild_id}/${role_id}/${special_id}/{{ auth()->user()user()->DiscordOAuth->discord_id }}`;
                                 special = `
                                 <div class="panel" id="role-${role_id}">
                                     <div class="panel-heading p-20 d-flex flex-row flex-wrap align-items-center justify-content-between" id="heading_${guild_id}" role="tab">

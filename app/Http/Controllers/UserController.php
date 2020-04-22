@@ -2,11 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\AlertHelper;
-use App\StripeHelper;
-use App\User;
-use Illuminate\Support\Facades\Log;
-
 class UserController extends Controller {
 
     public function __construct() {
@@ -31,7 +26,7 @@ class UserController extends Controller {
         // get last 100 most recent invoices for this customer
         $invoices = \Stripe\Invoice::all([
             'limit' => $num_of_invoices,
-            'customer' => auth()->user()->stripe_customer_id
+            'customer' => auth()->user()->StripeConnect->customer_id
         ]);
 
         $invoices_array = $invoices->toArray()['data'];

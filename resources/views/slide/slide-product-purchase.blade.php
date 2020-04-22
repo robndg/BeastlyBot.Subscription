@@ -174,7 +174,7 @@ $(document).ready(function() {
     $(document).ready(function () {
         socket.emit('get_guild_data', [socket_id, '{{ $guild_id }}']);
         socket.emit('get_role_data', [socket_id, '{{ $guild_id }}', '{{ $role_id }}']);
-        socket.emit('is_user_in_guild', [socket_id, '{{ $guild_id }}', '{{ auth()->user()->discord_id }}']);
+        socket.emit('is_user_in_guild', [socket_id, '{{ $guild_id }}', '{{ auth()->user()user()->DiscordOAuth->discord_id }}']);
 
         socket.on('res_user_in_guild_' + socket_id, function(msg) {
                 in_guild = msg;

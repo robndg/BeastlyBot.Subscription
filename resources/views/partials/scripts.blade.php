@@ -60,9 +60,9 @@
 
         $(document).ready(function () { 
             @if(env('DEV_ENV'))
-                socket = io('{{ SiteConfig::get('BOT_CONNECTION_URL') }}:3000', {secure: false});
+                socket = io('{{ SiteConfig::get('BOT_CONNECTION_URL') }}', {secure: false});
             @else
-                socket = io('{{ SiteConfig::get('BOT_CONNECTION_URL') }}:3000', {secure: true});
+                socket = io('{{ SiteConfig::get('BOT_CONNECTION_URL') }}', {secure: true});
             @endif
         });
 

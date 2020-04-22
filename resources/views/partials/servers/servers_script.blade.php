@@ -1,14 +1,12 @@
 var guild_id = null, role_id = null;
 
-socket.emit('get_guilds', [socket_id, '{{ auth()->user()->discord_id }}']);
+socket.emit('get_guilds', [socket_id, '{{ auth()->user()->DiscordOAuth->discord_id }}']);
 
 socket.on('res_guilds_' + socket_id, function (message) {
     $('#servers-table').empty();
 
     Object.keys(message).forEach(function (key) {
-
-        console.log(message[key]);
-
+        
         $('#servers-table').append(`
             <tr onClick="document.location.href='/server/${key}';" data-key="${key}">
                 <td class="cell-100 pl-15 pl-lg-30">

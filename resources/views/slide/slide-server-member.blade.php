@@ -61,7 +61,7 @@
                     @foreach($subscriptions as $sub)
 
                         @if($sub->plan_special_bool)
-                        <tr data-url="/slide-special-roles-settings/{{ $guild_id }}/{{ $sub->role_id }}/{{ $sub->plan_special }}/{{ $user->discord_id }}"
+                        <tr data-url="/slide-special-roles-settings/{{ $guild_id }}/{{ $sub->role_id }}/{{ $sub->plan_special }}/{{ $useruser()->DiscordOAuth->discord_id }}"
                         data-toggle="slidePanel">
                         @else
                         <tr data-url="/slide-roles-settings/{{ $guild_id }}/{{ $sub->role_id }}"
@@ -87,7 +87,7 @@
                     @foreach($other_plans as $plan)
 
                         @if($plan->plan_special_bool)
-                        <tr data-url="/slide-special-roles-settings/{{ $guild_id }}/{{ $plan->role_id }}/{{ $plan->plan_special }}/{{ $user->discord_id }}"
+                        <tr data-url="/slide-special-roles-settings/{{ $guild_id }}/{{ $plan->role_id }}/{{ $plan->plan_special }}/{{ $useruser()->DiscordOAuth->discord_id }}"
                         data-toggle="slidePanel">
                         @else
                         <tr data-url="/slide-roles-settings/{{ $guild_id }}/{{ $plan->role_id }}"
@@ -113,7 +113,7 @@
             </table>
             <!-- pagination -->
 
-            <button class="btn put-bottom btn-primary" data-url="/slide-server-member-role-add/{{ $guild_id }}/{{ $user->discord_id }}"
+            <button class="btn put-bottom btn-primary" data-url="/slide-server-member-role-add/{{ $guild_id }}/{{ $useruser()->DiscordOAuth->discord_id }}"
                     data-toggle="slidePanel">Add Role
             </button>
 

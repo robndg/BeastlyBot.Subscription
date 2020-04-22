@@ -750,7 +750,7 @@ class ServerController extends Controller {
         $guild_id = $request['guild_id'];
         //$roles = [];
         $durations = array(1, 3, 6, 12);
-        $discord_id = (\auth()->user()->discord_id);
+        $discord_id = (\auth()->user()->DiscordOAuth->discord_id);
         $plans = [];
         $role_ids = [];
 
