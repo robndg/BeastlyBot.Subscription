@@ -112,7 +112,7 @@
                         </a>
                     </li> -->
                     <li class="site-menu-category">SHOP
-                        @if(!auth()->user()->getStripeHelper()->hasExpressPlan() && auth()->user()->stripe_express_id !== null)
+                        @if(!auth()->user()->getStripeHelper()->hasExpressPlan() && auth()->user()->StripeConnect->express_id != null)
                         <a href="#" class="site-menu-badge" data-toggle="modal" data-target="#partnerPricingModal">
                             <span class="badge badge-pill badge-success text-capitalize mt-10 responsive-hide">Go Live</span>
                         </a>
@@ -126,7 +126,7 @@
                         </a>
                         @endif
                     </li>
-                    @if(auth()->user()->stripe_express_id !== null && auth()->user()->error != "1")
+                    @if(auth()->user()->StripeConnect->express_id != null && auth()->user()->error != "1")
                         <li class="dropdown site-menu-item {{ Request::is('servers') ? 'active' : '' }}">
                             <a data-toggle="dropdown" href="/servers">
                                 <i class="site-menu-icon icon-shop" aria-hidden="true"></i>

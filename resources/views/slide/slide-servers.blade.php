@@ -8,7 +8,7 @@
 </header>
 
     <div class="page-header my-10">
-        @if(auth()->user()->stripe_express_id != null)
+        @if(auth()->user()->StripeConnect->express_id != null)
         <div class="page-header-actions add-pulse">
             <a class="btn btn-primary btn-round"
                href="https://discordapp.com/oauth2/authorize?client_id=590725202489638913&amp;scope=bot&amp;permissions=281020422" target="_blank" id="Addbtn">

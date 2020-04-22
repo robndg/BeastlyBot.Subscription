@@ -15,7 +15,7 @@
 <div class="page-aside-inner page-aside-scroll">
   <div data-role="container">
     <div data-role="content">
-    @if(auth()->user()->stripe_express_id != null && auth()->user()->error != '1')
+    @if(auth()->user()->StripeConnect->express_id != null && auth()->user()->error != '1')
     <div class="card card-shadow card-inverse mb-0 bg-grey-3 white">
       <div class="card-block p-20">
         <div class="counter counter-lg counter-inverse text-left">
@@ -37,7 +37,7 @@
     <div class="card">
               <div class="card-header">
               <span id="notification_count_1-pg">0</span> New Notifications
-              </div>
+              </div> 
               <div class="card-block p-0">
                 <ul class="list-group list-group-full list-group-dividered list-group-no-hover mb-0" id="notifications-dropdown">
 
@@ -108,14 +108,14 @@
                       <div class="col-lg-1 col-xs-3 col-sm-3 col-md-2">
 
                         <div class="row no-space">
-                            {{-- <div class="@if(auth()->user()->stripe_express_id != null && auth()->user()->error != '1')col-6 col-sm-12 @else col-12 h-only-xs-50 @endif">
-                              <a href="javascript:void(0);" class="btn-75 @if(auth()->user()->stripe_express_id != null && auth()->user()->error != '1')pt-20 @else h-150 pt-10 pt-sm-60 @endif bd-top-sm" data-toggle="site-sidebar" data-url="/slide-account-settings"> --}}
+                            {{-- <div class="@if(auth()->user()->StripeConnect->express_id != null != null && auth()->user()->error != '1')col-6 col-sm-12 @else col-12 h-only-xs-50 @endif">
+                              <a href="javascript:void(0);" class="btn-75 @if(auth()->user()->StripeConnect->express_id != null && auth()->user()->error != '1')pt-20 @else h-150 pt-10 pt-sm-60 @endif bd-top-sm" data-toggle="site-sidebar" data-url="/slide-account-settings"> --}}
                               <div class="col-12 h-only-xs-50">
                               <a href="javascript:void(0);" class="btn-75 h-150 pt-10 pt-sm-60 bd-top-sm" data-toggle="site-sidebar" data-url="/slide-account-settings">
                                 <i class="wb-user"></i>
                               </a>
                             </div>
-                           {{-- @if(auth()->user()->stripe_express_id != null && auth()->user()->error != '1')
+                           {{-- @if(auth()->user()->StripeConnect->express_id != null && auth()->user()->error != '1')
                             <div class="col-6 col-sm-12">
                               <a href="javascript:void(0);" class="btn-75 pt-25 bd-top" data-toggle="site-sidebar" data-url="/slide-payout/{{ auth()->user()->stripe_express_id }}">
                                   <i class="icon-stripe"></i>
@@ -212,8 +212,7 @@
                 </a>
             </div>-->
 
-
-          @if(auth()->user()->stripe_express_id != null)
+          @if(auth()->user()->StripeConnect->express_id != null)
 
             @if(auth()->user()->error == "1")
 
