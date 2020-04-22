@@ -105,6 +105,11 @@ class StripeHelper
         return $this->getExpressSubscription() != null;
     }
 
+    public function hasActiveExpressPlan(): bool {
+        $subscription = $this->getExpressSubscription();
+        return $subscription != null && $subscription->status == 'active';
+    }
+
     public function getBalance() {
         if(Cache::has('balance_' . $this->user->StripeConnect->express_id)) return Cache::get('balance_' . $this->user->StripeConnect->express_id, 0);
         $balance = \Stripe\Balance::retrieve(

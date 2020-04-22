@@ -113,7 +113,7 @@ $('input#basic-url').on('keyup', function(){
             url: `/save-server-settings`,
             type: 'POST',
             data: {
-                id: '{{ $shop->id }}',
+                id: '{{ $shop->guild_id }}',
                 url: $("#basic-url").val(),
                 description: $("#description").val(),
                 refunds_enabled: refundsEnabled,

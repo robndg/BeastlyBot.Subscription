@@ -7,14 +7,10 @@ use App\DiscordStore;
 use App\Shop;
 use App\User;
 use App\Product;
-use App\Order;
 use App\Refund;
-use Carbon\Carbon;
 use DateTime;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Session;
 use Stripe\Exception\InvalidRequestException;
 
 class ServerController extends Controller {
@@ -22,7 +18,6 @@ class ServerController extends Controller {
     public function __construct() {
         $this->middleware('auth');
     }
-
 
     /* --------------------------------------------------------------------
         ServerController: getServerPage
@@ -40,34 +35,20 @@ class ServerController extends Controller {
     -------------------------------------------------------------------- */
 
     public static function getServerPage($id){
-        if(!auth()->user()->getDiscordHelper()->ownsGuild($id)) {
+        if(! auth()->user()->getDiscordHelper()->ownsGuild($id)) {
             AlertHelper::alertError('You are not the owner of that server!');
-            return redirect('dashboard');
+            return redirect('/dashboard');
         }
 
-        $discord_store = new DiscordStore();
-        $discord_store->guild_id = $id;
-        $discord_store->url = $id;
-        $discord_store->save();
-
-        $owner_id = Shop::where('id', '=', $id)->value('owner_id');
-        $stripe_express_id = User::where('id', '=', $owner_id)->value('stripe_express_id');
-
-        // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-
-        $stripe_account_array = \Stripe\Account::retrieve(
-            $stripe_express_id
-        );
-        $stripe_account_array->metadata['order'] == 'true' ? $has_order = true : $has_order = false;
-
-        //$has_product = Product::where('guild', '=', $id)->exists();
-        if(User::where('id', '=', $owner_id)->value('error', '=', '2')){
-            AlertHelper::alertError('Your Partner plan has expired. Please pay invoice and contact support.');
+        // if there is no store in the db, create one.
+        if(! DiscordStore::where('guild_id', $id)->exists()) {
+            $discord_store = new DiscordStore(['guild_id' => $id, 'url' => $id]);
+            $discord_store->save();
+        } else {
+            $discord_store = DiscordStore::where('guild_id', $id)->first();
         }
 
-        return view('server')->with('id', $id)->with('shop', Shop::where('id', $id)->get()[0])/*->with('has_product', $has_product)*/->with('has_order', $has_order);
-
+        return view('server')->with('id', $id)->with('shop', $discord_store)->with('has_order', false);
     }
 
     /* --------------------------------------------------------------------
@@ -399,29 +380,20 @@ class ServerController extends Controller {
     -------------------------------------------------------------------- */
 
     public function updateShop(Request $request) {
-        $id = $request['id'];
+        $guild_id = $request['id'];
         $desc = $request['description'];
         $url = $request['url'];
         $refunds_enabled = $request['refunds_enabled'];
         $refunds_days = $request['refunds_days'];
         $refunds_terms = $request['refunds_terms'];
 
-        if(!\auth()->user()->ownsGuild($id)) {
+        if(! auth()->user()->getDiscordHelper()->ownsGuild($guild_id)) 
             return response()->json(['success' => false, 'msg' => 'You are not the owner of this server.']);
-        }
 
-        if($refunds_type = true)
-
-        Shop::create($id);
-
-        if(Shop::where('url', strtolower($url))->exists()) {
-            $url_existing_shop = Shop::where('url', strtolower($url))->get()[0];
-            if($url_existing_shop->id !== $id) {
-                return response()->json(['success' => false, 'msg' => 'That URL is already in use.']);
-            }
-        }
-
-        $shop = Shop::where('id', $id)->get()[0];
+        if(DiscordStore::where('url', strtolower($url))->where('guild_id', '!=', $guild_id)->exists()) 
+            return response()->json(['success' => false, 'msg' => 'That URL is already in use.']);
+            
+        $shop = DiscordStore::where('guild_id', $guild_id)->first();
         $shop->url = $url;
         $shop->description = $desc;
         $shop->refunds_enabled = $refunds_enabled;

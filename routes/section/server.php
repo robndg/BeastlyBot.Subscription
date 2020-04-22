@@ -1,5 +1,6 @@
 <?php
 
+use App\DiscordStore;
 use App\SiteConfig;
 use App\Shop;
 use App\User;
@@ -26,10 +27,10 @@ Route::get('/get-transactions', 'ServerController@getTransactions');
 Route::get('/get-disputes', 'ServerController@getDisputes');
 
 Route::get('/slide-server-settings/{id}', function ($id) {
-    return view('/slide/slide-server-settings')->with('shop', Shop::where('id', $id)->get()[0]);
+    return view('/slide/slide-server-settings')->with('shop', DiscordStore::where('guild_id', $id)->first());
 });
 Route::get('/slide-list-products/{id}', function ($id) {
-    return view('/slide/slide-server-list-products')->with('id', $id)->with('shop', Shop::where('id', $id)->get()[0]);
+    return view('/slide/slide-server-list-products')->with('id', $id)->with('shop', DiscordStore::where('guild_id', $id)->first());
 });
 
 Route::get('/slide-roles-settings/{guild_id}/{role_id}', 'ServerController@getSlideRoleSettings');
