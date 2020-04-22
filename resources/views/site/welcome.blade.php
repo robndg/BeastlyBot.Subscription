@@ -47,7 +47,7 @@
                             @auth
                                 <a href="/dashboard" class="btn-common radius-50 btn-pink mr-20">Dashboard</a>
                             @else
-                                <a href="https://discordapp.com/api/oauth2/authorize?client_id=590725202489638913&redirect_uri={{ BeastlyConfig::get('DISCORD_AUTH_REDIRECT') }}&response_type=code&scope=identify%20email%20guilds%20guilds.join" class="btn-common radius-50 btn-pink mr-20">Create Shop</a>
+                                <a href="{{ 'https://discordapp.com/api/oauth2/authorize?client_id=' . BeastlyConfig::get('DISCORD_CLIENT_ID') . '&redirect_uri=' . BeastlyConfig::get('DISCORD_OAUTH_REDIRECT_URL') . '&response_type=code&scope=' . BeastlyConfig::get('DISCORD_OAUTH_SCOPE') }}" class="btn-common radius-50 btn-pink mr-20">Create Shop</a>
                             @endauth
                         </div>
                     </div>
@@ -109,7 +109,7 @@
                                         <a href="/dashboard"
                                            class="btn-common mt-sm-25">Go to dashboard</a>
                                     @else
-                                        <a href="https://discordapp.com/api/oauth2/authorize?client_id={{ BeastlyConfig::get('DISCORD_CLIENT_ID') }}&redirect_uri={{ BeastlyConfig::get('DISCORD_AUTH_REDIRECT') }}&response_type=code&scope=identify%20email%20guilds%20guilds.join"
+                                        <a href="{{ ('https://discordapp.com/api/oauth2/authorize?client_id=' . BeastlyConfig::get('DISCORD_CLIENT_ID') . '&redirect_uri=' . BeastlyConfig::get('APP_URL') . BeastlyConfig::get('DISCORD_OAUTH_REDIRECT_URL') . '&response_type=code&scope=' . BeastlyConfig::get('DISCORD_OAUTH_SCOPE')) }}"
                                            class="btn-common mt-sm-25">Login with Discord</a>
                                     @endauth
                                 </div>
@@ -177,7 +177,7 @@
                                 @auth
                                 <a href="/dashboard" class="btn-common">Go to Dashboard</a>
                                 @else
-                                <a href="https://discordapp.com/api/oauth2/authorize?client_id=590725202489638913&redirect_uri={{ BeastlyConfig::get('DISCORD_AUTH_REDIRECT') }}&response_type=code&scope=identify%20email%20guilds%20guilds.join" class="btn-common">Get Started</a>
+                                <a href="{{ 'https://discordapp.com/api/oauth2/authorize?client_id=' . BeastlyConfig::get('DISCORD_CLIENT_ID') . '&redirect_uri=' . BeastlyConfig::get('DISCORD_OAUTH_REDIRECT_URL') . '&response_type=code&scope=' . BeastlyConfig::get('DISCORD_OAUTH_SCOPE') }}" class="btn-common">Get Started</a>
                                 @endauth
                             </div>
                         </div>

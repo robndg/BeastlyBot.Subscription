@@ -102,7 +102,7 @@ class DiscordOAuthController extends Controller {
         return new Discord([
             'clientId' => BeastlyConfig::get('DISCORD_CLIENT_ID'),
             'clientSecret' => BeastlyConfig::get('DISCORD_SECRET'),
-            'redirectUri' => BeastlyConfig::get('DISCORD_AUTH_REDIRECT'),
+            'redirectUri' => BeastlyConfig::get('APP_URL') . BeastlyConfig::get('DISCORD_OAUTH_REDIRECT_URL'),
         ]);
     }
 

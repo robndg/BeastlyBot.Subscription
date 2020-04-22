@@ -11,7 +11,7 @@
         @if(auth()->user()->StripeConnect->express_id != null)
         <div class="page-header-actions add-pulse">
             <a class="btn btn-primary btn-round"
-               href="https://discordapp.com/oauth2/authorize?client_id=590725202489638913&amp;scope=bot&amp;permissions=281020422" target="_blank" id="Addbtn">
+        href="{{ 'https://discordapp.com/oauth2/authorize?client_id=' . BeastlyConfig::get('DISCORD_CLIENT_ID') . '&scope=bot&permissions=' . BeastlyConfig::get('DISCORD_BOT_PERMISSIONS') }}" target="_blank" id="Addbtn">
                 <i class="icon wb-plus" aria-hidden="true"></i>
                 Add Bot
             </a>
@@ -23,7 +23,7 @@
         @else
         <div class="page-header-actions add-pulse">
             <a class="btn btn-primary btn-round"
-               href="{{ BeastlyConfig::get('STRIPE_CONNECT_LINK') }}">
+               href="{{ 'https://connect.stripe.com/express/oauth/authorize?redirect_uri=' . BeastlyConfig::get('APP_URL') . '&client_id=' . BeastlyConfig::get('STRIPE_CLIENT_ID') }}">
                 Connect Stripe
                 <i class="icon-stripe ml-2" aria-hidden="true"></i>
             </a>

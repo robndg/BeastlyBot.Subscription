@@ -21,25 +21,25 @@
         <div class="panel-body container-fluid">
             <div class="row">
 
-                    @foreach(BeastlyConfig::$keys as $key)
-                
-                        <div class="col-sm-12 col-md-6 col-lg-6">
-                            <!-- Example Search -->
-                            <div class="example-wrap">
-                                <h4 class="example-title">{{str_replace('_', ' ', $key)}}</h4>
-                                <div class="form-group">
-                                <div class="input-group">
-                                    <input type="text" class="form-control" name="{{ $key }}" id="key-{{ $key }}" value="{{ BeastlyConfig::get($key) }}">
-                                    <span class="input-group-btn">
-                                        <button type="submit" class="btn btn-primary" data-name="{{ $key }}" onclick="setConfig('{{ $key }}');"><i class="icon wb-check" aria-hidden="true"></i></button>
-                                    </span>
-                                </div>
-                                </div>
+                    @foreach(BeastlyConfig::keys() as $key)
+                        @if($key !== 'id' && $key !== 'created_at' && $key !== 'updated_at')
+                            <div class="col-sm-12 col-md-6 col-lg-6">
+                                <!-- Example Search -->
+                                <div class="example-wrap">
+                                    <h4 class="example-title">{{str_replace('_', ' ', $key)}}</h4>
+                                    <div class="form-group">
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" name="{{ $key }}" id="key-{{ $key }}" value="{{ BeastlyConfig::get($key) }}">
+                                        <span class="input-group-btn">
+                                            <button type="submit" class="btn btn-primary" data-name="{{ $key }}" onclick="setConfig('{{ $key }}');"><i class="icon wb-check" aria-hidden="true"></i></button>
+                                        </span>
+                                    </div>
+                                    </div>
 
+                                </div>
+                                <!-- End Example Search -->
                             </div>
-                            <!-- End Example Search -->
-                        </div>
-            
+                        @endif
                     @endforeach
 
 

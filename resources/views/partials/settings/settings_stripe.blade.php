@@ -30,7 +30,7 @@
                                         @if(!isset($stripe_login_link) || $stripe_login_link === null)
                                             <div class="btn-group" role="group">
                                                 <button type="button" class="btn btn-primary"
-                                                        onclick="window.location.href = '{{ BeastlyConfig::get('STRIPE_CONNECT_LINK') }}';">
+                                                        onclick="window.location.href = '{{ 'https://connect.stripe.com/express/oauth/authorize?redirect_uri=' . BeastlyConfig::get('APP_URL') . '&client_id=' . BeastlyConfig::get('STRIPE_CLIENT_ID') }}';">
                                                     <i class="icon icon-stripe" aria-hidden="true"></i>
                                                     <br>
                                                     <span>Connect @if(auth()->user()->error == '1')a US Stripe Account @endif</span>

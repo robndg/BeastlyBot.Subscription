@@ -16,11 +16,29 @@ class CreateSiteConfigurationsTable extends Migration
     {
         Schema::create('site_configuration', function (Blueprint $table) {
             $table->id();
-            foreach(BeastlyConfig::$keys as $key) $table->string($key)->nullable();
+            $table->string('APP_URL')->nullable()->default('http://localhost:8000');
+            $table->string('STRIPE_KEY')->nullable()->default('pk_test_KeyiJNgicDxlA6AZeaT4DHLL000VlMFTii');
+            $table->string('STRIPE_SECRET')->nullable()->default('sk_test_CXSQrW2dFKVFf2mxpuVKrge400nlnthp2e');
+            $table->string('STRIPE_CLIENT_ID')->nullable()->default('ca_Fm0KaKiRMrz8QMhnKfTvM0p9x1484RzG');
+            $table->string('STRIPE_WEBHOOK_SECRET')->nullable()->default('whsec_e73JNJvsEv6UFtFzwnXBqyeR1DRCfdFI');
+            $table->string('STRIPE_PAYOUT_DELAY')->nullable()->default('7');
+            $table->string('EXPRESS_PROD_ID')->nullable()->default('prod_GbihfSzt1nfQkg');
+            $table->string('MONTHLY_PLAN')->nullable()->default('plan_GbiiDSRkOovFPF');
+            $table->string('YEARLY_PLAN')->nullable()->default('plan_GbiisRXZmt3IFC');
+            $table->string('SHOP_URL')->nullable()->default('/shop');
+            $table->string('BOT_CONNECTION_URL')->nullable()->default('127.0.0.1:3000');
+            $table->string('DISCORD_CLIENT_ID')->nullable()->default('590725202489638913');
+            $table->string('DISCORD_SECRET')->nullable()->default('GFrrypnToNrfFBbFAnkBYVm_XdDlw-yP');
+            $table->string('DISCORD_BOT_PERMISSIONS')->nullable()->default('281020422');
+            $table->string('DISCORD_OAUTH_REDIRECT_URL')->nullable()->default('/discord_oauth');
+            $table->string('DISCORD_OAUTH_SCOPE')->nullable()->default('identify%20email%20guilds%20guilds.join');
             $table->timestamps();
         });
 
-        if(! BeastlyConfig::where('id', 1)->exists()) self::setDefaultValues();
+        if(! BeastlyConfig::where('id', 1)->exists()) {
+            $config = new BeastlyConfig();
+            $config->save();
+        }
     }
 
     /**
@@ -33,22 +51,5 @@ class CreateSiteConfigurationsTable extends Migration
         Schema::dropIfExists('site_configuration');
     }
 
-    private static function setDefaultValues() {
-        BeastlyConfig::set('STRIPE_KEY', 'pk_test_KeyiJNgicDxlA6AZeaT4DHLL000VlMFTii');
-        BeastlyConfig::set('STRIPE_SECRET', 'sk_test_CXSQrW2dFKVFf2mxpuVKrge400nlnthp2e');
-        BeastlyConfig::set('STRIPE_CLIENT_ID', 'ca_Fm0KaKiRMrz8QMhnKfTvM0p9x1484RzG');
-        BeastlyConfig::set('STRIPE_WEBHOOK_SECRET', 'whsec_e73JNJvsEv6UFtFzwnXBqyeR1DRCfdFI');
-        BeastlyConfig::set('STRIPE_PAYOUT_DELAY', '7');
-        BeastlyConfig::set('EXPRESS_PROD_ID', 'prod_GbihfSzt1nfQkg');
-        BeastlyConfig::set('MONTHLY_PLAN', 'plan_GbiiDSRkOovFPF');
-        BeastlyConfig::set('YEARLY_PLAN', 'plan_GbiisRXZmt3IFC');
-        BeastlyConfig::set('STRIPE_CONNECT_LINK', 'https://connect.stripe.com/express/oauth/authorize?redirect_uri=http://localhost:8000&client_id=' . BeastlyConfig::get('STRIPE_CLIENT_ID'));
-        BeastlyConfig::set('SHOP_URL', '/shop');
-        BeastlyConfig::set('DISCORD_AUTH_REDIRECT', 'http://localhost:8000/discord_oauth');
-        BeastlyConfig::set('BOT_CONNECTION_URL', '127.0.0.1');
-        BeastlyConfig::set('DISCORD_CLIENT_ID', '590725202489638913');
-        BeastlyConfig::set('DISCORD_SECRET', 'GFrrypnToNrfFBbFAnkBYVm_XdDlw-yP');
-        BeastlyConfig::set('DISCORD_BOT_LINK', 'https://discordapp.com/oauth2/authorize?client_id=590725202489638913&scope=bot&permissions=281020422');
-    }
 
 }

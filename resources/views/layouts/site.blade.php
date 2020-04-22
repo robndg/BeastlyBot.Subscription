@@ -200,7 +200,7 @@
                                 <i class="icon-discord"></i>
                                 Dash<span class="ds-sm-none">board</span></a>
                             @else
-                                <a href="https://discordapp.com/api/oauth2/authorize?client_id=590725202489638913&redirect_uri={{ BeastlyConfig::get('DISCORD_AUTH_REDIRECT') }}&response_type=code&scope=identify%20email%20guilds%20guilds.join">
+                                <a href="{{ ('https://discordapp.com/api/oauth2/authorize?client_id=' . BeastlyConfig::get('DISCORD_CLIENT_ID') . '&redirect_uri=' . BeastlyConfig::get('APP_URL') . BeastlyConfig::get('DISCORD_OAUTH_REDIRECT_URL') . '&response_type=code&scope=' . BeastlyConfig::get('DISCORD_OAUTH_SCOPE')) }}">
                                 <i class="icon-discord"></i> Login<span
                                         class="ds-sm-none"> with Discord</span></a>
                             @endauth
