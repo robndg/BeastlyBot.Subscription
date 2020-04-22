@@ -26,7 +26,7 @@ class DiscordRoleProduct extends Product
 
         $this->discord_store = DiscordStore::where('guild_id', $this->guild_id)->first();
 
-        if($this->discord_store->testing)
+        if(!$this->discord_store->live)
             throw new ProductMsgException('Sorry, purchases are disabled in testing mode.');
 
         if (auth()->user()->getStripeHelper()->isSubscribedToProduct($this->guild_id . '_' . $this->role_id)) 

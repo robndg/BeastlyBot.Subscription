@@ -149,7 +149,7 @@
                         <ul class="site-menu-sub">
                             <li class="site-menu-item">
                                 <button type="button" class="btn btn-primary btn-block rounded-0 ladda-button" id="tour_connect-stripe"
-                                    onclick="window.location.href = '{{ env('STRIPE_CONNECT_LINK') }}&state={{ csrf_token() }}';"
+                                    onclick="window.location.href = '{{ BeastlyConfig::get('STRIPE_CONNECT_LINK') }}&state={{ csrf_token() }}';"
                                     data-style="slide-up" data-plugin="ladda">
                                     <i class="icon wb-info-circle l-up" aria-hidden="true"
                                         data-plugin="webuiPopover"

@@ -24,7 +24,7 @@ $shop_url = App\Shop::where('id', $guild_id)->value('url');
 
 
 @if(auth()->user()->ownsGuild($guild_id))
-    @if((!App\Shop::where('id', $guild_id)->get()[0]->testing) || $owner_array->error == '2')
+    @if((!App\Shop::where('id', $guild_id)->get()[0]->live) || $owner_array->error == '2')
         <div class="bg-dark-4 text-white text-center font-size-16 font-weight-500 w-200 mx-auto card m-0 mb-30">
             <a class="card-body p-5 text-white" href="/server/{{ $guild_id }}{{ (!auth()->user()->canAcceptPayments()) ? '#ready' : '' }}">
         <!-- <p>You are viewing this as a <span class="badge badge-primary">Test</span> session <span class="font-weight-100">(only you can see this page)</span>.
@@ -113,7 +113,7 @@ $shop_url = App\Shop::where('id', $guild_id)->value('url');
 @section('scripts')
 
 
-@if(((App\Shop::where('id', $guild_id)->get()[0]->testing) && ($owner_array->canAcceptPayments())) || (auth()->user()->ownsGuild($guild_id)))
+@if(((App\Shop::where('id', $guild_id)->get()[0]->live) && ($owner_array->canAcceptPayments())) || (auth()->user()->ownsGuild($guild_id)))
 @if($owner_array->error != ('1' || '2'))
     <script type="text/javascript">
         var role_descs = JSON.parse('{!! json_encode($descriptions) !!}');

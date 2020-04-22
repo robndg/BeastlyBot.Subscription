@@ -25,18 +25,18 @@
                     class="d-flex flex-row flex-wrap align-items-center justify-content-between justify-content-lg-end col-xxl-5 col-xl-5 col-lg-6 col-md-12 col-sm-12 mt-md-xx">
                     <div class="d-block d-flex align-items-center payments-switch">
                             <div class="btn-group btn-group-toggle" data-toggle="buttons" role="group" id="live-btns">
-                                <button class="btn btn-outline @if(!$shop->testing)btn-primary active @else btn-success @endif ladda-button" data-plugin="ladda" data-style="zoom-out" data-type="progress" id="test-switch" data-status="Test">
-                                    <input type="radio" name="options" autocomplete="off" value="Test" id="basic-test" @if(!$shop->testing) checked @endif/>
+                                <button class="btn btn-outline @if(!$shop->live)btn-primary active @else btn-success @endif ladda-button" data-plugin="ladda" data-style="zoom-out" data-type="progress" id="test-switch" data-status="Test">
+                                    <input type="radio" name="options" autocomplete="off" value="Test" id="basic-test" @if(!$shop->live) checked @endif/>
                                     Test
                                 </button>
-                                <button class="btn btn-outline @if($shop->testing)btn-success active @else btn-primary @endif ladda-button" data-plugin="ladda" data-style="zoom-out" data-type="progress" id="live-switch" data-status="Live">
-                                    <input type="radio" name="options" autocomplete="off" value="Live" id="basic-live" @if($shop->testing) checked @endif />
+                                <button class="btn btn-outline @if($shop->live)btn-success active @else btn-primary @endif ladda-button" data-plugin="ladda" data-style="zoom-out" data-type="progress" id="live-switch" data-status="Live">
+                                    <input type="radio" name="options" autocomplete="off" value="Live" id="basic-live" @if($shop->live) checked @endif />
                                     Live
                                 </button>
                             </div>
                             <button type="button" class="site-action-toggle btn btn-lg btn-dark btn-icon btn-inverse mr-15 ml-15" id="btn-store1"
-                                data-toggle="tooltip" data-original-title="{{ env('SHOP_URL') }}/{{ $shop->url }}"
-                                onclick="window.open('{{ env('SHOP_URL') }}/{{ $shop->url }}')"><i class="front-icon icon-shop @if($shop->testing)green-600 @else blue-600 @endif animation-scale-up" id="icon-store1" aria-hidden="true"></i><span class="font-size-14 ml-2">Go to Store</span>
+                                data-toggle="tooltip" data-original-title="{{ BeastlyConfig::get('SHOP_URL') }}/{{ $shop->url }}"
+                                onclick="window.open('{{ BeastlyConfig::get('SHOP_URL') }}/{{ $shop->url }}')"><i class="front-icon icon-shop @if($shop->live)green-600 @else blue-600 @endif animation-scale-up" id="icon-store1" aria-hidden="true"></i><span class="font-size-14 ml-2">Go to Store</span>
                             </button>
                     </div>
                     <button type="button" class="btn mt-0 ml-30 btn-sm btn-icon btn-dark btn-round mr-lg-30"
@@ -86,7 +86,7 @@
 <!--
     <div class="site-action hidden-sm-down" data-plugin="actionBtn">
         <button type="button" class="site-action-toggle btn-raised btn btn-primary" id="btn-store2"
-                onclick="window.open('{{ env('APP_URL') }}/shop/{{ $shop->url }}')">
+                onclick="window.open('{{ BeastlyConfig::get('APP_URL') }}/shop/{{ $shop->url }}')">
             <i class="front-icon icon-shop animation-scale-up mr-2" aria-hidden="true"></i>Store Front
         </button>
     </div>-->
@@ -100,13 +100,13 @@
   $(document).ready(function() {
         $('#live-switch, #test-switch').on('click', function() {
             $('#live-switch, #test-switch').attr('disabled', true);
-            var testing = $(this).data('status');
+            var live = $(this).data('status');
 
-            console.log(testing);
+            console.log(live);
 
         @if(auth()->user()->canAcceptPayments())
             Toast.fire({
-                title: 'Going ' + testing + ' Mode...',
+                title: 'Going ' + live + ' Mode...',
                 // type: 'info',
                 showCancelButton: false,
                 showConfirmButton: false,
@@ -116,7 +116,7 @@
            // Swal.showLoading();
 
         @else
-            if(testing == "Live"){
+            if(live == "Live"){
                 $('#partnerPricingModal').modal('show');
             }
         @endif
@@ -127,12 +127,12 @@
             type: 'POST',
             data: {
                 id: '{{ $shop->id }}',
-                testing: testing,
+                live: live,
                 _token: '{{ csrf_token() }}'
             },
         }).done(function (msg) {
             if(msg['success']) {
-                if(testing == "Live"){
+                if(live == "Live"){
                     $("#test-switch").addClass('btn-success', 'active').removeClass('btn-primary');
                     $("#live-switch").addClass('btn-success').removeClass('btn-primary', 'active');
                     setTimeout(function(){
@@ -165,7 +165,7 @@
                 }
             } else {
                 Toast.fire({
-                    title: 'Going ' + testing + ' Mode...',
+                    title: 'Going ' + live + ' Mode...',
                     text: msg['msg'],
                     type: 'warning',
                     showCancelButton: false,
@@ -208,15 +208,15 @@ $(document).ready(function() {
 
         Swal.showLoading();
 
-        var base_url = "{{ env('APP_URL') }}/shop/";
-        var testing = $("#basic-test").val();
+        var base_url = "{{ BeastlyConfig::get('APP_URL') }}/shop/";
+        var live = $("#basic-test").val();
 
         $.ajax({
             url: `/save-go-live`,
             type: 'POST',
             data: {
                 id: '{{ $shop->id }}',
-                testing: $("#basic-test").val(),
+                live: $("#basic-test").val(),
                 _token: '{{ csrf_token() }}'
             },
         }).done(function (msg) {
@@ -253,7 +253,7 @@ $(document).ready(function() {
     @include('partials.server.subscribers_script')
     @include('partials.server.server_script')
     @include('partials.server.payments_script')
-@if(auth()->user()->error == '2' && $shop->testing)
+@if(auth()->user()->error == '2' && $shop->live)
 <script type="text/javascript">
         setTimeout(function(){
              $("#test-switch").click();

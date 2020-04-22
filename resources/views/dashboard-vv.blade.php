@@ -257,7 +257,7 @@
                       </div>
                     </div>
                 </a>
-                <a href="{{ env('STRIPE_CONNECT_LINK') }}" class="d-none card card-block card-bordered btn btn-primary ladda-button"
+                <a href="{{ BeastlyConfig::get('STRIPE_CONNECT_LINK') }}" class="d-none card card-block card-bordered btn btn-primary ladda-button"
                     id="btn_connect-stripe-block" data-style="slide-up" data-plugin="ladda">
                     <i class="icon wb-info-circle l-up text-white" aria-hidden="true"
                       data-plugin="webuiPopover"
@@ -384,7 +384,7 @@
                 </div>
               </div>
           </a>
-          <a href="{{ env('STRIPE_CONNECT_LINK') }}" class="d-none card card-block card-bordered btn btn-primary ladda-button"
+          <a href="{{ BeastlyConfig::get('STRIPE_CONNECT_LINK') }}" class="d-none card card-block card-bordered btn btn-primary ladda-button"
               id="btn_connect-stripe-block" data-style="slide-up" data-plugin="ladda">
               <i class="icon wb-info-circle l-up text-white" aria-hidden="true"
                 data-plugin="webuiPopover"

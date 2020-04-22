@@ -24,7 +24,7 @@
         @else
         <div class="page-header-actions add-pulse">
             <a class="btn btn-primary btn-round"
-               href="{{ env('STRIPE_CONNECT_LINK') }}">
+               href="{{ BeastlyConfig::get('STRIPE_CONNECT_LINK') }}">
                 Connect Stripe
                 <i class="icon-stripe ml-2" aria-hidden="true"></i>
             </a>

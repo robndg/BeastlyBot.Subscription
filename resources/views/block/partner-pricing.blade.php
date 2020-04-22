@@ -129,11 +129,11 @@
             <div class="row">
                 <div class="col-lg-8 col-md-12 offset-lg-2 text-center">
                     <div class="list-group">
-                        <a class="list-group-item list-group-item-action flex-column align-items-start text-center" href="{{ env('STRIPE_CONNECT_LINK') }}">
+                        <a class="list-group-item list-group-item-action flex-column align-items-start text-center" href="{{ BeastlyConfig::get('STRIPE_CONNECT_LINK') }}">
                             <h4 class="list-group-item-heading mt-0 mb-5">Connect Stripe</h4>
                             <p class="mb-0">To go live and take payments connect your email with Stripe, our secure payment processor.</p>
                             <button type="button" class="btn btn-primary btn-block w-300 mt-20 ladda-button mx-auto"
-                                    onclick="window.location.href = '{{ env('STRIPE_CONNECT_LINK') }}';"
+                                    onclick="window.location.href = '{{ BeastlyConfig::get('STRIPE_CONNECT_LINK') }}';"
                                     data-style="slide-up" data-plugin="ladda">
                                     <i class="icon-stripe ladda-label" aria-hidden="true"></i>
                                     <br>

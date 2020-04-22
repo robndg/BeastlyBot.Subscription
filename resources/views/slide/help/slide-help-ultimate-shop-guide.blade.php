@@ -16,11 +16,11 @@
                 <div>
                 @if(auth()->user()->stripe_express_id === null)
                     <div class="list-group">
-                        <a class="list-group-item list-group-item-action flex-column align-items-start text-center pulse" href="{{ env('STRIPE_CONNECT_LINK') }}">
+                        <a class="list-group-item list-group-item-action flex-column align-items-start text-center pulse" href="{{ BeastlyConfig::get('STRIPE_CONNECT_LINK') }}">
                             <h4 class="list-group-item-heading mt-0 mb-5">Connect Stripe</h4>
                             <p class="mb-0">@lang('lang.connect_stripe')</p>
                             <p><button type="button" class="btn btn-primary btn-block mt-2 ladda-button"
-                                    onclick="window.location.href = '{{ env('STRIPE_CONNECT_LINK') }}';"
+                                    onclick="window.location.href = '{{ BeastlyConfig::get('STRIPE_CONNECT_LINK') }}';"
                                     data-style="slide-up" data-plugin="ladda">
                                     <i class="icon-stripe ladda-label" aria-hidden="true"></i>
                                     <br>

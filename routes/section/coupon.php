@@ -33,7 +33,7 @@ Route::post('/promotions-delete-coupon/{id}', 'PromotionController@deleteCoupon'
 // });
 
 Route::post('/bknd00/validate-coupon', function (\Illuminate\Http\Request $request) {
-    \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+    \Stripe\Stripe::setApiKey(BeastlyConfig::get('STRIPE_SECRET'));
     try {
         $user = \App\User::where('discord_id', $request['owner_id'])->get()[0];
         $stripe_promotion = \Stripe\Coupon::retrieve($user->id . $request['code']);

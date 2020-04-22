@@ -441,7 +441,7 @@ class ServerController extends Controller {
         2) Create shop table if not already
         3) Return false if !canAcceptPayments (shows modal)
         4) Check if Subscription still active (error 2)
-        5) Save shop testing true (Live), false (Test)
+        5) Save shop live true (Live), false (Test)
         6) Return response
 
         Used:
@@ -450,7 +450,7 @@ class ServerController extends Controller {
 
     public function updateStatus(Request $request) {
         $id = $request['id'];
-        $testing = $request['testing'];
+        $live = $request['live'];
 
         if(!\auth()->user()->ownsGuild($id)) {
             return response()->json(['success' => false, 'msg' => 'You are not the owner of this server.']);
@@ -467,12 +467,12 @@ class ServerController extends Controller {
                     return response()->json(['success' => false, 'msg' => 'Please pay partner invoice to go Live.']);
                 }
 
-                if($testing === "Live"){
-                    $shop->testing = true;
+                if($live === "Live"){
+                    $shop->live = true;
                     $shop->owner_id = (\auth()->user()->id);
                 }
                 else{
-                    $shop->testing = false;
+                    $shop->live = false;
                 }
                 $shop->save();
                 return response()->json(['success' => true]);

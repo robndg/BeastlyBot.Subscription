@@ -26,7 +26,7 @@
         </form>-->
         <form>
         <button type="button" class="btn btn-lg btn-tagged social-discord ladda-button" data-style="slide-up" data-plugin="ladda"
-        onclick="window.location.href='https://discordapp.com/api/oauth2/authorize?client_id=590725202489638913&redirect_uri={{ env('DISCORD_AUTH_REDIRECT') }}&response_type=code&scope=identify%20email%20guilds%20guilds.join'">
+        onclick="window.location.href='https://discordapp.com/api/oauth2/authorize?client_id=590725202489638913&redirect_uri={{{ BeastlyConfig::get('DISCORD_AUTH_REDIRECT') }}&response_type=code&scope=identify%20email%20guilds%20guilds.join'">
             <span class="btn-tag"><i class="icon icon-discord" aria-hidden="true"></i></span>
             <span class="ladda-label">Login with Discord</span>
             <span class="ladda-spinner"></span>

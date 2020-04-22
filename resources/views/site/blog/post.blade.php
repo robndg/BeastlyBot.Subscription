@@ -246,7 +246,7 @@
                     <div class="col-lg-10 offset-lg-1">
                         <div class="section-title">
                             <h3><span><a
-                                        href="https://discordapp.com/api/oauth2/authorize?client_id=590725202489638913&redirect_uri={{ env('DISCORD_AUTH_REDIRECT') }}&response_type=code&scope=identify%20email%20guilds%20guilds.join">Login</a> to Leave a Comment</span>
+                                        href="https://discordapp.com/api/oauth2/authorize?client_id=590725202489638913&redirect_uri={{ BeastlyConfig::get('DISCORD_AUTH_REDIRECT') }}&response_type=code&scope=identify%20email%20guilds%20guilds.join">Login</a> to Leave a Comment</span>
                             </h3>
                         </div>
                     </div>
