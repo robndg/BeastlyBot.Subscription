@@ -52,7 +52,7 @@ class UserController extends Controller {
 
         #if (auth()->user()->error == "1") return response()->json(['success' => false, 'msg' => 'Please refresh the page and connect a US Stripe account.']);
 
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
         $unix_now = time();
 
     #####
