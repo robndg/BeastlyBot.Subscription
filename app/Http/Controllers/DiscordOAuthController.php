@@ -35,7 +35,7 @@ class DiscordOAuthController extends Controller {
 
             // Check if a user already exists in our DB with the discord user.id of the logged in oauth2 user
             if (DiscordOAuth::where('discord_id', $discord_user->getId())->exists()) {
-                $user = DiscordOAuth::where('discord_id', $discord_user->getId())->first()->user();
+                $user = DiscordOAuth::where('discord_id', $discord_user->getId())->first()->user;
                 auth()->login($user);
             }
             // if the user does not exists we need to create the user and log them in
