@@ -246,7 +246,7 @@
                     <div class="col-lg-10 offset-lg-1">
                         <div class="section-title">
                             <h3><span><a
-                                        href="{{ 'https://discordapp.com/api/oauth2/authorize?client_id=' . BeastlyConfig::get('DISCORD_CLIENT_ID') . '&redirect_uri=' . BeastlyConfig::get('DISCORD_OAUTH_REDIRECT_URL') . '&response_type=code&scope=' . BeastlyConfig::get('DISCORD_OAUTH_SCOPE') }}">Login</a> to Leave a Comment</span>
+                                        href="{{ 'https://discordapp.com/api/oauth2/authorize?client_id=' . SiteConfig::get('DISCORD_CLIENT_ID') . '&redirect_uri=' . SiteConfig::get('DISCORD_OAUTH_REDIRECT_URL') . '&response_type=code&scope=' . SiteConfig::get('DISCORD_OAUTH_SCOPE') }}">Login</a> to Leave a Comment</span>
                             </h3>
                         </div>
                     </div>

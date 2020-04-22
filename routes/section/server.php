@@ -1,6 +1,6 @@
 <?php
 
-use App\BeastlyConfig;
+use App\SiteConfig;
 use App\Shop;
 use App\User;
 use Illuminate\Support\Facades\Route;
@@ -48,7 +48,7 @@ Route::get('/slide-server-member/{guild_id}/{user_id}', function ($guild_id, $us
        /* if(\Illuminate\Support\Facades\Session::has('inv_' . $user_id . $guild_id)) {
             $invoices_array =  \Illuminate\Support\Facades\Session::get('inv_' . $user_id . $guild_id);
         } else {*/
-            \Stripe\Stripe::setApiKey(BeastlyConfig::get('STRIPE_SECRET'));
+            \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
 
             foreach ($user->getSubscriptions($guild_id) as $subscription) {
                 $invoices = \Stripe\Invoice::all(['subscription' => $subscription->id]);

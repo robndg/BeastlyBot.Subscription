@@ -1,6 +1,6 @@
 <?php
 
-use App\BeastlyConfig;
+use App\SiteConfig;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -35,8 +35,8 @@ class CreateSiteConfigurationsTable extends Migration
             $table->timestamps();
         });
 
-        if(! BeastlyConfig::where('id', 1)->exists()) {
-            $config = new BeastlyConfig();
+        if(! SiteConfig::where('id', 1)->exists()) {
+            $config = new SiteConfig();
             $config->save();
         }
     }

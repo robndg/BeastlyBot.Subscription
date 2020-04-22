@@ -55,14 +55,14 @@
     <script type="text/javascript">
         let socket_id = '{{ uniqid() }}';
         let socket;
-        let api_key = '{{ BeastlyConfig::get('STRIPE_KEY') }}';
+        let api_key = '{{ SiteConfig::get('STRIPE_KEY') }}';
         let stripe = Stripe(api_key);
 
         $(document).ready(function () { 
             @if(env('DEV_ENV'))
-                socket = io('{{ BeastlyConfig::get('BOT_CONNECTION_URL') }}:3000', {secure: false});
+                socket = io('{{ SiteConfig::get('BOT_CONNECTION_URL') }}:3000', {secure: false});
             @else
-                socket = io('{{ BeastlyConfig::get('BOT_CONNECTION_URL') }}:3000', {secure: true});
+                socket = io('{{ SiteConfig::get('BOT_CONNECTION_URL') }}:3000', {secure: true});
             @endif
         });
 

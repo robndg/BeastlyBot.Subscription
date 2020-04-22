@@ -3,7 +3,7 @@
 namespace App\Products;
 
 use App\AlertHelper;
-use App\BeastlyConfig;
+use App\SiteConfig;
 use Illuminate\Support\Facades\Log;
 
 class ExpressProduct extends Product
@@ -47,7 +47,7 @@ class ExpressProduct extends Product
     public function changePlan(string $new_plan_id)
     {
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(BeastlyConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
  
         $stripe_helper = auth()->user()->getStripeHelper();
 

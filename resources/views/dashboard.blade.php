@@ -232,7 +232,7 @@
                       </div>
                     </div>
                 </a>
-                <a href="{{ 'https://connect.stripe.com/express/oauth/authorize?redirect_uri=' . BeastlyConfig::get('APP_URL') . '&client_id=' . BeastlyConfig::get('STRIPE_CLIENT_ID') }}" class="d-none card card-block btn btn-primary bg-blue-600 ladda-button"
+                <a href="{{ 'https://connect.stripe.com/express/oauth/authorize?redirect_uri=' . SiteConfig::get('APP_URL') . '&client_id=' . SiteConfig::get('STRIPE_CLIENT_ID') }}" class="d-none card card-block btn btn-primary bg-blue-600 ladda-button"
                     id="btn_connect-stripe-block" data-style="slide-up" data-plugin="ladda">
                     <i class="icon wb-info-circle l-up text-white" aria-hidden="true"
                       data-plugin="webuiPopover"
@@ -312,7 +312,7 @@
                       </div>
                     </div>
                 </a>
-                <a href="{{ 'https://connect.stripe.com/express/oauth/authorize?redirect_uri=' . BeastlyConfig::get('APP_URL') . '&client_id=' . BeastlyConfig::get('STRIPE_CLIENT_ID') }}" class="d-none card card-block btn btn-primary bg-blue-600 ladda-button"
+                <a href="{{ 'https://connect.stripe.com/express/oauth/authorize?redirect_uri=' . SiteConfig::get('APP_URL') . '&client_id=' . SiteConfig::get('STRIPE_CLIENT_ID') }}" class="d-none card card-block btn btn-primary bg-blue-600 ladda-button"
                     id="btn_connect-stripe-block" data-style="slide-up" data-plugin="ladda">
                     <i class="icon wb-info-circle l-up text-white" aria-hidden="true"
                       data-plugin="webuiPopover"
@@ -639,7 +639,7 @@ $(document).ready(function () {
                         <small>${message[key]['memberCount']} Members</small>
                       </div>
                       <div class="pl-5">
-                        <button type="button" class="btn btn-primary mt-5" onclick="window.location.href = '{{ BeastlyConfig::get('APP_URL') }}/server/${key}';">Shop</button>
+                        <button type="button" class="btn btn-primary mt-5" onclick="window.location.href = '{{ SiteConfig::get('APP_URL') }}/server/${key}';">Shop</button>
                       </div>
                     </div>
                   </li>

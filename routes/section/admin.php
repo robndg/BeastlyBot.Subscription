@@ -1,6 +1,6 @@
 <?php
 
-use App\BeastlyConfig;
+use App\SiteConfig;
 use Illuminate\Support\Facades\Route;
 
 Route::group(['middleware' => ['App\Http\Middleware\AdminMiddleware']], function () {

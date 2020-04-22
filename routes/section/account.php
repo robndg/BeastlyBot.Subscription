@@ -1,7 +1,7 @@
 <?php
 
 use App\AlertHelper;
-use App\BeastlyConfig;
+use App\SiteConfig;
 use App\DiscordHelper;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Log;
@@ -57,7 +57,7 @@ Route::group(['middleware' => ['auth', 'web']], function () {
     Route::get('/buy-plan-cancel', 'UserController@checkoutExpressPlanFailure');
 
     Route::get('/slide-account-subscription-settings/{sub_id}', function ($sub_id) {
-        \Stripe\Stripe::setApiKey(BeastlyConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
 
         $role_name = \request('role_name');
         $guild_name = \request('guild_name');

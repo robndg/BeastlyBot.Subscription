@@ -257,7 +257,7 @@
                       </div>
                     </div>
                 </a>
-                <a href="{{ 'https://connect.stripe.com/express/oauth/authorize?redirect_uri=' . BeastlyConfig::get('APP_URL') . '&client_id=' . BeastlyConfig::get('STRIPE_CLIENT_ID') }}" class="d-none card card-block card-bordered btn btn-primary ladda-button"
+                <a href="{{ 'https://connect.stripe.com/express/oauth/authorize?redirect_uri=' . SiteConfig::get('APP_URL') . '&client_id=' . SiteConfig::get('STRIPE_CLIENT_ID') }}" class="d-none card card-block card-bordered btn btn-primary ladda-button"
                     id="btn_connect-stripe-block" data-style="slide-up" data-plugin="ladda">
                     <i class="icon wb-info-circle l-up text-white" aria-hidden="true"
                       data-plugin="webuiPopover"
@@ -384,7 +384,7 @@
                 </div>
               </div>
           </a>
-          <a href="{{ BeastlyConfig::get('STRIPE_CONNECT_LINK') }}" class="d-none card card-block card-bordered btn btn-primary ladda-button"
+          <a href="{{ SiteConfig::get('STRIPE_CONNECT_LINK') }}" class="d-none card card-block card-bordered btn btn-primary ladda-button"
               id="btn_connect-stripe-block" data-style="slide-up" data-plugin="ladda">
               <i class="icon wb-info-circle l-up text-white" aria-hidden="true"
                 data-plugin="webuiPopover"

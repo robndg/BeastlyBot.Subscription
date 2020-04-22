@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\AlertHelper;
-use App\BeastlyConfig;
+use App\SiteConfig;
 use App\StripeHelper;
 use Illuminate\Support\Facades\Log;
 
@@ -36,7 +36,7 @@ class StripeConnectController extends Controller
             $user->stripe_express_id = $stripe_account->id;
             $user->save();
             AlertHelper::alertSuccess('Stripe account created! You can now accept payments.');
-            \Stripe\Stripe::setApiKey(BeastlyConfig::get('STRIPE_SECRET'));
+            \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
             // Set payout schedule to 7 days automatically by default
             \Stripe\Account::update(
                 $stripe_account->id,
@@ -47,7 +47,7 @@ class StripeConnectController extends Controller
                         [
                             'schedule' =>
                             [
-                                'delay_days' => BeastlyConfig::get('STRIPE_PAYOUT_DELAY_DAYS'),
+                                'delay_days' => SiteConfig::get('STRIPE_PAYOUT_DELAY_DAYS'),
                                 'interval' => 'daily'
                             ]
                         ]

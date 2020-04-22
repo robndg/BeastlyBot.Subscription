@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\AlertHelper;
-use App\BeastlyConfig;
+use App\SiteConfig;
 use App\Products\DiscordRoleProduct;
 use App\Products\ExpressProduct;
 use App\Products\ProductMsgException;

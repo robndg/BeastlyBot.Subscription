@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\BeastlyConfig;
+use App\SiteConfig;
 use Exception;
 use Illuminate\Http\Request;
 
@@ -23,7 +23,7 @@ class AdminController extends Controller
         ## Check if unlock key correct, then update DB
         try {
         if ($req_unlock_code === "99CR%")
-            BeastlyConfig::set($req_update_name, $req_update_string);
+            SiteConfig::set($req_update_name, $req_update_string);
         else throw new Exception('Invalid passcode.');
         } catch (Exception $e) {
             return response()->json(['success' => false, 'msg' => $e->getMessage()]);

@@ -19,7 +19,7 @@
             </div>
             <div class="timeline-info pr-10 mb-0">
                 <time datetime="2017-05-15">
-                    Click <a class="btn btn-sm btn-primary btn-round ml-10" href="{{ 'https://discordapp.com/oauth2/authorize?client_id=' . BeastlyConfig::get('DISCORD_CLIENT_ID') . '&scope=bot&permissions=' . BeastlyConfig::get('DISCORD_BOT_PERMISSIONS') }}" target="_blank">
+                    Click <a class="btn btn-sm btn-primary btn-round ml-10" href="{{ 'https://discordapp.com/oauth2/authorize?client_id=' . SiteConfig::get('DISCORD_CLIENT_ID') . '&scope=bot&permissions=' . SiteConfig::get('DISCORD_BOT_PERMISSIONS') }}" target="_blank">
                     <i class="icon wb-plus" aria-hidden="true"></i>
                     Add Bot
                     </a>

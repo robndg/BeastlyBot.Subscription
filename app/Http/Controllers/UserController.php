@@ -70,7 +70,7 @@ class UserController extends Controller {
         2) Get it from user DB
             $stripe_payout_delay = User::where('stripe_account_id', '=' , $stripe_account_id)->value('stripe_delay_days');
         */
-        $stripe_payout_delay = BeastlyConfig::get('STRIPE_PAYOUT_DELAY');
+        $stripe_payout_delay = SiteConfig::get('STRIPE_PAYOUT_DELAY');
     #####
 
     ####

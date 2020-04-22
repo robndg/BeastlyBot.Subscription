@@ -17,7 +17,7 @@ class StripeHelper
     }
 
     public function getSubscriptions() {
-        \Stripe\Stripe::setApiKey(BeastlyConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
 
         if(Session::has('subs_' . $this->user->DiscordOAuth->discord_id)) return Session::get('subs_' . $this->user->DiscordOAuth->discord_id);
 
@@ -59,7 +59,7 @@ class StripeHelper
 
     public function getStripeEmail(): string {
         if (Session::has('stripe_email')) return Session::get('stripe_email');
-        \Stripe\Stripe::setApiKey(BeastlyConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
 
         try {
             Session::put('stripe_email', $this->getCustomerAccount()->email);
@@ -71,7 +71,7 @@ class StripeHelper
     }
 
     public function getCustomerAccount(): \Stripe\Customer {
-        \Stripe\Stripe::setApiKey(BeastlyConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
         try {
             return \Stripe\Customer::retrieve($this->user->StripeConnect->customer_id);
         } catch (ApiErrorException $e) {
@@ -81,17 +81,17 @@ class StripeHelper
 
     public function isSubscriptionMonthly(): bool {
         $active_plan = $this->getExpressSubscription();
-        return $active_plan !== null && $active_plan->id == BeastlyConfig::get('MONTHLY_PLAN');
+        return $active_plan !== null && $active_plan->id == SiteConfig::get('MONTHLY_PLAN');
     }
 
     public function isSubscriptionYearly(): bool {
         $active_plan = $this->getExpressSubscription();
-        return $active_plan !== null && $active_plan->id == BeastlyConfig::get('YEARLY_PLAN');
+        return $active_plan !== null && $active_plan->id == SiteConfig::get('YEARLY_PLAN');
     }
 
     public function getExpressSubscription() {
         foreach($this->getSubscriptions() as $subscription) {
-            if ($subscription->items->data[0]->plan->product === BeastlyConfig::get('EXPRESS_PROD_ID'))  return $subscription;
+            if ($subscription->items->data[0]->plan->product === SiteConfig::get('EXPRESS_PROD_ID'))  return $subscription;
         }
 
         return null;
@@ -115,15 +115,15 @@ class StripeHelper
     }
 
     public function getLoginURL(): string {
-        \Stripe\Stripe::setApiKey(BeastlyConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
         return $this->isExpressUser() ? \Stripe\Account::createLoginLink($this->user->StripeConnect->express_id)->url : null;
     }
 
     public static function getAccountFromStripeConnect(string $code): \Stripe\Account {
         $token_request_body = array(
-            'client_secret' => BeastlyConfig::get('STRIPE_SECRET'),
+            'client_secret' => SiteConfig::get('STRIPE_SECRET'),
             'grant_type' => 'authorization_code',
-            'client_id' => BeastlyConfig::get('STRIPE_KEY'),
+            'client_id' => SiteConfig::get('STRIPE_KEY'),
             'code' => $code,
         );
         $req = curl_init('https://connect.stripe.com/oauth/token');
@@ -135,7 +135,7 @@ class StripeHelper
         $resp = json_decode(curl_exec($req), true);
         curl_close($req);
 
-        \Stripe\Stripe::setApiKey(BeastlyConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
 
         return \Stripe\Account::retrieve($resp['stripe_user_id']);
     }

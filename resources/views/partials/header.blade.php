@@ -149,7 +149,7 @@
                         <ul class="site-menu-sub">
                             <li class="site-menu-item">
                                 <button type="button" class="btn btn-primary btn-block rounded-0 ladda-button" id="tour_connect-stripe"
-                                    onclick="window.location.href = '{{ 'https://connect.stripe.com/express/oauth/authorize?redirect_uri=' . BeastlyConfig::get('APP_URL') . '&client_id=' . BeastlyConfig::get('STRIPE_CLIENT_ID') }}&state={{ csrf_token() }}';"
+                                    onclick="window.location.href = '{{ 'https://connect.stripe.com/express/oauth/authorize?redirect_uri=' . SiteConfig::get('APP_URL') . '&client_id=' . SiteConfig::get('STRIPE_CLIENT_ID') }}&state={{ csrf_token() }}';"
                                     data-style="slide-up" data-plugin="ladda">
                                     <i class="icon wb-info-circle l-up" aria-hidden="true"
                                         data-plugin="webuiPopover"
