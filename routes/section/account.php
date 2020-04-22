@@ -5,7 +5,7 @@ use App\BeastlyConfig;
 use App\DiscordHelper;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Log;
-use App\Notification;
+#use App\Notification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 

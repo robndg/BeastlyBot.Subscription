@@ -117,7 +117,7 @@
                             </div>
                            {{-- @if(auth()->user()->StripeConnect->express_id != null && auth()->user()->error != '1')
                             <div class="col-6 col-sm-12">
-                              <a href="javascript:void(0);" class="btn-75 pt-25 bd-top" data-toggle="site-sidebar" data-url="/slide-payout/{{ auth()->user()->stripe_express_id }}">
+                              <a href="javascript:void(0);" class="btn-75 pt-25 bd-top" data-toggle="site-sidebar" data-url="/slide-payout/{{ auth()->user()->StripeConnect->express_id }}">
                                   <i class="icon-stripe"></i>
                               </a>
                             </div>

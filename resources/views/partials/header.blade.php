@@ -59,7 +59,7 @@
                 {{--     @include('partials.messages') --}}
                 {{-- </li> --}}
                 <li class="nav-item">
-                    <a class="nav-link navbar-avatar" href="/account/settings" role="button">
+                    <a class="nav-link navbar-avatar" href="javascript:void(0)" data-toggle="site-sidebar" data-url="/slide-account-settings" role="button">
                         <span class="avatar avatar-online">
                             <img src="{{ auth()->user()->getDiscordHelper()->getAvatar() }}" alt="User">
                             <i></i>
