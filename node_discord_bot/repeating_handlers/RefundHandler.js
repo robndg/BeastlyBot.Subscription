@@ -36,7 +36,7 @@ function run() {
                             subscription_handler.endPartnerSubscription(subscription);
                             //console.log("endedPartnerSub")
                         }else{
-                            subscription_handler.endSubscription(subscription);
+                            subscription_handler.end_subscription(subscription);
                             //console.log("endedSub")
                         }
 

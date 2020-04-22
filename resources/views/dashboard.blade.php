@@ -551,65 +551,65 @@ $('#notifications_modal').on('hide.bs.modal', function() {
 
 <script>
 
-$(document).ready(function () {
-        fetchNotifications();
+// $(document).ready(function () {
+//         fetchNotifications();
 
-        $('#notification_count_1').text('0');
+//         $('#notification_count_1').text('0');
 
-        function fetchNotifications() {
-        $.ajax({
-            url: '/bknd00/get_notifications',
-            type: 'GET',
-            data: {
-                _token: '{{ csrf_token() }}'
-            },
-        }).done(function (msg) {
-            //$('#notification_count_1').addClass('badge-default').removeClass('badge-primary');
-            $('#notification_count_1-pg').text(msg['unread_count']);
+//         function fetchNotifications() {
+//         $.ajax({
+//             url: '/bknd00/get_notifications',
+//             type: 'GET',
+//             data: {
+//                 _token: '{{ csrf_token() }}'
+//             },
+//         }).done(function (msg) {
+//             //$('#notification_count_1').addClass('badge-default').removeClass('badge-primary');
+//             $('#notification_count_1-pg').text(msg['unread_count']);
 
-            msg['notifications'].reverse().forEach(notification => {
-                if($('#not1fication_' + notification['id']).length) {
-                } else {
-                    var color = 'blue';
+//             msg['notifications'].reverse().forEach(notification => {
+//                 if($('#not1fication_' + notification['id']).length) {
+//                 } else {
+//                     var color = 'blue';
 
-                    if(notification['type'] == 'success') {
-                        color = 'green';
-                    } else if(notification['type'] == 'warning') {
-                        color = 'yellow';
-                    } else if(notification['type'] == 'error') {
-                        color = 'red';
-                    }
-                    if(notification['read']==true){
-                      read = 'read'
-                    }else{
-                      read = 'unread'
-                    }
+//                     if(notification['type'] == 'success') {
+//                         color = 'green';
+//                     } else if(notification['type'] == 'warning') {
+//                         color = 'yellow';
+//                     } else if(notification['type'] == 'error') {
+//                         color = 'red';
+//                     }
+//                     if(notification['read']==true){
+//                       read = 'read'
+//                     }else{
+//                       read = 'unread'
+//                     }
 
-                    var timeDiff = timeDiffStr(new Date(notification['created_at'] * 1000).getTime(), (new Date()).getTime());
+//                     var timeDiff = timeDiffStr(new Date(notification['created_at'] * 1000).getTime(), (new Date()).getTime());
 
-                    var html = `
-                        <a class="list-group-item dropdown-item px-15 m-0 open-notification ${read}" href="#notifications_modal" id="not1fication_${notification['id']}" data-id="${notification['id']}" data-type="${notification['type']}" data-message="${notification['message']}">
-                            <div class="media">
-                                <div class="pr-10">
-                                    <i class="icon wb-order bg-${color}-600 white icon-circle"
-                                    aria-hidden="true"></i>
-                                </div>
-                                <div class="media-body">
-                                    <h6 class="media-heading text-truncate" title="${notification['message']}">${notification['message']}</h6>
-                                    <time class="media-meta">${timeDiff}</time>
-                                </div>
-                            </div>
-                        </a>
-                    `;
+//                     var html = `
+//                         <a class="list-group-item dropdown-item px-15 m-0 open-notification ${read}" href="#notifications_modal" id="not1fication_${notification['id']}" data-id="${notification['id']}" data-type="${notification['type']}" data-message="${notification['message']}">
+//                             <div class="media">
+//                                 <div class="pr-10">
+//                                     <i class="icon wb-order bg-${color}-600 white icon-circle"
+//                                     aria-hidden="true"></i>
+//                                 </div>
+//                                 <div class="media-body">
+//                                     <h6 class="media-heading text-truncate" title="${notification['message']}">${notification['message']}</h6>
+//                                     <time class="media-meta">${timeDiff}</time>
+//                                 </div>
+//                             </div>
+//                         </a>
+//                     `;
 
-                    $('#notifications-dropdown').prepend(html);
-                }
-            });
-        });
-    }
+//                     $('#notifications-dropdown').prepend(html);
+//                 }
+//             });
+//         });
+//     }
 
-    setInterval(fetchNotifications, 2000);
-    });
+//     setInterval(fetchNotifications, 2000);
+//     });
 
 
 

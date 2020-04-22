@@ -12,7 +12,7 @@ class StripeConnectController extends Controller
 
     public function __construct()
     {
-        $this->middleware('guest')->except('logout');
+        $this->middleware('auth');
     }
 
     public function connect()
@@ -31,10 +31,9 @@ class StripeConnectController extends Controller
         $user = auth()->user();
 
         $stripe_account = StripeHelper::getAccountFromStripeConnect($code);
-
         if ($stripe_account->country == 'US' && $user->stripe_express_id == null) {
-            $user->stripe_express_id = $stripe_account->id;
-            $user->save();
+            $user->StripeConnect->express_id = $stripe_account->id;
+            $user->StripeConnect->save();
             AlertHelper::alertSuccess('Stripe account created! You can now accept payments.');
             \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
             // Set payout schedule to 7 days automatically by default
@@ -47,7 +46,7 @@ class StripeConnectController extends Controller
                         [
                             'schedule' =>
                             [
-                                'delay_days' => SiteConfig::get('STRIPE_PAYOUT_DELAY_DAYS'),
+                                'delay_days' => SiteConfig::get('STRIPE_PAYOUT_DELAY'),
                                 'interval' => 'daily'
                             ]
                         ]

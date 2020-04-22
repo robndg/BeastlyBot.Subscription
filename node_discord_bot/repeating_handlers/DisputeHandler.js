@@ -214,7 +214,7 @@ function run(){
                                     );
 
                                     subscription_handler.cancelSubscription(dispute_inv_sub);
-                                    subscription_handler.endSubscription(dispute_inv_sub);
+                                    subscription_handler.end_subscription(dispute_inv_sub);
 
                                 }
                         }

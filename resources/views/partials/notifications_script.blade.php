@@ -1,4 +1,4 @@
-<script type="text/javascript">
+{{-- <script type="text/javascript">
     $(document).ready(function () {
         fetchNotifications();
 
@@ -22,7 +22,6 @@
             });
         };
     });
-{{--
             msg['notifications'].forEach(notification => {
                 if($('#not1fication_' + notification['id']).length) {
                 } else {
@@ -55,6 +54,6 @@
 
                     $('#notifications-dropdown').append(html);
                 }
-            }); --}}
+            }); 
 
-</script>
+</script> --}}

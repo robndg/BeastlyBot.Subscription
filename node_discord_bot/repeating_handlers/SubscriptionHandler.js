@@ -137,7 +137,7 @@ function verify_and_end_subscriptions() {
                     if(subscription.plan.id == ('plan_GbiiDSRkOovFPF' || 'plan_GbiisRXZmt3IFC')){
                         endPartnerSubscription(subscription);
                     }else{
-                        endSubscription(subscription);
+                        end_subscription(subscription);
                     }
                 }
             }

@@ -39,7 +39,7 @@
 @section('scripts')
 
 
-    <script type="text/javascript">
+    {{-- <script type="text/javascript">
     $(document).ready(function () {
         fetchNotifications();
 
@@ -106,6 +106,6 @@
 
     setInterval(fetchNotifications, 2000);
     });
-</script>
+</script> --}}
 
 @endsection
