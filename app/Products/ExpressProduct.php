@@ -41,7 +41,7 @@ class ExpressProduct extends Product
 
     public function checkoutCancel()
     {
-        return redirect('/account/settings');
+        return redirect('/servers?click-first=true');
     }
 
     public function changePlan(string $new_plan_id)

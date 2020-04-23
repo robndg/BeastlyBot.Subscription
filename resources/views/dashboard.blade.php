@@ -15,7 +15,7 @@
 <div class="page-aside-inner page-aside-scroll">
   <div data-role="container">
     <div data-role="content">
-    @if(auth()->user()->StripeConnect->express_id != null && auth()->user()->error != '1')
+    @if(auth()->user()->getStripeHelper()->isExpressUser())
     <div class="card card-shadow card-inverse mb-0 bg-grey-3 white">
       <div class="card-block p-20">
         <div class="counter counter-lg counter-inverse text-left">
@@ -112,8 +112,8 @@
                       <div class="col-lg-1 col-xs-3 col-sm-3 col-md-2">
 
                         <div class="row no-space">
-                            {{-- <div class="@if(auth()->user()->StripeConnect->express_id != null != null && auth()->user()->error != '1')col-6 col-sm-12 @else col-12 h-only-xs-50 @endif">
-                              <a href="javascript:void(0);" class="btn-75 @if(auth()->user()->StripeConnect->express_id != null && auth()->user()->error != '1')pt-20 @else h-150 pt-10 pt-sm-60 @endif bd-top-sm" data-toggle="site-sidebar" data-url="/slide-account-settings"> --}}
+                            {{-- <div class="@if(auth()->user()->getStripeHelper()->hasActiveExpressPlan())col-6 col-sm-12 @else col-12 h-only-xs-50 @endif">
+                              <a href="javascript:void(0);" class="btn-75 @if(auth()->user()->getStripeHelper()->hasActiveExpressPlan())pt-20 @else h-150 pt-10 pt-sm-60 @endif bd-top-sm" data-toggle="site-sidebar" data-url="/slide-account-settings"> --}}
                               <div class="col-12 h-only-xs-50">
                               <a href="javascript:void(0);" class="btn-75 h-150 pt-10 pt-sm-60 bd-top-sm" data-toggle="site-sidebar" data-url="/slide-account-settings">
                                 <i class="wb-user"></i>
@@ -135,9 +135,9 @@
                         <div class="card-block h-150 h-only-xs-100 h-only-sm-100 h-only-md-100 bg-grey-3 draw-grad-up">
                           <div class="slider pt-0 mx-30" id="subscriptionsSlider">
 
-                            @if(auth()->user()->canAcceptPayments())
+                            @if(auth()->user()->getStripeHelper()->hasActiveExpressPlan())
                             <div>
-                              <div class="text-center mt-lg-40" onclick="window.location.href = '/account/settings';">
+                              <div class="text-center mt-lg-40">
                                 <span class="badge badge-success badge-lg font-size-20">Live</span>
                                 <p class="font-weight-100">Active {{ gmdate("m-d-Y", auth()->user()->getPlanExpiration()) }}</p>
                               </div>
@@ -216,8 +216,9 @@
                 </a>
             </div>-->
 
-          @if(auth()->user()->StripeConnect->express_id != null)
+          @if(auth()->user()->getStripeHelper()->isExpressUser())
 
+            {{--V1 
             @if(auth()->user()->error == "1")
 
 
@@ -263,7 +264,7 @@
             </script>
 
 
-            @else
+            @else --}}
 
            <!--<div class="col-12 hidden-md-down visible-xs-down">
               <p class="mb-1 font-weight-100">Shop</p>
@@ -301,7 +302,7 @@
                 </a>
             </div>-->
 
-            @endif
+            {{-- @endif --}}
 
 
           @else

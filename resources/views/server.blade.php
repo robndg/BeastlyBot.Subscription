@@ -115,13 +115,6 @@
 
            // Swal.showLoading();
 
-        @else
-            if(live == "Live"){
-                $('#partnerPricingModal').modal('show');
-            }
-        @endif
-
-        @if(auth()->user()->getStripeHelper()->hasActiveExpressPlan())
         $.ajax({
             url: `/save-go-live`,
             type: 'POST',
@@ -165,8 +158,8 @@
                 }
             } else {
                 Toast.fire({
-                    title: 'Going ' + live + ' Mode...',
-                    text: msg['msg'],
+                    //title: 'Going ' + live + ' Mode...',
+                    text: ' ' + msg['msg'],
                     type: 'warning',
                     showCancelButton: false,
                     showConfirmButton: false,
@@ -178,6 +171,10 @@
             },3000)
         });
 
+        @else
+            if(live == "Live"){
+                $('#partnerPricingModal').modal('show');
+            }
         @endif
 
     })
