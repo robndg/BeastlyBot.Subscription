@@ -29,11 +29,11 @@
                             <i class="icon wb-payment" aria-hidden="true"></i> Subscribed
                         </button>
                         <div class="dropdown-menu" aria-labelledby="moreDropdown" role="menu" x-placement="bottom-start">
-                            <a class="dropdown-item" href="javascript:void(0)" onclick="requestRefundSubscription();" role="menuitem">@if(Refund::where('sub_id', $subscription->id)->exists()) @if(Refund::where('sub_id', $subscription->id)->where('issued','=','1')->exists()) Refunded @elseif(Refund::where('sub_id', $subscription->id)->where('issued','=','0')->exists()) @if(Refund::where('sub_id', $subscription->id)->where('refund_terms','=','100')->exists()) Success @else Denied @endif @else Request Submitted @endif @else Request Refund @endif</a>
-                            @if(Refund::where('sub_id', $subscription->id)->where('decision')->exists())
+                            <a class="dropdown-item" href="javascript:void(0)" onclick="requestRefundSubscription();" role="menuitem">{{--v1 @if(Refund::where('sub_id', $subscription->id)->exists()) @if(Refund::where('sub_id', $subscription->id)->where('issued','=','1')->exists()) Refunded @elseif(Refund::where('sub_id', $subscription->id)->where('issued','=','0')->exists()) @if(Refund::where('sub_id', $subscription->id)->where('refund_terms','=','100')->exists()) Success @else Denied @endif @else Request Submitted @endif @else Request Refund @endif --}}</a>
+                            {{--v1 @if(Refund::where('sub_id', $subscription->id)->where('decision')->exists())
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item disabled" href="javascript:void(0)" role="menuitem">{{ $subscription->metadata['refund_days'] }} days to request from {{ Carbon::createFromTimestamp($subscription->start_date)->toDateTimeString()  }}</a>
-                            @endif
+                            @endif --}}
                         </div>{{-- Carbon::createFromTimestamp((Carbon::now()->toDateTimeString()) - (Carbon::create($subscription->start_date)->toDateTimeString()))->toDateTimeString() --}}
                         @endif
                     @else
@@ -315,3 +315,8 @@
         });
     }
 </script>
+
+
+
+
+@include('partials/clear_script')

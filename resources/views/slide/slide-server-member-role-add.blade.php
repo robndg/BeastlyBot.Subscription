@@ -50,7 +50,7 @@
                           <div class="input-group">
                               <select class="form-control" id="users_list">
                               <!-- maybe reload slide if new user selected -->
-                              <option value="{{ $useruser()->DiscordOAuth->discord_id }}" id="{{ $useruser()->DiscordOAuth->discord_id }}">{{ $user->getDiscordUsername() }}</option>
+                              <option value="{{ $user()->DiscordOAuth->discord_id }}" id="{{ $useruser()->DiscordOAuth->discord_id }}">{{ auth()->user()->getDiscordHelper()->getUsername() }}</option>
                               </select>
                           </div>
 

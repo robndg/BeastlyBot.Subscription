@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\SiteConfig;
 use App\Coupon;
 use App\Http\PayPal\PayPalRecurring;
 use App\PricingTable;
@@ -20,7 +21,7 @@ class PromotionController extends Controller {
 
     public function getPromotionsPage() {
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
 
         $coupons = array();
 
@@ -47,7 +48,7 @@ class PromotionController extends Controller {
     }
     public function getPromotionsSlide() {
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
 
         $coupons = array();
 

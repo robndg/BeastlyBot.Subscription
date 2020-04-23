@@ -16,12 +16,12 @@
         <div class="col-sm-2 col-4">
             <a class="avatar avatar-xxl" href="javascript:void(0)">
                 <img id="discord_icon"
-                     src="{{ auth()->user()->getDiscordAvatar() }}"
+                     src="{{ auth()->user()->getDiscordHelper()->getAvatar() }}"
                      alt="...">
             </a>
         </div>
         <div class="col-sm-8 col-8">
-            <h1 class="pt-10 pl-10" id="discord_username" style="color: white;">{{ auth()->user()->getDiscordUsername()  }}</h1>
+            <h1 class="pt-10 pl-10" id="discord_username" style="color: white;">{{ auth()->user()->getDiscordHelper()->getUsername() }}</h1>
            <div class="badge badge-lg badge-primary font-size-20"><i class="icon-discord mr-2"
                                                                                   aria-hidden="true"></i> <span
                 id="role_name">Loading...</span>
@@ -106,7 +106,7 @@
                 <div class="container">
                     <div class="row">
                         <br/>
-                        @if((auth()->user()->ownsGuild($guild_id)) && (!auth()->user()->canAcceptPayments()))
+                        @if((auth()->user()->getDiscordHelper()->ownsGuild($guild_id)) && (!auth()->user()->canAcceptPayments()))
                         <a href="javascript:void(0)" class="btn btn-success btn-lg btn-block" data-toggle="modal" data-target="#partnerPricingModal"
                            role="button">Pay</a>
                         @else
@@ -149,7 +149,7 @@ $(document).ready(function() {
     $(document).ready(function () {
         socket.emit('get_guild_data', [socket_id, '{{ $guild_id }}']);
         socket.emit('get_role_data', [socket_id, '{{ $guild_id }}', '{{ $role_id }}']);
-        socket.emit('is_user_in_guild', [socket_id, '{{ $guild_id }}', '{{ auth()->user()user()->DiscordOAuth->discord_id }}']);
+        socket.emit('is_user_in_guild', [socket_id, '{{ $guild_id }}', '{{ auth()->user()->DiscordOAuth->discord_id }}']);
 
         socket.on('res_user_in_guild_' + socket_id, function(msg) {
                 in_guild = msg;

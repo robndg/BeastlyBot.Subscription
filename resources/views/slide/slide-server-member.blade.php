@@ -3,7 +3,7 @@
         <button type="button" class="btn btn-icon btn-pure btn-inverse slidePanel-close actions-top icon wb-close"
                 aria-hidden="true"></button>
     </div>
-    <h1>{{ $user->getDiscordUsername() }}</h1>
+    <h1>{{ auth()->user()->getDiscordHelper()->getUsername() }}</h1>
 </header>
 
 <!-- nav-tabs -->

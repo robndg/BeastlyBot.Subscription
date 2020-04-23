@@ -1,6 +1,7 @@
 <?php
 
 use App\Shop;
+use App\DiscordStore;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/slide-product-purchase/{guild_id}/{role_id}', function($guild_id, $role_id) {
@@ -21,12 +22,15 @@ Route::get('/product/{id}', function () {
 //Route::group(['domain' => 'shop.'.env('APP_URL')], function () {
 //Route::group(['domain' => 'beastly.store'], function () {
     Route::get('/shop/{guild_id}', function ($guild_id) {
-        if(!Shop::where('url', $guild_id)->exists()) {
+        if(!DiscordStore::where('url', $guild_id)->exists()) {
             return abort(404);
         }
 
-        $shop = Shop::where('url', $guild_id)->get()[0];
+        $shop = DiscordStore::where('url', $guild_id)->get()[0];
+        /* --V1
         return view('subscribe')->with('guild_id', $shop->id)->with('descriptions', \App\RoleDesc::where('guild_id', $guild_id)->get());
+        */
+        return view('subscribe')->with('guild_id', $shop->guild_id)->with('descriptions', 'asd');
     });
 //});
 

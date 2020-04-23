@@ -32,13 +32,13 @@
            {{-- @include('partials/settings/settings_stripe') --}}
 
 
-                            <div class="list-group list-group-dividered">
-                                <div class="h-only-xs-250 mb-20 mb-md-0" style="overflow:hidden">
-                                @include('partials/payments/payments_foreach')
-                                </div>
-                                <a href="/account/payments" class="btn btn-block btn-dark">View All</a>
+            <div class="list-group list-group-dividered">
+                <div class="h-only-xs-250 mb-20 mb-md-0" style="overflow:hidden">
+                @include('partials/payments/payments_foreach')
+                </div>
+                <a href="/account/payments" class="btn btn-block btn-dark">View All</a>
 
-                            </div>
+            </div>
 
 
         </div>

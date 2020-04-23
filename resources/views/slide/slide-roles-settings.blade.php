@@ -8,7 +8,7 @@
         aria-hidden="true"></button>
     @endif
     </div>
-    <h1>Product Settings @if($special)<span class="text-bold">| {{ $user->getDiscordUsername() }}</span>@endif</h1>
+    <h1>Product Settings @if($special)<span class="text-bold">| {{ $user()->getDiscordHelper()->getUsername() }}</span>@endif</h1>
     <p><span id="role_name"></span></p>
 </header>
 
@@ -85,14 +85,14 @@
                             <div class="card-body">
                                 <div class="row no-space text-center">
                                     <div class="col-12">
-                                        @if(RoleDesc::where('guild_id', $guild_id)->where('role_id', $role_id)->exists())
+                                        {{--V1 @if(RoleDesc::where('guild_id', $guild_id)->where('role_id', $role_id)->exists())
                                             <textarea id='product-description' class="lit-group-item form-control" placeholder="These awesome perks..."
                                                     @if(!$enabled) disabled
                                                     @endif>{{ RoleDesc::where('guild_id', $guild_id)->where('role_id', $role_id)->get()[0]->description }}</textarea>
                                         @else
                                             <textarea id='product-description' class="lit-group-item form-control" placeholder="These awesome perks.."
                                                     @if(!$enabled) disabled @endif></textarea>
-                                        @endif
+                                        @endif --}}
                                         <button type="button" class="btn btn-block mt-10 btn-dark btn-lg @if(!$enabled) disabled @endif" id="desc-btn"
                                             @if(!$enabled) disabled @else onClick="updateProductDesc();" @endif>Update Description
                                         </button>

@@ -4,10 +4,10 @@
     <div class="p-30 text-center">
         <a class="avatar avatar-xxl" href="javascript:void(0)">
             <img
-                 src="{{ auth()->user()->getDiscordAvatar() }}"
+                 src="{{ auth()->user()->getDiscordHelper()->getUsername() }}"
                  alt="...">
         </a>
-        <h5>{{ auth()->user()->getDiscordUsername() }}</h5>
+        <h5>{{ auth()->user()->getDiscordHelper()->getUsername() }}</h5>
         <!--<button type="button" class="btn btn-block btn-dark" id="dark-day" onClick="changeNightMode();">Dark/Day</button>-->
         <button type="button" class="btn btn-block btn-dark" onclick="window.location.href = '/logout';">Log out</button>
     </div>

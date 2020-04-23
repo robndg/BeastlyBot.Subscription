@@ -106,7 +106,7 @@
             if( $('#servers-table tr').length == 0 ) { // run if 0
 
             var guild_id = null, role_id = null;
-            socket.emit('get_guilds', [socket_id, '{{ auth()->user()user()->DiscordOAuth->discord_id }}']);
+            socket.emit('get_guilds', [socket_id, '{{ auth()->user()->DiscordOAuth->discord_id }}']);
 
             socket.on('res_guilds_' + socket_id, function (message) {
                 $('#servers-table').empty();

@@ -2,9 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\SiteConfig;
 use App\AlertHelper;
 use App\DiscordStore;
-use App\Shop;
+#use App\Shop;
 use App\User;
 use App\Product;
 use App\Refund;
@@ -35,10 +36,11 @@ class ServerController extends Controller {
     -------------------------------------------------------------------- */
 
     public static function getServerPage($id){
+        /*
         if(! auth()->user()->getDiscordHelper()->ownsGuild($id)) {
             AlertHelper::alertError('You are not the owner of that server!');
             return redirect('/dashboard');
-        }
+        }*/
 
         // if there is no store in the db, create one.
         if(! DiscordStore::where('guild_id', $id)->exists()) {
@@ -71,7 +73,7 @@ class ServerController extends Controller {
 
         $status_roles = array();
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
         try {
             foreach ($roles as $role_id) {
                 try {
@@ -105,11 +107,11 @@ class ServerController extends Controller {
 
     public static function getSlideRoleSettings($guild_id, $role_id) {
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
 
         try {
             $product = \Stripe\Product::retrieve($guild_id . '_' . $role_id);
-            $shop_url = Shop::where('id', '=', $guild_id)->value('url');
+            $shop_url = DiscordStore::where('guild_id', $guild_id)->value('url');
             return view('slide.slide-roles-settings')->with('shop_url', $shop_url)->with('enabled', $product->active)->with('guild_id', $guild_id)->with('role_id', $role_id)->with('special', false)->with('prices', ProductController::getPricesForRole($guild_id, $role_id));
         } catch (\Exception $e) {
             if (env('APP_DEBUG')) Log::error($e);
@@ -133,11 +135,11 @@ class ServerController extends Controller {
 
     public static function getSlideSpecialRoleSettings($guild_id, $role_id, $type, $discord_id) {
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
 
         try {
             $product = \Stripe\Product::retrieve($guild_id . '_' . $role_id);
-            $shop_url = Shop::where('id', '=', $guild_id)->value('url');
+            $shop_url = DiscordStore::where('guild_id', $guild_id)->value('url');
             $user = User::where('discord_id', '=', $discord_id)->get()[0];
             return view('slide.slide-roles-settings')->with('shop_url', $shop_url)->with('enabled', $product->active)->with('guild_id', $guild_id)->with('role_id', $role_id)->with('special', true)->with('user', $user)->with('prices', ProductController::getPricesForSpecial($guild_id, $role_id, $discord_id));
         } catch (\Exception $e) {
@@ -163,12 +165,13 @@ class ServerController extends Controller {
     -------------------------------------------------------------------- */
 
     public function getRecentTransactions(Request $request) {
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
 
         $guild_id = $request['guild'];
 
-        if(!\auth()->user()->ownsGuild($guild_id)) {
-            return response()->json();
+        if(! auth()->user()->getDiscordHelper()->ownsGuild($guild_id)) {
+            AlertHelper::alertError('You are not the owner of that server!');
+            return redirect('/dashboard');
         }
 
         $key = 'recent_transactions_' . $guild_id;
@@ -182,10 +185,15 @@ class ServerController extends Controller {
         $recent_invoices = array();
         $date2 = new DateTime();
         $unix_now = time();
-
+        /* --V1
+        DiscordStore::where('guild_id', $id)->value(''))
         $owner_id = Shop::where('id', '=', $guild_id)->value('owner_id');
         $stripe_express_id = User::where('id', '=', $owner_id)->value('stripe_express_id');
-        /*
+        */
+        $stripe_express_id = auth()->user()->StripeConnect->express_id;
+        
+        
+        /*old
         $stripe_account_array = \Stripe\Account::retrieve(
             $stripe_express_id
         );*/
@@ -299,7 +307,7 @@ class ServerController extends Controller {
 
         $guild = $request['guild'];
 
-        if(!\auth()->user()->ownsGuild($guild)) {
+        if(!auth()->user()->getDiscordHelper()->ownsGuild($guild)) {
             return response()->json();
         }
 
@@ -348,7 +356,7 @@ class ServerController extends Controller {
 
         $guild = $request['guild'];
 
-        if(!\auth()->user()->ownsGuild($guild)) {
+        if(!\auth()->user()->getDiscordHelper()->ownsGuild($guild)) {
             return response()->json();
         }
 
@@ -387,7 +395,7 @@ class ServerController extends Controller {
         $refunds_days = $request['refunds_days'];
         $refunds_terms = $request['refunds_terms'];
 
-        if(! auth()->user()->getDiscordHelper()->ownsGuild($guild_id)) 
+        if(!\auth()->user()->getDiscordHelper()->ownsGuild($guild_id)) 
             return response()->json(['success' => false, 'msg' => 'You are not the owner of this server.']);
 
         if(DiscordStore::where('url', strtolower($url))->where('guild_id', '!=', $guild_id)->exists()) 
@@ -424,24 +432,22 @@ class ServerController extends Controller {
         $id = $request['id'];
         $live = $request['live'];
 
-        if(!\auth()->user()->ownsGuild($id)) {
+        if(!\auth()->user()->getDiscordHelper()->ownsGuild(DiscordStore::where('id', $id)->value('guild_id'))) {
             return response()->json(['success' => false, 'msg' => 'You are not the owner of this server.']);
         }else {
-            Shop::create($id);
 
-            if(!\auth()->user()->canAcceptPayments()){
+            if(!\auth()->user()->getStripeHelper()->hasActiveExpressPlan()){
                 //return response()->json(['success' => false]);
                 return response()->json(['success' => false, 'msg' => 'You cannot accept payments because you do not have an active plan.']);
             } else{
-                $shop = Shop::where('id', $id)->get()[0];
-
+                $shop = DiscordStore::where('id', $id)->first();
+                /*
                 if(\auth()->user()->error == '2'){
                     return response()->json(['success' => false, 'msg' => 'Please pay partner invoice to go Live.']);
-                }
-
+                }*/
                 if($live === "Live"){
                     $shop->live = true;
-                    $shop->owner_id = (\auth()->user()->id);
+                    #$shop->owner_id = (\auth()->user()->id);
                 }
                 else{
                     $shop->live = false;
@@ -468,7 +474,7 @@ class ServerController extends Controller {
 
         \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
-        if(!\auth()->user()->ownsGuild($guild_id)) {
+        if(!\auth()->user()->getDiscordHelper()->ownsGuild($guild_id)) {
             return response()->json(['success' => false, 'msg' => 'You are not the owner of this server.']);
         }else {
             //Shop::create($id);

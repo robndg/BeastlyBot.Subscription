@@ -104,7 +104,7 @@
 
             console.log(live);
 
-        @if(auth()->user()->canAcceptPayments())
+        @if(auth()->user()->getStripeHelper()->hasActiveExpressPlan())
             Toast.fire({
                 title: 'Going ' + live + ' Mode...',
                 // type: 'info',
@@ -121,7 +121,7 @@
             }
         @endif
 
-        @if(auth()->user()->canAcceptPayments())
+        @if(auth()->user()->getStripeHelper()->hasActiveExpressPlan())
         $.ajax({
             url: `/save-go-live`,
             type: 'POST',

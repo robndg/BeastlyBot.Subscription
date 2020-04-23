@@ -81,13 +81,13 @@ class ProductController extends Controller {
     public function updatePrices(Request $request) {
         $guild_id = $request['guild_id'];
 
-        if(!\auth()->user()->ownsGuild($guild_id)) {
+        if(!\auth()->user()->getDiscordHelper()->ownsGuild($guild_id)) {
             return response()->json(['success' => false, 'msg' => 'You are not the owner of this server.']);
         }
-
+        /* --V1
         if(\auth()->user()->error == '1') {
             return response()->json(['success' => false, 'msg' => 'You must connect a new Stripe account']);
-        }
+        }*/
         $role_name = $request['role_name'];
 
         $role_id = $request['role_id'];
@@ -265,13 +265,13 @@ class ProductController extends Controller {
     public function toggleProductActivity(Request $request) {
         $guild_id = $request['guild_id'];
 
-        if(!\auth()->user()->ownsGuild($guild_id)) {
+        if(!\auth()->user()->getDiscordHelper()->ownsGuild($guild_id)) {
             return response()->json(['success' => false, 'msg' => 'You are not the owner of this server.']);
         }
-
+        /* --V1
         if(\auth()->user()->error == '1') {
             return response()->json(['success' => false, 'msg' => 'You must connect a new Stripe account']);
-        }
+        } */
 
         $role_id = $request['role_id'];
         $guild_name = $request['guild_name'];

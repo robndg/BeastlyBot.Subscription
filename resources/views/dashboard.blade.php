@@ -20,15 +20,19 @@
       <div class="card-block p-20">
         <div class="counter counter-lg counter-inverse text-left">
           <div class="counter-label mb-20">
-            <div>PAY OUT <i class="icon wb-info-circle ml-1 text-white" aria-hidden="true"
+            <div>BALANCE <i class="icon wb-info-circle ml-1 text-white" aria-hidden="true"
               data-plugin="webuiPopover"
-              data-content="&lt;p&gt;Funds successfully paid out and on the way to your bank account.&lt;/p&gt;" data-trigger="hover"
+              data-content="&lt;p&gt;Your shops recent orders balance. Pending for payout. You’ll receive payouts daily.&lt;/p&gt;" data-trigger="hover"
               data-animation="pop"></i></div>
           </div>
           <div class="counter-number-group mb-5">
             <span class="counter-number-related">$</span>
             <span class="counter-number">{{ number_format(($balance->available[0]->amount)/100, 2, '.', ',') }}</span>
-            <button type="button" class="btn btn-primary btn-sm btn-link float-right" data-toggle="site-sidebar" data-url="/slide-payout/{{ auth()->user()->stripe_express_id }}">View Pending</button>
+            {{--v1 <button type="button" class="btn btn-primary btn-sm btn-link float-right" data-toggle="site-sidebar" data-url="/slide-payout/{{ auth()->user()->stripe_express_id }}">View Pending</button>--}}
+            <button type="button" class="btn btn-success btn-sm float-right ladda-button" data-style="slide-up" data-plugin="ladda" onclick="window.open('{{ $stripe_login_link }}', '_blank');">
+                <span class="ladda-label">Payouts <i class="wb-arrow-right ml-1"></i></span>
+                <span class="ladda-spinner"></span>
+            </button>
           </div>
         </div>
       </div>
@@ -619,7 +623,7 @@ $('#notifications_modal').on('hide.bs.modal', function() {
 <script type="text/javascript">
     var guild_id = null, role_id = null;
     $(document).ready(function () {
-        socket.emit('get_guilds', [socket_id, '{{ auth()->user()user()->DiscordOAuth->discord_id }}']);
+        socket.emit('get_guilds', [socket_id, '{{ auth()->user()->DiscordOAuth->discord_id }}']);
 
         socket.on('res_guilds_' + socket_id, function (message) {
             $('#servers-table-side').empty();

@@ -2,6 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\AlertHelper;
+use App\SiteConfig;
+use App\StripeHelper;
+use Illuminate\Support\Facades\Log;
+
 class UserController extends Controller {
 
     public function __construct() {
@@ -11,16 +16,22 @@ class UserController extends Controller {
     public function getDashboard() {
         $stripe_helper = auth()->user()->getStripeHelper();
 
-    // get all active subscriptions for user and put into cleaned up array
-    $subscriptions = array();
-    foreach ($stripe_helper->getSubscriptions() as $subscription) {
-        $subscriptions[$subscription->id] = $subscription->toArray();
-    }
-
-    return view('dashboard')->with('subscriptions', $subscriptions)->with('balance', $stripe_helper->getBalance());
+        // get all active subscriptions for user and put into cleaned up array
+        $subscriptions = array();
+        foreach ($stripe_helper->getSubscriptions() as $subscription) {
+            $subscriptions[$subscription->id] = $subscription->toArray();
+        }
+        if (auth()->user()->StripeConnect->express_id){
+            return view('dashboard')->with('subscriptions', $subscriptions)->with('balance', $stripe_helper->getBalance())->with('stripe_login_link', $stripe_helper->getLoginURL());
+        }else{
+            return view('dashboard')->with('subscriptions', $subscriptions);
+        }
     }
 
     public static function getViewWithInvoices(string $view, int $num_of_invoices) {
+
+        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+        
         $stripe_helper = auth()->user()->getStripeHelper();
 
         // get last 100 most recent invoices for this customer
@@ -48,11 +59,12 @@ class UserController extends Controller {
     
     public function getPayoutSlide($stripe_account_id) {
 
+        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+
         if (auth()->user()->StripeConnect->express_id != $stripe_account_id && !Auth::user()->admin) return response()->json(['success' => false, 'msg' => 'You do not own this Stripe account.']);
 
         #if (auth()->user()->error == "1") return response()->json(['success' => false, 'msg' => 'Please refresh the page and connect a US Stripe account.']);
 
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
         $unix_now = time();
 
     #####
@@ -65,7 +77,7 @@ class UserController extends Controller {
         2) Get it from user DB
             $stripe_payout_delay = User::where('stripe_account_id', '=' , $stripe_account_id)->value('stripe_delay_days');
         */
-        $stripe_payout_delay = SiteConfig::get('STRIPE_PAYOUT_DELAY');
+
     #####
 
     ####

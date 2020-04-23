@@ -11,7 +11,8 @@
 
 @section('content')
 
-@if(App\Shop::where('id', '=', $guild_id)->value('owner_id'))
+{{--V1
+@if(App\DiscordStore::where('id', '=', $guild_id)->value('owner_id'))
 @php
 
 $get_owner_id = App\Shop::where('id', $guild_id)->value('owner_id');
@@ -21,10 +22,10 @@ $shop_url = App\Shop::where('id', $guild_id)->value('url');
 
 @endphp
 @endif
+--}}
 
-
-@if(auth()->user()->ownsGuild($guild_id))
-    @if((!App\Shop::where('id', $guild_id)->get()[0]->live) || $owner_array->error == '2')
+@if(auth()->user()->getDiscordHelper()->ownsGuild($guild_id))
+    @if((!App\DiscordStore::where('guild_id', $guild_id)->get()[0]->live) || $owner_array->error == '2')
         <div class="bg-dark-4 text-white text-center font-size-16 font-weight-500 w-200 mx-auto card m-0 mb-30">
             <a class="card-body p-5 text-white" href="/server/{{ $guild_id }}{{ (!auth()->user()->canAcceptPayments()) ? '#ready' : '' }}">
         <!-- <p>You are viewing this as a <span class="badge badge-primary">Test</span> session <span class="font-weight-100">(only you can see this page)</span>.
@@ -100,27 +101,27 @@ $shop_url = App\Shop::where('id', $guild_id)->value('url');
         </div>
     </div>
     {{--
-@if(auth()->user()->ownsGuild($guild_id))
+@if(auth()->user()->getDiscordHelper()->ownsGuild($guild_id))
     @if(auth()->user()->plan_sub_id !== null)
         @include('partials/clear_script')
     @endif
 @endif
 --}}
-<input readonly type="text" value="https://beastly.store/{{ $shop_url }}" id="input_copy-url" style="opacity:0">
+<input readonly type="text" value="https://beastly.store/{{ App\DiscordStore::where('guild_id', $guild_id)->value('url') }}" id="input_copy-url" style="opacity:0">
 
 @endsection
 
 @section('scripts')
 
 
-@if(((App\Shop::where('id', $guild_id)->get()[0]->live) && ($owner_array->canAcceptPayments())) || (auth()->user()->ownsGuild($guild_id)))
+@if(((App\DiscordStore::where('guild_id', $guild_id)->get()[0]->live) && ($owner_array->canAcceptPayments())) || (auth()->user()->getDiscordHelper()->ownsGuild($guild_id)))
 @if($owner_array->error != ('1' || '2'))
     <script type="text/javascript">
         var role_descs = JSON.parse('{!! json_encode($descriptions) !!}');
 
         $(document).ready(function () {
         //$(window).on('load', function() { // speeds it up but breaks special
-            socket.emit('is_user_banned', [socket_id, '{{ $guild_id }}', '{{ auth()->user()user()->DiscordOAuth->discord_id }}']);
+            socket.emit('is_user_banned', [socket_id, '{{ $guild_id }}', '{{ auth()->user()->DiscordOAuth->discord_id }}']);
 
             socket.on('res_user_banned_' + socket_id, function(msg) {
                 if(msg) {
@@ -207,8 +208,8 @@ $shop_url = App\Shop::where('id', $guild_id)->value('url');
                                 var guild_id = special_id.split('_')[0];
                                 var role_id = special_id.split('_')[1];
                                 var role_name = product_nickname.split('-')[0];
-                                //var link = `/slide-special-purchase/${guild_id}/${role_id}/${special_id}/{{ auth()->user()user()->DiscordOAuth->discord_id }}`;
-                                var link = `/slide-special-purchase/${guild_id}/${role_id}/${special_id}/{{ auth()->user()user()->DiscordOAuth->discord_id }}`;
+                                //var link = `/slide-special-purchase/${guild_id}/${role_id}/${special_id}/{{ auth()->user()->DiscordOAuth->discord_id }}`;
+                                var link = `/slide-special-purchase/${guild_id}/${role_id}/${special_id}/{{ auth()->user()->getDiscordHelper()->discord_id() }}`;
                                 special = `
                                 <div class="panel" id="role-${role_id}">
                                     <div class="panel-heading p-20 d-flex flex-row flex-wrap align-items-center justify-content-between" id="heading_${guild_id}" role="tab">
@@ -216,7 +217,7 @@ $shop_url = App\Shop::where('id', $guild_id)->value('url');
                                         </div>
                                         <div class="text-center">
                                             <a data-toggle="collapse" href="#tab_${role_id}" data-parent="#accordian_main" aria-expanded="true" aria-controls="tab_${role_id}">
-                                                <div class="badge badge-primary badge-lg font-size-18 text-white" style="background-color:}"><i class="fab icon-discord mr-2"></i> <span>${role_name} ({{ auth()->user()->getDiscordUsername() }})</span></div>
+                                                <div class="badge badge-primary badge-lg font-size-18 text-white" style="background-color:}"><i class="fab icon-discord mr-2"></i> <span>${role_name} ({{ auth()->user()->getDiscordHelper()->getUsername() }})</span></div>
                                             </a>
                                         </div>
                                         <div class="w-100 hidden-sm-down">
