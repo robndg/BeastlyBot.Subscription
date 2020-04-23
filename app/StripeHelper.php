@@ -27,6 +27,72 @@ class StripeHelper
         return $stripe_subs;
     }
 
+    public function getSubscriptionsList() {
+        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+
+        if(Session::has('subs_list_' . $this->user->DiscordOAuth->discord_id)) return Session::get('subs_list_' . $this->user->DiscordOAuth->discord_id);
+
+        $stripe_subs = \Stripe\Subscription::all(['customer' => $this->user->StripeConnect->customer_id, 'status' => 'active']);
+
+        $stripe_subs_list = array();
+
+        foreach ($stripe_subs as $sub) {
+            $continue = false;
+            if($sub->status != 'expired'){
+                try{
+                    try{
+                    $sub_id = explode('_', $sub->id)[0];
+                    $sub_end_date = $sub->current_period_end;
+
+                    $plan = $sub->plan[0];
+                    
+                    $continue = true;
+                    }catch(Exception $e){
+                        Log::error($e);
+                    }
+                    if($continue == true && ($sub->items->data[0]['plan']->product != SiteConfig::get('EXPRESS_PROD_ID'))){
+
+                        $plan_product_full = $sub->items->data[0]['plan']->product;
+                        $plan_guild_id = $plan_product_full;
+                        try{
+                        $plan_guild_id = explode('_', $plan_product_full)[0];
+                        }catch(Exception $e){
+                            Log::error($e);
+                        }
+                        $plan_role_id = $plan_product_full;
+                        try{
+                        $plan_role_id = explode('_', $plan_product_full)[1];
+                        }catch(Exception $e){
+                            Log::error($e);
+                        }
+                        $plan_role_nickname_full = $sub->items->data[0]['plan']->nickname;
+                        $plan_role_nickname = $plan_role_nickname_full;
+                        try{
+                        $plan_role_nickname = explode(' - ', $plan_role_nickname)[0];
+                        }catch(Exception $e){
+                            Log::error($e);
+                        }
+
+                        $sub->sub_id = $sub_id; #sub_id
+                        $sub->guild_id = $plan_guild_id; #guild_id->guild_name
+                        $sub->role_id = $plan_role_id; #guild_id->guild_name
+                        $sub->role_name = $plan_role_nickname; #role_name
+                        $sub->role_color = "3e8ef7";
+                        #$sub->plan_amount = $plan_amount; #role_name
+                        $sub->end_date = $sub_end_date; #end date
+                        
+                        array_push($stripe_subs_list, $sub);
+                    }
+                }catch(Exception $e){
+                    Log::error($e);
+                }
+            }
+        }
+
+        Session::put('subs_list_' . $this->user->DiscordOAuth->discord_id, $stripe_subs_list);
+        return $stripe_subs_list;
+    }
+
     public function isSubscribedToProduct(string $id): bool {
         foreach ($this->getSubscriptions() as $subscription) {
             if ($subscription->items->data[0]->plan->product == $id) return true;

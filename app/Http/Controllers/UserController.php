@@ -21,6 +21,7 @@ class UserController extends Controller {
         foreach ($stripe_helper->getSubscriptions() as $subscription) {
             $subscriptions[$subscription->id] = $subscription->toArray();
         }
+        
         if (auth()->user()->StripeConnect->express_id){
             return view('dashboard')->with('subscriptions', $subscriptions)->with('balance', $stripe_helper->getBalance())->with('stripe_login_link', $stripe_helper->getLoginURL());
         }else{

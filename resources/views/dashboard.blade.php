@@ -114,9 +114,9 @@
                         <div class="row no-space">
                             {{-- <div class="@if(auth()->user()->getStripeHelper()->hasActiveExpressPlan())col-6 col-sm-12 @else col-12 h-only-xs-50 @endif">
                               <a href="javascript:void(0);" class="btn-75 @if(auth()->user()->getStripeHelper()->hasActiveExpressPlan())pt-20 @else h-150 pt-10 pt-sm-60 @endif bd-top-sm" data-toggle="site-sidebar" data-url="/slide-account-settings"> --}}
-                              <div class="col-12 h-only-xs-50">
+                              <div class="col-12 h-only-xs-50" >
                               <a href="javascript:void(0);" class="btn-75 h-150 pt-10 pt-sm-60 bd-top-sm" data-toggle="site-sidebar" data-url="/slide-account-settings">
-                                <i class="wb-user"></i>
+                                <i class="wb-more-horizontal"></i>
                               </a>
                             </div>
                            {{-- @if(auth()->user()->StripeConnect->express_id != null && auth()->user()->error != '1')
@@ -133,16 +133,25 @@
 
                       <div class="col-12 col-md-9 col-lg-5 col-xl-3">
                         <div class="card-block h-150 h-only-xs-100 h-only-sm-100 h-only-md-100 bg-grey-3 draw-grad-up">
-                          <div class="slider pt-0 mx-30" id="subscriptionsSlider">
-
-                            @if(auth()->user()->getStripeHelper()->hasActiveExpressPlan())
+                          <div class="slider pt-0 mx-5" id="subscriptionsSlider">
+                          @if(auth()->user()->getStripeHelper()->hasActiveExpressPlan())
                             <div>
-                              <div class="text-center mt-lg-40">
-                                <span class="badge badge-success badge-lg font-size-20">Live</span>
-                                <p class="font-weight-100">Active {{ gmdate("m-d-Y", auth()->user()->getPlanExpiration()) }}</p>
+                              <div class="text-center mt-lg-30">
+                                <span class="badge badge-success badge-lg font-size-18">Live</span>
+                                <div class="d-block wb-check green-600 pt-1"></div>
+                                <p class="font-weight-100 mt--3">{{ gmdate("M d Y", auth()->user()->getPlanExpiration()) }}</p>
                               </div>
                             </div>
-                            @endif
+                          @endif
+                          @foreach(auth()->user()->getStripeHelper()->getSubscriptionsList() as $sub_list)
+                          <div>
+                            <div class="text-center mt-lg-30" onclick="window.location.href = '/account/subscriptions';">
+                              <div class="badge badge-primary badge-lg font-size-18 text-truncate" style="background-color: {{ $sub_list->role_color }}">{{ $sub_list->role_name }}</div>
+                              <div class="d-block wb-check green-600 pt-1"></div>
+                              <p class="font-weight-100 mt--3">{{ gmdate("M d Y", $sub_list->end_date) }}</p>
+                            </div>
+                          </div>
+                          @endforeach
 
                           </div>
                         </div>
@@ -450,6 +459,8 @@
                 $('#discord_username').text(discord_username + " #" + discord_discriminator);
             });
 
+            /* REMOVED in V2 */
+            {{--V1
             @foreach($subscriptions as $subscription)
                 var data = '{{ $subscription['items']['data'][0]['plan']['id'] }}';
                 var guild_id = data.split('_')[0];
@@ -474,7 +485,8 @@
                     }
                 });
             });
-        });
+
+
 
         function toTitleCase(str) {
             return str.replace(/\w\S*/g, function(txt){
@@ -493,9 +505,8 @@
                   </div>
                 </div>
             `;
-        }
+         --}}
     </script>
-
 
 <script>
 
