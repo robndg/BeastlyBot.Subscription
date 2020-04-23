@@ -373,9 +373,23 @@ function start() {
             }
 
         });
+
+        // cached (30 minutes)
+        socket.on('get_other_guilds', function (data) {
+            var key = `get_other_guilds_${data[1]}`;
+            var guilds = cache.get(key);
+        
+        
+            if(guilds) {
+                io.emit('res_other_guilds_' + data[0], guilds);
+            } else {
+                cache.set(key, bot.getOtherGuilds(data[1]), 60 * 60 * 0.5);
+                io.emit('res_other_guilds_' + data[0], cache.get(key));
+            }
+        });
+
+        
     });
-
-
 
 }
 

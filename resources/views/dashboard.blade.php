@@ -40,15 +40,12 @@
     @endif
     <div class="card">
               <div class="card-header">
-              <span id="notification_count_1-pg">0</span> New Notifications
+              <span id="notification_count_1-pg">0</span> Other Guilds
               </div> 
               <div class="card-block p-0">
-                <ul class="list-group list-group-full list-group-dividered list-group-no-hover mb-0" id="notifications-dropdown">
+                <ul class="list-group list-group-full list-group-dividered list-group-no-hover mb-0" id="guilds-dropdown">
 
-
-
-
-                  {{-- <li class="list-group-item px-5">
+                  {{--<li class="list-group-item px-5">
                     <div class="d-flex align-items-start">
                       <div class="pl-2 pr-10">
                         <a class="avatar avatar-lg" href="javascript:void(0)">
@@ -63,7 +60,7 @@
                         <button type="button" class="btn btn-primary btn-outline mt-5">Invite</button>
                       </div>
                     </div>
-                  </li> --}}
+                  </li>--}}
 
                 </ul>
               </div>
@@ -429,6 +426,7 @@
       </div>
       <div class="modal-body text-center">
         <h5 class="font-size-16 font-weight-100" id="noti_message"></h5>
+        
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-outline btn-success" data-dismiss="modal"><i class="wb wb-check"></i></button>
@@ -442,6 +440,41 @@
 
 @section('scripts')
 
+<script type="text/javascript">
+   // var guild_id = null, role_id = null;
+    $(document).ready(function () {
+        socket.emit('get_other_guilds', [socket_id, '{{ auth()->user()->DiscordOAuth->discord_id }}']);
+
+        socket.on('res_other_guilds_' + socket_id, function (message) {
+            $('#guilds_down').empty();
+
+            Object.keys(message).forEach(function (key) {
+                console.log(message[key]['id']);
+                var html = `
+                <li class="list-group-item px-5">
+                    <div class="d-flex align-items-start">
+                      <div class="pl-2 pr-10">
+                        <a class="avatar avatar-lg" href="javascript:void(0)">
+                          <img class="img-fluid" src="${message[key]['iconURL']}" alt="...">
+                        </a>
+                      </div>
+                      <div class="media-body">
+                        <h5 class="mt-5 mb-5">${message[key]['name']}</h5>
+                        <small>${message[key]['memberCount']} Members</small>
+                      </div>
+                      <div class="pl-5">
+                        <button type="button" class="btn btn-primary mt-5" onclick="window.location.href = '{{ SiteConfig::get('APP_URL') }}/shop/${key}';">Shop</button>
+                      </div>
+                    </div>
+                  </li>
+                  `;
+
+                $('#guilds-dropdown').append(html);
+            });
+        });
+
+    });
+</script>
 
 <script type="text/javascript">
         var subscriptions = JSON.parse('{!! json_encode($subscriptions) !!}');
@@ -458,9 +491,10 @@
                 discord_discriminator = message['discriminator'];
                 $('#discord_username').text(discord_username + " #" + discord_discriminator);
             });
+        });
 
             /* REMOVED in V2 */
-            {{--V1
+            /*V1
             @foreach($subscriptions as $subscription)
                 var data = '{{ $subscription['items']['data'][0]['plan']['id'] }}';
                 var guild_id = data.split('_')[0];
@@ -489,7 +523,7 @@
 
 
         function toTitleCase(str) {
-            return str.replace(/\w\S*/g, function(txt){
+            return str.replace(/\w\S8/g, function(txt){ ###!!! replace 8 with *
                 return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
             });
         }
@@ -505,7 +539,7 @@
                   </div>
                 </div>
             `;
-         --}}
+         */
     </script>
 
 <script>
@@ -565,7 +599,7 @@ $('#notifications_modal').on('hide.bs.modal', function() {
     </script>
 
 
-<script>
+////<script>
 
 // $(document).ready(function () {
 //         fetchNotifications();
@@ -629,7 +663,7 @@ $('#notifications_modal').on('hide.bs.modal', function() {
 
 
 
-</script>
+//</script>
 
 {{--
 <script type="text/javascript">

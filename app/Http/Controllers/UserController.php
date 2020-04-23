@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\AlertHelper;
 use App\SiteConfig;
 use App\StripeHelper;
+use App\DiscordStore;
 use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller {

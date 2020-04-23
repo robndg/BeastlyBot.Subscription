@@ -36,7 +36,7 @@ bot.registry.registerCommandsIn(__dirname + "/commands");
 
 bot.login(process.env.DISCORD_KEY);
 
-module.exports = {getRoles, getGuilds, getGuildData, getRoleData, bot, mysqlConnection, stripe};
+module.exports = {getRoles, getGuilds, getGuildData, getRoleData, bot, mysqlConnection, stripe, getOtherGuilds};
 
 // Start the web socket
 var socketHandler = require('./SocketHandler.js');
@@ -152,4 +152,31 @@ function getMemberCount(guild, role) {
         if (member.roles.cache.has(role.id)) count++;
     });
     return count;
+}
+
+function getOtherGuilds(user_id) {
+    let other_guilds = {};
+    bot.guilds.cache.forEach(g => {
+        if (g.owner.id != user_id) {
+            if (g.icon !== null && g.icon !== undefined){
+                other_guilds[g.id] = {
+                    name: g.name,
+                    iconURL: `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=256`,
+                    memberCount: g.memberCount,
+                    owner: g.ownerID,
+                    id: g.id
+                }
+            }else{
+                other_guilds[g.id] = {
+                    name: g.name,
+                    iconURL: `https://discordapp.com/assets/322c936a8c8be1b803cd94861bdfa868.png`,
+                    memberCount: g.memberCount,
+                    owner: g.ownerID,
+                    id: g.id
+                }
+            }
+        }
+    });
+
+    return other_guilds;
 }

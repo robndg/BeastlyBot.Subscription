@@ -85,6 +85,8 @@ class DiscordOAuthController extends Controller {
 
                 $connect = new StripeConnect(['user_id' => $user->id, 'customer_id' => $stripe_account->id]);
                 $user->StripeConnect()->save($connect);
+
+                // Add welcome message/email or something
             }
         } catch (IdentityProviderException $e) {
             if (env('APP_DEBUG')) Log::error($e);
