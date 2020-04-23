@@ -1,12 +1,14 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\DiscordStore;
+use App\ProductRole;
 use Illuminate\Support\Facades\Cache;
 use App\SiteConfig;
 use App\Products\DiscordRoleProduct;
 use App\Products\Plans\DiscordPlan;
 use App\Products\ProductMsgException;
-use App\RoleDesc;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -86,48 +88,36 @@ class ProductController extends Controller {
         foreach ([1, 3, 6, 12] as $duration) {
             $key = 'price_' . $guild_id . '_' . $role_id . '_' . $duration;
             if(! Cache::has($key)) {
-                $discord_role_product = new DiscordRoleProduct($guild_id, $role_id, $duration);
-                if($discord_role_product->getStripePlan() != null)
-                    Cache::put($key, $discord_role_product->getStripePlan()->amount / 100, 60 * 5);
+                $discord_plan = new DiscordPlan(new DiscordRoleProduct($guild_id, $role_id, $duration), 'month', $duration);
+                if($discord_plan->getStripePlan() != null)
+                    Cache::put($key, $discord_plan->getStripePlan()->amount / 100, 60 * 5);
                 else 
                     Cache::put($key, 0, 60 * 5);
             }
 
             $prices[$duration] = Cache::get($key, 0);
         }
-
         return $prices;
     }
 
     public function setProductDescription(Request $request) {
         $guild_id = $request['guild_id'];
-
-        if(!\auth()->user()->getDiscordHelper()->ownsGuild($guild_id)) {
-            return response()->json(['success' => false, 'msg' => 'You are not the owner of this server.']);
-        }
-        /* --V1
-        if(auth()->user()->error == '1') {
-            return response()->json(['success' => false, 'msg' => 'You must connect a new Stripe account']);
-        }*/
-
         $role_id = $request['role_id'];
         $description = $request['description'];
 
-        $role_desc = new RoleDesc();
-        // Check if a description exists already in DB. If it does grab it.
-        if (RoleDesc::where('guild_id', $guild_id)->where('role_id', $role_id)->exists())
-            $role_desc = RoleDesc::where('guild_id', $guild_id)->where('role_id', $role_id)->get()[0];
+        if(! auth()->user()->getDiscordHelper()->ownsGuild($guild_id)) 
+            return response()->json(['success' => false, 'msg' => 'You are not the owner of this server.']);
+        
+        $store = DiscordStore::where('guild_id', $guild_id);
 
-        // if there is no description entered here then remove from DB, else insert/update into the DB
-        if (empty($description)) {
-            $role_desc->delete();
+        if(! ProductRole::where('discord_store_id', $store->id)->exists()) {
+            $product_role = new ProductRole(['discord_store_id' => $store->id, 'role_id' => $role_id]);
         } else {
-            $role_desc->guild_id = $guild_id;
-            $role_desc->role_id = $role_id;
-            $role_desc->description = $description;
-            $role_desc->save();
+            $product_role = ProductRole::where('discord_store_id', $store->id)->first();
         }
 
+        $product_role->description = $description;
+        $product_role->save();
         return response()->json(['success' => true]);
     }
 

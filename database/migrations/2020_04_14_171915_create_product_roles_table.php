@@ -15,7 +15,7 @@ class CreateProductRolesTable extends Migration
     {
         Schema::create('product_roles', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('guild_id');
+            $table->bigInteger('discord_store_id');
             $table->bigInteger('role_id');
             $table->string('description');
             $table->timestamps();
