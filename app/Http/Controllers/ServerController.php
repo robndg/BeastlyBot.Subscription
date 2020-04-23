@@ -8,6 +8,7 @@ use App\DiscordStore;
 #use App\Shop;
 use App\User;
 use App\Product;
+use App\Products\DiscordRoleProduct;
 use App\Refund;
 use DateTime;
 use Illuminate\Support\Facades\Log;
@@ -36,16 +37,13 @@ class ServerController extends Controller {
     -------------------------------------------------------------------- */
 
     public static function getServerPage($id){
-        /*
         if(! auth()->user()->getDiscordHelper()->ownsGuild($id)) {
             AlertHelper::alertError('You are not the owner of that server!');
             return redirect('/dashboard');
-        }*/
+        }
 
-        // if there is no store in the db, create one.
         if(! DiscordStore::where('guild_id', $id)->exists()) {
-            $discord_store = new DiscordStore(['guild_id' => $id, 'url' => $id]);
-            $discord_store->save();
+            $discord_store = new DiscordStore(['guild_id' => $id, 'url' => $id, 'user_id' => auth()->user()->id]);
         } else {
             $discord_store = DiscordStore::where('guild_id', $id)->first();
         }
@@ -60,36 +58,31 @@ class ServerController extends Controller {
 
         Quick check and array push for Stripe active roles.
         1) Get $request roles array from SocketHandler (res_roles_ + socket_id)
-        2) Check if roles active in Stripe, of not set false
+        2) Check if roles active in Stripe, if not set false
         3) Send json array of role_id, boolean
 
         Used:
         -- server blade (roles_script): to un-hide active roles in list
     -------------------------------------------------------------------- */
-
     public static function getStatusRoles(Request $request){
-
         $roles = $request['roles'];
 
         $status_roles = array();
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
         \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
         try {
-            foreach ($roles as $role_id) {
+            foreach ($roles as $role) {
                 try {
-                    $role = \Stripe\Product::retrieve($role_id['guild_id'] . '_' . $role_id['role_id']);
-                    $active = $role->active;
-                    array_push($status_roles, ['product' => $role_id['role_id'], 'active' => $active, 'role_name' => $role_id['name']]);
+                    $discord_product = new DiscordRoleProduct($role['guild_id'], $role['role_id'], null);
+                    array_push($status_roles, ['product' => $role['role_id'], 'active' => $discord_product->getStripeProduct()->active, 'role_name' => $role['name']]);
                 } catch (\Exception $e){
-                    array_push($status_roles, ['product' => $role_id['role_id'], 'active' => false, 'role_name' => $role_id['name']]);
+                    array_push($status_roles, ['product' => $role['role_id'], 'active' => false, 'role_name' => $role['name']]);
                 }
             }
             return response()->json($status_roles);
-
         } catch (\Exception $e) {
             if (env('APP_DEBUG')) Log::error($e);
         }
-
     }
 
     /* --------------------------------------------------------------------
@@ -110,12 +103,13 @@ class ServerController extends Controller {
         \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
 
         try {
-            $product = \Stripe\Product::retrieve($guild_id . '_' . $role_id);
+            $discord_product = new DiscordRoleProduct($guild_id, $role_id, null);
+            $product = $discord_product->getStripeProduct();
             $shop_url = DiscordStore::where('guild_id', $guild_id)->value('url');
-            return view('slide.slide-roles-settings')->with('shop_url', $shop_url)->with('enabled', $product->active)->with('guild_id', $guild_id)->with('role_id', $role_id)->with('special', false)->with('prices', ProductController::getPricesForRole($guild_id, $role_id));
+            return view('slide.slide-roles-settings')->with('shop_url', $shop_url)->with('enabled', $product->active)->with('guild_id', $guild_id)->with('role_id', $role_id)->with('prices', ProductController::getPricesForRole($guild_id, $role_id));
         } catch (\Exception $e) {
             if (env('APP_DEBUG')) Log::error($e);
-            return view('slide.slide-roles-settings')->with('enabled', false)->with('guild_id', $guild_id)->with('role_id', $role_id)->with('special', false)->with('prices', ProductController::getPricesForRole($guild_id, $role_id));
+            return view('slide.slide-roles-settings')->with('enabled', false)->with('guild_id', $guild_id)->with('role_id', $role_id)->with('prices', ProductController::getPricesForRole($guild_id, $role_id));
         }
     }
 

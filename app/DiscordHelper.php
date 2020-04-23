@@ -57,15 +57,11 @@ class DiscordHelper
     }
 
     public function ownsGuild($guild_id): bool {
-        if(Session::has('owner_' . $guild_id)) return Session::get('owner_' . $guild_id);
+        if(Cache::has('owner_' . $guild_id)) return Cache::get('owner_' . $guild_id, false);
 
-        foreach($this->getGuilds() as $guild) {
-            Session::put('owner_'. $guild_id, $guild['owner']);
-        }
+        foreach($this->getGuilds() as $guild) Cache::put('owner_'. $guild_id, $guild['owner']);
 
-        if(Session::has('owner_' . $guild_id)) return Session::get('owner_' . $guild_id);
-
-        return false;
+        return Cache::get('owner_' . $guild_id, false);
     }
 
     private function getDiscordData() {

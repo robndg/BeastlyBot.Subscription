@@ -9,18 +9,15 @@ abstract class Product
 {
   
     protected $product_type;
-    protected $stripe_product_obj, $stripe_plan_obj;
+    protected $stripe_product_obj;
 
-    public function __construct(string $product_type, string $product_id = null, string $plan_id)
+    public function __construct(string $product_type)
     {
         $this->product_type = $product_type;
         \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
-        if($product_id !== null) {
-            $this->stripe_product_obj = \Stripe\Product::retrieve($product_id);
-            if (! $this->stripe_product_obj->active) throw new ProductMsgException('Product is not active.');
-        }
-        $this->stripe_plan_obj = \Stripe\Plan::retrieve($plan_id);
-        if (! $this->stripe_plan_obj->active) throw new ProductMsgException('Plan is not active.');
+        try {
+            $this->stripe_product_obj = \Stripe\Product::retrieve($this->getStripeID());
+        } catch (\Exception $e) {}
     }
 
     abstract public function checkoutValidate(): void;
@@ -29,17 +26,21 @@ abstract class Product
 
     abstract public function checkoutCancel();
 
-    abstract public function changePlan(string $new_plan_id);
-
     abstract public function create(Request $request);
 
-    abstract public function delete(Request $request);
+     // can't delete a product if there are any \Stripe\Plan's still with active \Stripe\Subscription's on them.
+    public function delete(Request $request) {
+        if($this->stripe_product_obj != null)
+            $this->stripe_product_obj->delete();
+    }
 
-    abstract public function update(Request $request);
+    public function update(Request $request) {}
 
     abstract public function getCallbackParams(): array;
 
     abstract public function getApplicationFee(): float;
+
+    abstract public function getStripeID(): string;
 
     public function getCallbackSuccessURL(): string {
         $data = $this->getCallbackParams();
@@ -56,17 +57,22 @@ abstract class Product
     }
 
     public function getStripeProduct(): \Stripe\Product {
+        if($this->stripe_product_obj == null) {
+            try {
+                $this->stripe_product_obj = \Stripe\Product::retrieve($this->getStripeID());
+            } catch (\Exception $e) {}
+        }
         return $this->stripe_product_obj;
-    }
-
-    public function getStripePlan(): \Stripe\Plan {
-        return $this->stripe_plan_obj;
     }
 
     public function getExpressOwnerID(): string {
         if($this->stripe_product_obj != null) 
             return $this->stripe_product_obj->metadata['owner_id'];
         return null;
+    }
+
+    protected function validPrice($input): bool {
+        return $input === null || $input === '' || preg_match('/^[0-9]+(?:\.[0-9]{0,2})?$/', $input);
     }
 
 }

@@ -3,7 +3,6 @@
 namespace App\Products;
 
 use App\DiscordStore;
-use Exception;
 use Illuminate\Http\Request;
 
 class DiscordRoleProduct extends Product
@@ -34,22 +33,10 @@ class DiscordRoleProduct extends Product
         
     }
 
-    public function checkoutSuccess()
-    {
-        return redirect('/account/subscriptions');
-    }
-
-    public function checkoutCancel()
-    {
-        return redirect('/shop/' . $this->guild_id);
-    }
-
     public function create(Request $request) {
-        $product_id = 'discord_' . $this->guild_id . '_' . $this->role_id;
-        
         \Stripe\Product::create([
             'name' => $request['name'],
-            'id' => $product_id,
+            'id' => $this->getProductID(),
             'type' => 'service',
             'metadata' => ['owner_id' => auth()->user()->StripeConnect->express_id],
         ]);
@@ -57,18 +44,11 @@ class DiscordRoleProduct extends Product
         return response()->json(['success' => true, 'msg' => 'Product created!']);
     }
 
-    // can't delete a product if there are any \Stripe\Plan's still with active \Stripe\Subscription's on them.
-    public function delete(Request $request) {
-        $product_id = 'discord_' . $this->guild_id . '_' . $this->role_id;
-
-        $product = \Stripe\Product::retrieve($product_id);
-        $product->delete();
-
-        return response()->json(['success' => true, 'msg' => 'Product deleted!']);
-    }
-
     public function update(Request $request) {
-        
+        try {
+            \Stripe\Product::update($this->getProductID(), ['active' => $request['active']]);
+        } catch(\Exception $e) {
+        }
     }
 
     public function getCallbackParams(): array
@@ -79,6 +59,21 @@ class DiscordRoleProduct extends Product
     public function getApplicationFee(): float
     {
         return 5.0;
+    }
+
+    public function getProductID(): string
+    {
+        return 'discord_' . $this->guild_id . '_' . $this->role_id;
+    }
+
+    public function checkoutSuccess()
+    {
+        return redirect('/account/subscriptions');
+    }
+
+    public function checkoutCancel()
+    {
+        return redirect('/shop/' . $this->guild_id);
     }
 
 }
