@@ -108,7 +108,7 @@ class ProductController extends Controller {
         if(! auth()->user()->getDiscordHelper()->ownsGuild($guild_id)) 
             return response()->json(['success' => false, 'msg' => 'You are not the owner of this server.']);
         
-        $store = DiscordStore::where('guild_id', $guild_id);
+        $store = DiscordStore::where('guild_id', $guild_id)->first();
 
         if(! ProductRole::where('discord_store_id', $store->id)->exists()) {
             $product_role = new ProductRole(['discord_store_id' => $store->id, 'role_id' => $role_id]);
