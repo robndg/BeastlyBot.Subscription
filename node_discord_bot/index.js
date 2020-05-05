@@ -158,25 +158,52 @@ function getOtherGuilds(user_id) {
     let other_guilds = {};
     bot.guilds.cache.forEach(g => {
         if (g.owner.id != user_id) {
-            if (g.icon !== null && g.icon !== undefined){
-                other_guilds[g.id] = {
-                    name: g.name,
-                    iconURL: `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=256`,
-                    memberCount: g.memberCount,
-                    owner: g.ownerID,
-                    id: g.id
-                }
-            }else{
-                other_guilds[g.id] = {
-                    name: g.name,
-                    iconURL: `https://discordapp.com/assets/322c936a8c8be1b803cd94861bdfa868.png`,
-                    memberCount: g.memberCount,
-                    owner: g.ownerID,
-                    id: g.id
-                }
-            }
+            
+            // TODO: how to get the ID here, would help! or if check if Bot is in a guild (if (guild.member(USER_ID)) {)
+                index.mysqlConnection.query("SELECT * FROM discord_stores WHERE guild_id ='" + g.id + "';", function (err, result) {
+                    if (err) {
+                        if (g.icon !== null && g.icon !== undefined){
+                            other_guilds[g.id] = {
+                                name: g.name,
+                                iconURL: `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=256`,
+                                memberCount: g.memberCount,
+                                owner: g.ownerID,
+                                id: g.id,
+                                shop: false,
+                            }
+                        }else{
+                            other_guilds[g.id] = {
+                                name: g.name,
+                                iconURL: `https://discordapp.com/assets/322c936a8c8be1b803cd94861bdfa868.png`,
+                                memberCount: g.memberCount,
+                                owner: g.ownerID,
+                                id: g.id,
+                                shop: false,
+                            }
+                        }
+                    }else{
+                        if (g.icon !== null && g.icon !== undefined){
+                            other_guilds[g.id] = {
+                                name: g.name,
+                                iconURL: `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=256`,
+                                memberCount: g.memberCount,
+                                owner: g.ownerID,
+                                id: g.id,
+                                shop: true,
+                            }
+                        }else{
+                        other_guilds[g.id] = {
+                            name: g.name,
+                            iconURL: `https://discordapp.com/assets/322c936a8c8be1b803cd94861bdfa868.png`,
+                            memberCount: g.memberCount,
+                            owner: g.ownerID,
+                            id: g.id,
+                            shop: true,
+                        };
+                        }
+                    }
+            });
+            return other_guilds;
         }
-    });
-
-    return other_guilds;
+    })
 }

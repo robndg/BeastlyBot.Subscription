@@ -449,7 +449,6 @@
             $('#guilds_down').empty();
 
             Object.keys(message).forEach(function (key) {
-                console.log(message[key]['id']);
                 var html = `
                 <li class="list-group-item px-5">
                     <div class="d-flex align-items-start">
@@ -468,7 +467,6 @@
                     </div>
                   </li>
                   `;
-
                 $('#guilds-dropdown').append(html);
             });
         });

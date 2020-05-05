@@ -135,7 +135,8 @@ function verify_and_end_subscriptions() {
                 // console.log(subscription);
                 if (subscription.metadata['ended'] != 'true'){
                     if(subscription.plan.id == ('plan_GbiiDSRkOovFPF' || 'plan_GbiisRXZmt3IFC')){
-                        endPartnerSubscription(subscription);
+                       // endPartnerSubscription(subscription);
+                       //console.log("end partnership");
                     }else{
                         end_subscription(subscription);
                     }
