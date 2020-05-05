@@ -157,53 +157,35 @@ function getMemberCount(guild, role) {
 function getOtherGuilds(user_id) {
     let other_guilds = {};
     bot.guilds.cache.forEach(g => {
+        $shop = false;
         if (g.owner.id != user_id) {
-            
-            // TODO: how to get the ID here, would help! or if check if Bot is in a guild (if (guild.member(USER_ID)) {)
-                index.mysqlConnection.query("SELECT * FROM discord_stores WHERE guild_id ='" + g.id + "';", function (err, result) {
-                    if (err) {
-                        if (g.icon !== null && g.icon !== undefined){
-                            other_guilds[g.id] = {
-                                name: g.name,
-                                iconURL: `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=256`,
-                                memberCount: g.memberCount,
-                                owner: g.ownerID,
-                                id: g.id,
-                                shop: false,
-                            }
-                        }else{
-                            other_guilds[g.id] = {
-                                name: g.name,
-                                iconURL: `https://discordapp.com/assets/322c936a8c8be1b803cd94861bdfa868.png`,
-                                memberCount: g.memberCount,
-                                owner: g.ownerID,
-                                id: g.id,
-                                shop: false,
-                            }
-                        }
-                    }else{
-                        if (g.icon !== null && g.icon !== undefined){
-                            other_guilds[g.id] = {
-                                name: g.name,
-                                iconURL: `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=256`,
-                                memberCount: g.memberCount,
-                                owner: g.ownerID,
-                                id: g.id,
-                                shop: true,
-                            }
-                        }else{
-                        other_guilds[g.id] = {
-                            name: g.name,
-                            iconURL: `https://discordapp.com/assets/322c936a8c8be1b803cd94861bdfa868.png`,
-                            memberCount: g.memberCount,
-                            owner: g.ownerID,
-                            id: g.id,
-                            shop: true,
-                        };
-                        }
-                    }
-            });
-            return other_guilds;
+        mysqlConnection.query("SELECT * FROM discord_shops WHERE discord_id='" + g.id + "';", function (err, result) {
+            if (err) {
+                $shop = false;
+            }else{
+                $shop = true;
+            }
+        });
+            if (g.icon !== null && g.icon !== undefined){
+                other_guilds[g.id] = {
+                    name: g.name,
+                    iconURL: `https://cdn.discordapp.com/icons/${g.id}/${g.icon}.png?size=256`,
+                    memberCount: g.memberCount,
+                    owner: g.ownerID,
+                    id: g.id,
+                    shop: $shop, // way to check if enabled or not
+                }
+            }else{
+                other_guilds[g.id] = {
+                    name: g.name,
+                    iconURL: `https://discordapp.com/assets/322c936a8c8be1b803cd94861bdfa868.png`,
+                    memberCount: g.memberCount,
+                    owner: g.ownerID,
+                    id: g.id,
+                    shop: $shop,
+                }
+            }        
         }
     })
+    return other_guilds;
 }

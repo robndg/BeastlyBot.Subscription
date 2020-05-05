@@ -449,24 +449,26 @@
             $('#guilds_down').empty();
 
             Object.keys(message).forEach(function (key) {
-                var html = `
-                <li class="list-group-item px-5">
-                    <div class="d-flex align-items-start">
-                      <div class="pl-2 pr-10">
-                        <a class="avatar avatar-lg" href="javascript:void(0)">
-                          <img class="img-fluid" src="${message[key]['iconURL']}" alt="...">
-                        </a>
+                if((message[key]['shop']) == true){
+                  var html = `
+                  <li class="list-group-item px-5">
+                      <div class="d-flex align-items-start">
+                        <div class="pl-2 pr-10">
+                          <a class="avatar avatar-lg" href="javascript:void(0)">
+                            <img class="img-fluid" src="${message[key]['iconURL']}" alt="...">
+                          </a>
+                        </div>
+                        <div class="media-body">
+                          <h5 class="mt-5 mb-5">${message[key]['name']}</h5>
+                          <small>${message[key]['memberCount']} Members</small>
+                        </div>
+                        <div class="pl-5">
+                          <button type="button" class="btn btn-primary mt-5" onclick="window.location.href = '{{ SiteConfig::get('APP_URL') }}/shop/${key}';">Shop</button>
+                        </div>
                       </div>
-                      <div class="media-body">
-                        <h5 class="mt-5 mb-5">${message[key]['name']}</h5>
-                        <small>${message[key]['memberCount']} Members</small>
-                      </div>
-                      <div class="pl-5">
-                        <button type="button" class="btn btn-primary mt-5" onclick="window.location.href = '{{ SiteConfig::get('APP_URL') }}/shop/${key}';">Shop</button>
-                      </div>
-                    </div>
-                  </li>
-                  `;
+                    </li>
+                    `;
+                  } 
                 $('#guilds-dropdown').append(html);
             });
         });
