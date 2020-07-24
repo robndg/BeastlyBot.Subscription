@@ -10,9 +10,10 @@ Homestead.json
 Homestead.yaml
 npm-debug.log
 yarn-error.log
-composer.lock
-/node_discord_bot/.env
-.vscode
 .DS_Store
 .editorconfig
 .styleci.yml
+composer.lock
+package-lock.json
+package.json
+phpunit.xml
