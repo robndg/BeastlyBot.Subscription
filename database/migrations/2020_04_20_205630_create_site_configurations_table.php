@@ -16,9 +16,9 @@ class CreateSiteConfigurationsTable extends Migration
     {
         Schema::create('site_configuration', function (Blueprint $table) {
             $table->id();
-            $table->string('APP_URL')->nullable()->default('http://localhost:8000');
+            $table->string('APP_URL')->nullable()->default('https://beastlybot.colbymchenry.com');
             $table->string('STRIPE_KEY')->nullable()->default('pk_test_KeyiJNgicDxlA6AZeaT4DHLL000VlMFTii');
-            $table->string('STRIPE_SECRET')->nullable()->default('sk_test_CXSQrW2dFKVFf2mxpuVKrge400nlnthp2e');
+            $table->string('STRIPE_SECRET')->nullable()->default('sk_test_51FF2w1HTMWe6sDFbmnYJsN6c3y1Q3TfQdrbb9JZsU8P7vzTQXFyt4Oz4E3zJGDV3Y7mn86pUgoBTfuT3hyzDJCJN00WxTHKgz0');
             $table->string('STRIPE_CLIENT_ID')->nullable()->default('ca_Fm0KaKiRMrz8QMhnKfTvM0p9x1484RzG');
             $table->string('STRIPE_WEBHOOK_SECRET')->nullable()->default('whsec_e73JNJvsEv6UFtFzwnXBqyeR1DRCfdFI');
             $table->string('STRIPE_PAYOUT_DELAY')->nullable()->default('7');

@@ -103,6 +103,7 @@
             });
 
             function getHTML2(is_enabled, guild_id, role_id, color, name, txt_active, btn_active, role_active, icon_active) {
+                roles[role_id] = name;
                 return `
                     <tr class="role ${is_enabled}" id="${guild_id}_${role_id}">
                         <td class="pl-15">
@@ -158,13 +159,15 @@
 
                     //switchery.disable();
                     $.ajax({
-                        url: '/toggle-role',
+                        url: '/product',
                         type: 'POST',
                         data: {
+                            'product_type': 'discord',
+                            'interval_cycle': 1,
                             'guild_id': guild_id,
                             'role_id': role_id,
                             'guild_name': Global.name,
-                            'role_name': name,
+                            'name': roles[role_id]['name'],
                             _token: '{{ csrf_token() }}'
                         },
                     }).done(function (msg) {

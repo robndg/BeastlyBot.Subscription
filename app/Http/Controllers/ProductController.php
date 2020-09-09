@@ -31,6 +31,7 @@ class ProductController extends Controller {
                     throw new ProductMsgException('Could not find product by that type.');
                 break;
             }
+            // TODO: Handle create and update as default case
             // find the action to execute
             \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
             switch($request['action']) {
@@ -40,6 +41,12 @@ class ProductController extends Controller {
                     return $product->delete($request);
                 case "update":
                     return $product->update($request);
+                default:
+                    if($product->getStripeProduct() == null) {
+                        return $product->create($request);
+                    } else {
+                        return $product->update($request);
+                    }
             }
         } catch(ProductMsgException $e) {
             return response()->json(['success' => false, 'msg' => $e->getMessage()]);
@@ -72,6 +79,14 @@ class ProductController extends Controller {
                     return $plan->delete($request);
                 case "update":
                     return $plan->update($request);
+                default:
+                {
+                    if($plan->getStripePlan() == null) {
+                        return $plan->create($request);
+                    } else {
+                        return $plan->update($request);
+                    }
+                }
             }
         } catch(ProductMsgException $e) {
             return response()->json(['success' => false, 'msg' => $e->getMessage()]);

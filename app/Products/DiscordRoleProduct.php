@@ -36,17 +36,17 @@ class DiscordRoleProduct extends Product
     public function create(Request $request) {
         \Stripe\Product::create([
             'name' => $request['name'],
-            'id' => $this->getProductID(),
+            'id' => $this->getStripeID(),
             'type' => 'service',
             'metadata' => ['owner_id' => auth()->user()->StripeConnect->express_id],
         ]);
 
-        return response()->json(['success' => true, 'msg' => 'Product created!']);
+        return response()->json(['success' => true, 'msg' => 'Product created!', 'active' => true]);
     }
 
     public function update(Request $request) {
         try {
-            \Stripe\Product::update($this->getProductID(), ['active' => $request['active']]);
+            \Stripe\Product::update($this->getStripeID(), ['active' => $request['active']]);
         } catch(\Exception $e) {
         }
     }
@@ -61,7 +61,7 @@ class DiscordRoleProduct extends Product
         return 5.0;
     }
 
-    public function getProductID(): string
+    public function getStripeID(): string
     {
         return 'discord_' . $this->guild_id . '_' . $this->role_id;
     }
@@ -75,5 +75,7 @@ class DiscordRoleProduct extends Product
     {
         return redirect('/shop/' . $this->guild_id);
     }
+
+
 
 }

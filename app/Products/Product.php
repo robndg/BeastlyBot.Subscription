@@ -56,7 +56,7 @@ abstract class Product
         return SiteConfig::get('APP_URL') . '/checkout?' . http_build_query($data);
     }
 
-    public function getStripeProduct(): \Stripe\Product {
+    public function getStripeProduct() {
         if($this->stripe_product_obj == null) {
             try {
                 $this->stripe_product_obj = \Stripe\Product::retrieve($this->getStripeID());

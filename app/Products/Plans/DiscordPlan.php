@@ -18,7 +18,9 @@ class DiscordPlan extends Plan
             parent::create($request);
             $key = 'price_' . $this->product->getStripeID() . '_' . $this->interval_cycle;
             Cache::put($key, $request['price'], 60 * 5);
-        } catch(\Exception $e) {}
+        } catch(\Exception $e) {
+            \Log::info($e);
+        }
     }
 
     public function getStripeID(): string

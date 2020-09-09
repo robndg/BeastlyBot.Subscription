@@ -1,5 +1,10 @@
 <header class="slidePanel-header dual bg-blue-500">
     <div class="slidePanel-actions" aria-label="actions" role="group">
+    <!-- TODO: Deal with the $special -->
+    @php
+    $special = false;
+    @endphp
+    
     @if($special)
     <button type="button" class="btn btn-icon btn-pure btn-inverse actions-top icon wb-chevron-right"
         aria-hidden="true" data-url="/slide-server-member/{{ $guild_id }}/{{ $useruser()->DiscordOAuth->discord_id }}" id="back-btn" data-toggle="slidePanel"></button>
@@ -244,50 +249,96 @@ $('textarea#product-description').on('keyup', function(){
         });
         Toast.showLoading();
         $.ajax({
-            url: '/update_discord_prices',
+            url: '/plan',
             type: 'POST',
             data: {
-                'price_1_month': $('#price_1m').val(),
-                'price_3_month': $('#price_3m').val(),
-                'price_6_month': $('#price_6m').val(),
-                'price_12_month': $('#price_12m').val(),
+                'product_type': 'discord',
+                'interval': 'month',
+                'interval_cycle': 1,
+                'price': $('#price_1m').val(),
                 'role_id': role_id,
-                'role_name': role_name,
+                'role_name': roles[role_id]['name'],
                 'guild_id': guild_id,
                 _token: '{{ csrf_token() }}'
             },
         }).done(function (msg, enabled) {
-            if (msg['success']) {
-                Toast.fire({
-                    title: 'Success!',
-                    text: msg['msg'],
-                    type: 'success',
+
+            $.ajax({
+                url: '/plan',
+                type: 'POST',
+                data: {
+                    'product_type': 'discord',
+                    'interval': 'month',
+                    'interval_cycle': 3,
+                    'price': $('#price_3m').val(),
+                    'role_id': role_id,
+                    'role_name': roles[role_id]['name'],
+                    'guild_id': guild_id,
+                    _token: '{{ csrf_token() }}'
+                },
+            }).done(function (msg, enabled) {
+                $.ajax({
+                    url: '/plan',
+                    type: 'POST',
+                    data: {
+                        'product_type': 'discord',
+                        'interval': 'month',
+                        'interval_cycle': 6,
+                        'price': $('#price_6m').val(),
+                        'role_id': role_id,
+                        'role_name': roles[role_id]['name'],
+                        'guild_id': guild_id,
+                        _token: '{{ csrf_token() }}'
+                    },
+                }).done(function (msg, enabled) {
+                    $.ajax({
+                        url: '/plan',
+                        type: 'POST',
+                        data: {
+                            'product_type': 'discord',
+                            'interval': 'month',
+                            'interval_cycle': 12,
+                            'price': $('#price_12m').val(),
+                            'role_id': role_id,
+                            'role_name': roles[role_id]['name'],
+                            'guild_id': guild_id,
+                            _token: '{{ csrf_token() }}'
+                        },
+                    }).done(function (msg, enabled) {
+                        if (msg['success']) {
+                            Toast.fire({
+                                title: 'Success!',
+                                text: msg['msg'],
+                                type: 'success',
+                            });
+                            $('#' + guild_id + '_' + role_id).removeClass('inactive-role').addClass('active-role');
+                            $('#toggle-product-icon_' + guild_id + '_' + role_id).removeClass('wb-plus').addClass('wb-check');
+                            $('#toggle-check_' + guild_id + '_' + role_id).addClass('green-600').removeClass('grey-2');
+                            $('#product-settings_' + guild_id + '_' + role_id).removeClass('disabled btn-dark').addClass('btn-primary').attr("disabled", false);
+                            $('#toggle-product_' + guild_id + '_' + role_id).addClass('active');
+                            $('#product-settings_' + guild_id + '_' + role_id).removeClass('disabled').attr("disabled", false);
+                        } else {
+                            Toast.fire({
+                                title: 'Success',
+                                text: msg['msg'],
+                                type: 'warning',
+                            });
+                            $('#' + guild_id + '_' + role_id).addClass('inactive-role').removeClass('active-role');
+                            $('#toggle-product-icon_' + guild_id + '_' + role_id).addClass('wb-plus').removeClass('wb-check');
+                            $('#toggle-check_' + guild_id + '_' + role_id).addClass('grey-2').removeClass('green-600');
+                            $('#product-settings_' + guild_id + '_' + role_id).addClass('disabled btn-dark').removeClass('btn-primary').attr("disabled", true);
+                            $('#toggle-product_' + guild_id + '_' + role_id).removeClass('active');
+                            $('.text_save-roles').removeClass('d-none').text('Disabled');
+                        }
+                        setTimeout(function(){
+                            //$('#icon_save-roles').removeClass("wb-check").addClass("wb-minus");
+                            $('.text_save-roles').addClass('d-none').text();
+                        }, 2000);
+            
+                        $('#btn_visit-shop').removeClass('d-none');
+                    });
                 });
-                $('#' + guild_id + '_' + role_id).removeClass('inactive-role').addClass('active-role');
-                $('#toggle-product-icon_' + guild_id + '_' + role_id).removeClass('wb-plus').addClass('wb-check');
-                $('#toggle-check_' + guild_id + '_' + role_id).addClass('green-600').removeClass('grey-2');
-                $('#product-settings_' + guild_id + '_' + role_id).removeClass('disabled btn-dark').addClass('btn-primary').attr("disabled", false);
-                $('#toggle-product_' + guild_id + '_' + role_id).addClass('active');
-                $('#product-settings_' + guild_id + '_' + role_id).removeClass('disabled').attr("disabled", false);
-            } else {
-                Toast.fire({
-                    title: 'Success',
-                    text: msg['msg'],
-                    type: 'warning',
-                });
-                $('#' + guild_id + '_' + role_id).addClass('inactive-role').removeClass('active-role');
-                $('#toggle-product-icon_' + guild_id + '_' + role_id).addClass('wb-plus').removeClass('wb-check');
-                $('#toggle-check_' + guild_id + '_' + role_id).addClass('grey-2').removeClass('green-600');
-                $('#product-settings_' + guild_id + '_' + role_id).addClass('disabled btn-dark').removeClass('btn-primary').attr("disabled", true);
-                $('#toggle-product_' + guild_id + '_' + role_id).removeClass('active');
-                $('.text_save-roles').removeClass('d-none').text('Disabled');
-            }
-            setTimeout(function(){
-                //$('#icon_save-roles').removeClass("wb-check").addClass("wb-minus");
-                $('.text_save-roles').addClass('d-none').text();
-            }, 2000);
-  
-            $('#btn_visit-shop').removeClass('d-none');
+            });
         });
     }
 </script>

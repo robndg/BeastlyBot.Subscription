@@ -8,9 +8,9 @@ if (process.env.DEV_ENV === 'false') {
     https = require('https');
     const fs = require('fs');
     credentials = {
-        key: fs.readFileSync('/etc/letsencrypt/live/beastlybot.com/privkey.pem').toString(),
-        cert: fs.readFileSync('/etc/letsencrypt/live/beastlybot.com/cert.pem').toString(),
-        ca: fs.readFileSync('/etc/letsencrypt/live/beastlybot.com/chain.pem').toString(),
+        key: fs.readFileSync('/etc/letsencrypt/live/colbymchenry.com/privkey.pem').toString(),
+        cert: fs.readFileSync('/etc/letsencrypt/live/colbymchenry.com/cert.pem').toString(),
+        ca: fs.readFileSync('/etc/letsencrypt/live/colbymchenry.com/chain.pem').toString(),
         requestCert: true,
         rejectUnauthorized: false
     };

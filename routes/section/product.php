@@ -50,10 +50,6 @@ Route::post('/process-special-checkout', 'OrderController@specialProcess');
 
 Route::post('/check-prices', 'ProductController@checkProductPrices');
 
-Route::post('/toggle-role', 'ProductController@toggleProductActivity');
+Route::post('/product', 'ProductController@product');
 
-Route::post('/update_discord_prices', 'ProductController@updatePrices');
-
-Route::post('/update_special_prices', 'ProductController@updateSpecialPrices');
-
-Route::post('/update_product_desc', 'ProductController@setProductDescription');
+Route::post('/plan', 'ProductController@plan');

@@ -30,6 +30,7 @@ abstract class Plan
 
     public function create(Request $request) {
         $price = $request['price'];
+
         if (! $this->validPrice($price)) throw new ProductMsgException('Invalid price for ' . $this->interval_cycle . ' ' . $this->interval . '.');
 
         // if the plan already exists, delete it.
@@ -38,18 +39,22 @@ abstract class Plan
         } catch (\Exception $e) {
         }
 
+        if($price < 1) return;
+
         \Stripe\Plan::create([
             "amount" => $price * 100,
             "interval" => $this->interval,
-            "interval_count" => $this->interval_count,
+            "interval_count" => $this->interval_cycle,
             "product" => $this->product->getStripeID(),
             "currency" => "usd",
             'metadata' => [
-                'owner_id' => auth()->user()->StripeOAuth->express_id
+                'owner_id' => auth()->user()->StripeConnect->express_id
             ],
             "id" => $this->getStripeID(),
             "nickname" => $request['nickname'],
         ]);
+        
+        return response()->json(['success' => true, 'msg' => 'Plan created!', 'active' => true]);
     }
     
     /* 
@@ -58,8 +63,11 @@ abstract class Plan
         Internally Stripe will continue to use the old plan for existing customers.
     */
     public function delete(Request $request) {
+        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
         try {
-            $this->getStripePlan()->delete();
+            if($this->getStripePlan() !== null) {
+                $this->getStripePlan()->delete();
+            }
         } catch(\Exception $e) {}
     }
 
