@@ -156,10 +156,7 @@ class StripeHelper
     }
 
     public function getExpressSubscription() {
-        \Log::info("GET EXPRESS");
         foreach($this->getSubscriptions() as $subscription) {
-            \Log::info("ITERATE");
-            \Log::info($subscription);
             if ($subscription->items->data[0]->plan->product === SiteConfig::get('EXPRESS_PROD_ID'))  return $subscription;
         }
 

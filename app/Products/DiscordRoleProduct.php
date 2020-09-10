@@ -3,6 +3,7 @@
 namespace App\Products;
 
 use App\DiscordStore;
+use App\SiteConfig;
 use Illuminate\Http\Request;
 
 class DiscordRoleProduct extends Product
@@ -67,7 +68,8 @@ class DiscordRoleProduct extends Product
 
     public function getApplicationFee(): float
     {
-        return 5.0;
+        // TODO: Need to fix to 5% and make the express connect account ours so we get 5% per subscription to discord account. 
+        return 0;
     }
 
     public function getStripeID(): string
