@@ -48,7 +48,7 @@ abstract class Plan
             "product" => $this->product->getStripeID(),
             "currency" => "usd",
             'metadata' => [
-                'owner_id' => auth()->user()->StripeConnect->express_id
+                'user_id' => auth()->user()->id
             ],
             "id" => $this->getStripeID(),
             "nickname" => $request['nickname'],

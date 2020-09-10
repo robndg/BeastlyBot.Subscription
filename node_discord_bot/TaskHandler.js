@@ -31,7 +31,7 @@ async function startLoopShort() {
     while (true) {
         await delayShort();
         subscription_handler.init_subscriptions(); //// this causes problems if not on live server
-        subscription_handler.verify_and_end_subscriptions();
+        subscription_handler.verify_and_end_subscriptions(); // TODO: Fix this and move to loop long
     }
 }
 
@@ -56,13 +56,8 @@ function sendMessage(msg, priority) {
     });
 }
 
-function sendWebNotification(discord_id, type, message, creator, invoice) {
-    if(creator === null || creator === '' || creator === undefined){var creator = 'bot'};
-    if(invoice === null || invoice === '' || invoice === undefined){var invoice = null};
-   // now = new Date();
-
-   // read = false;
-    index.mysqlConnection.query(`INSERT INTO notifications (user, type, message, creator, invoice) VALUES ('${discord_id}', '${type}', '${message}', '${creator}', '${invoice}');`, function(err, result) {
+function sendWebNotification(user_id, type, message) {
+    index.mysqlConnection.query(`INSERT INTO notifications (user_id, type, message) VALUES ('${user_id}', '${type}', '${message}');`, function(err, result) {
         // simple error handling
         if (err) {
             sendMessage(err.message, 5);
@@ -72,7 +67,7 @@ function sendWebNotification(discord_id, type, message, creator, invoice) {
     });
 }
 
-function sendWebNotificationFromSub(subscription, type, message, creator, invoice) {
+function sendWebNotificationFromSub(subscription, type, message) {
     now = new Date();
     index.stripe.plans.retrieve(subscription.items.data[0].plan.id,
         function(err, plan) {
@@ -82,8 +77,7 @@ function sendWebNotificationFromSub(subscription, type, message, creator, invoic
                 console.log(err);
                 return;
             }
-            var product_owner_id = plan.metadata.id;
-            sendWebNotification(product_owner_id, type, message, creator, invoice);
+            sendWebNotification(plan.metadata.user_id, type, message);
         }
     );
 }

@@ -19,7 +19,11 @@ class DiscordHelper
     public function cache(): void {
         $data = $this->getDiscordData();
         $username = $data['username'] . ' #' . $data['discriminator'];
-        $avatar_url = "https://cdn.discordapp.com/avatars/" . $this->user->DiscordOAuth->discord_id . "/" . $this->getDiscordData()['avatar'] . ".png";
+        if(empty($this->getDiscordData()['avatar'])) {
+            $avatar_url = "https://cdn.discordapp.com/avatars/" . $this->user->DiscordOAuth->discord_id . "/" . $this->getDiscordData()['avatar'] . ".png";
+        } else {
+            $avatar_url = 'https://i.imgur.com/qbVxZbJ.png';
+        }
         $minutes_to_cache = 10;
         Cache::put('discord_username_' . $this->user->DiscordOAuth->discord_id, $username, 60 * $minutes_to_cache);
         Cache::put('discord_email_' . $this->user->DiscordOAuth->discord_id, $data['email'], 60 * $minutes_to_cache);
@@ -61,11 +65,12 @@ class DiscordHelper
     }
 
     public function ownsGuild($guild_id): bool {
-        if(Cache::has('owner_' . $guild_id)) return Cache::get('owner_' . $guild_id, false);
-
-        foreach($this->getGuilds() as $guild) Cache::put('owner_'. $guild_id, $guild['owner']);
-
-        return Cache::get('owner_' . $guild_id, false);
+        if(DiscordStore::where('guild_id', $guild_id)->exists()) {
+            $store = DiscordStore::where('guild_id', $guild_id)->first();
+            if($store->user_id == auth()->user()->id) return true;
+        }
+        
+        return false;
     }
 
     private function getDiscordData() {

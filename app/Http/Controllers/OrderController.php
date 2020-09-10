@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\AlertHelper;
 use App\SiteConfig;
+use App\Order;
 use App\Products\DiscordRoleProduct;
 use App\Products\ExpressProduct;
 use App\Products\ProductMsgException;
@@ -90,7 +91,7 @@ class OrderController extends Controller {
 
         if($success)
             AlertHelper::alertSuccess('Payment successful!');
-        else
+        else 
             AlertHelper::alertInfo('Payment cancelled.');
 
         // If the customer does not exist we have to cancel the order as we won't have a stripe account to charge
@@ -116,6 +117,13 @@ class OrderController extends Controller {
         } catch(\Stripe\Exception\ApiErrorException $e) {
             if(env('APP_DEBUG')) Log::error($e);
             AlertHelper::alertWarning($e->getError()->message);
+        }
+
+        if($success) {
+            $session = \Stripe\Checkout\Session::retrieve(Session::get('checkout_id'));
+            $order = new Order();
+            $order->id = $session->subscription;
+            $order->save();
         }
 
         Session::remove('checkout_id');

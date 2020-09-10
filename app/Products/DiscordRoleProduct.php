@@ -39,7 +39,7 @@ class DiscordRoleProduct extends Product
             'name' => $request['name'],
             'id' => $this->getStripeID(),
             'type' => 'service',
-            'metadata' => ['owner_id' => auth()->user()->StripeConnect->express_id],
+            'metadata' => ['user_id' => auth()->user()->id],
         ]);
 
         if(! DiscordStore::where('guild_id', $this->guild_id)->exists()) {

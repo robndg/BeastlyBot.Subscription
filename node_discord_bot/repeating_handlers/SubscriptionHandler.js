@@ -3,6 +3,45 @@ var index = require('../index.js');
 var task_handler = require('../TaskHandler.js');
 var refund_handler = require('./RefundHandler.js');
 
+async function getDiscordID(user_id) {
+    return new Promise( ( resolve, reject ) => {
+        index.mysqlConnection.query(`SELECT * FROM discord_o_auths WHERE user_id='${user_id}';`, function (err, result) {
+            if (err) {
+                sendMessage(err.message, 3);
+                console.log(err);
+                resolve(null);
+            }
+
+            if (result.length < 1) resolve(null);
+            resolve(result[0].discord_id);
+        });
+    } );
+}
+
+async function getCriticalData(subscription) {
+    return new Promise( ( resolve, reject ) => {
+        index.stripe.plans.retrieve(subscription.items.data[0].plan.id,
+            function(err, plan) {
+                // simple error handling
+                if (err) {
+                    sendMessage(err.message, 3);
+                    console.log(err);
+                    resolve(null);
+                }
+
+                if(subscription.items.data[0].plan.id.includes('discord')) {
+                    var myArray = {
+                        user_id: plan.metadata.user_id, 
+                        guild_id: subscription.items.data[0].plan.id.split('_')[1], 
+                        role_id: subscription.items.data[0].plan.id.split('_')[2]
+                    };
+                    resolve(myArray);
+                }
+            }
+        );
+    });
+}
+
 async function init_subscriptions() {
     /**
      * Any new orders are stored in the "orders" table under the Stripe subscription ID.
@@ -30,66 +69,72 @@ async function init_subscriptions() {
                     return;
                 }
 
-                var user_id = subscription.metadata['id'];
-                var discord_id = subscription.metadata['discord_id'];
-                var guild_id = subscription.items.data[0].plan.id.split('_')[0];
-                var role_id = subscription.items.data[0].plan.id.split('_')[1];
-                var guild = index.bot.guilds.cache.get(guild_id);
-                var valid_guild = guild !== null && guild !== undefined;
-                var role = valid_guild ? guild.roles.cache.get(role_id) : null;
-                var valid_role = role !== null && role !== undefined;
+                // get user_id, guild_id, and role_id from the Stripe subscription object
+                Promise.resolve(getCriticalData(subscription)).then(function(result) {
+                    var user_id = result.user_id;
+                    var guild_id = result.guild_id;
+                    var role_id = result.role_id;
+                    // get the discord_id from the database based off the user_id
+                  Promise.resolve(getDiscordID(user_id)).then(async function(discord_id) {
+                    var guild = index.bot.guilds.cache.get(guild_id);
+                    var valid_guild = guild !== null && guild !== undefined;
+                    var role = valid_guild ? guild.roles.cache.get(role_id) : null;
+                    var valid_role = role !== null && role !== undefined;
 
-                // if invalid subscription status (anything != completed) we break out of this subscription object
-                var valid_subscription_status = await valid_sub_status(subscription, discord_id);
-                if(!valid_subscription_status) {
-                    end_subscription(subscription, true, true, true);
-                    return;
-                }
-
-                // if invalid guild or role we break out of this subscription object
-                var valid_guild_role = await valid_guild_role(subscription, discord_id, valid_guild, valid_role);
-                if(!valid_guild_role) {
-                    end_subscription(subscription, true, true, true);
-                    return;
-                }
-
-                /**
-                 * At this point we've validated everything to ensure this is a good and valid order/subscription
-                 */
-                // try to get the user from the guild
-                guild.members.fetch(discord_id).then(guildMember => {
-                    // try to add the desired role to the GuildMember
-                    guildMember.roles.add(role_id).then(user => {
-                        // let the user know the role was purchased successfully
-                        user.send(`Purchase completed for the role ${role.name} in the ${guild.name} server! Role added.`);
-                        task_handler.sendWebNotificationFromSub(subscription, 'success', `${guildMember.displayName} purchased ${role.name}.`, `${user_id}`, null);
-                    }).catch(error => {
-                        console.log(error.message);
-                        // if there is an error we need to refund and cancel the order and let the product owner know
+                    // if invalid subscription status (anything != completed) we break out of this subscription object
+                    var valid_subscription_status = await valid_sub_status(subscription, discord_id);
+                    if(!valid_subscription_status) {
                         end_subscription(subscription, true, true, true);
-                        // TODO: this doesnt seem to remove their subscription if it failed, still shows in subscriptions
-                        if(error.message == 'Missing Permissions'){
-                            guildMember.send(`Move Bot Role Higher (missing permissions). Failed to add the ${role.name} role to your account in the ${guild.name} server. Transaction cancelled. Order refunded.`);
-                            task_handler.sendWebNotificationFromSub(subscription, 'error', `Move Bot Role Higher (missing permissions). Could not add ${role.name} role to ${guildMember.displayName}. Order refunded.`);
-                        } else {
-                            guildMember.send(`Failed to add the ${role.name} role to your account in the ${guild.name} server. Transaction cancelled. Order refunded.`);
-                            task_handler.sendWebNotificationFromSub(subscription, 'error', `Could not add ${role.name} role to ${guildMember.displayName}. Order refunded.`);
-                        }
-                    });
-                }).catch(error => {
-                    // TODO: Auto accept invite to guild from bot to user
-                    var invite = guild.channels.cache.array()[0].createInvite({
-                        maxAge: 10 * 60 * 1000, // maximum time for the invite, in milliseconds
-                        maxUses: 1 // maximum times it can be used
-                      });
+                        return;
+                    }
 
-                    // if we are here then the user who purchased the role is not in the server
-                    index.bot.users.fetch(discord_id).then(user => {
-                        user.send(`You are not in the ${guild.name} server. You have until 24 hours to accept this invite or the order will be cancelled and refunded.`);
-                        user.send(`${invite}`);
+                    // if invalid guild or role we break out of this subscription object
+                    var valid_guild_role_arg = await valid_guild_role(subscription, discord_id, valid_guild, valid_role);
+                    if(!valid_guild_role_arg) {
+                        end_subscription(subscription, true, true, true);
+                        return;
+                    }
+
+                    /**
+                     * At this point we've validated everything to ensure this is a good and valid order/subscription
+                     */
+                    // try to get the user from the guild
+                    guild.members.fetch(discord_id).then(guildMember => {
+                        // try to add the desired role to the GuildMember
+                        guildMember.roles.add(role_id).then(user => {
+                            // let the user know the role was purchased successfully
+                            user.send(`Purchase completed for the role ${role.name} in the ${guild.name} server! Role added.`);
+                            end_subscription(subscription, true, false, false);
+                        }).catch(error => {
+                            // if there is an error we need to refund and cancel the order and let the product owner know
+                            end_subscription(subscription, true, true, true);
+                            // TODO: this doesnt seem to remove their subscription if it failed, still shows in subscriptions
+                            if(error.message == 'Missing Permissions'){
+                                guildMember.send(`Move Bot Role Higher (missing permissions). Failed to add the ${role.name} role to your account in the ${guild.name} server. Transaction cancelled. Order refunded.`);
+                                task_handler.sendWebNotificationFromSub(subscription, 'error', `Move Bot Role Higher (missing permissions). Could not add ${role.name} role to ${guildMember.displayName}. Order refunded.`);
+                            } else {
+                                guildMember.send(`Failed to add the ${role.name} role to your account in the ${guild.name} server. Transaction cancelled. Order refunded.`);
+                                task_handler.sendWebNotificationFromSub(subscription, 'error', `Could not add ${role.name} role to ${guildMember.displayName}. Order refunded.`);
+                            }
+                        });
                     }).catch(error => {
-                        console.log(error.message)
+                        // TODO: Auto accept invite to guild from bot to user
+                        var invite = guild.channels.cache.array()[0].createInvite({
+                            maxAge: 10 * 60 * 1000, // maximum time for the invite, in milliseconds
+                            maxUses: 1 // maximum times it can be used
+                        });
+
+                        end_subscription(subscription, true, true, true);
+
+                        // if we are here then the user who purchased the role is not in the server
+                        index.bot.users.fetch(discord_id).then(user => {
+                            user.send(`You are not in the ${guild.name} server. Transaction cancelled. Order refunded. Use the link below to join the server.`);
+                            user.send(`${invite}`);
+                        }).catch(error => {
+                            console.log(error.message)
+                        });
                     });
+                  });
                 });
 
                 // order successful so we are just deleting the order from table
@@ -185,7 +230,7 @@ async function valid_guild_role(subscription, discord_id, valid_guild, valid_rol
                 // send message over discord to the user who ordered the role
                 user.send(`Payment processing failed for invoice #${invoice.number}. Invalid ${msg}.  Transaction cancelled. Order refunded.`);
                 // send notification to web interface for the owner
-                task_handler.sendWebNotificationFromSub(subscription, 'error', `A ${msg} could not be found! Invoice #${invoice.number} was refunded.`, `${discord_id}`, `${invoice.number}`);
+                task_handler.sendWebNotificationFromSub(subscription, 'error', `A ${msg} could not be found! Invoice #${invoice.number} was refunded.`);
             });
         }).catch(error => {
             console.log(error.message)

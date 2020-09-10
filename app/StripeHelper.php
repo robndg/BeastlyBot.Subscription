@@ -76,7 +76,7 @@ class StripeHelper
                         $sub->sub_id = $sub_id; #sub_id
                         $sub->guild_id = $plan_guild_id; #guild_id->guild_name
                         $sub->role_id = $plan_role_id; #guild_id->guild_name
-                        $sub->role_name = $plan_role_nickname; #role_name
+                        $sub->role_name = 'TODO FIX THIS in StripeHelper'; #role_name
                         $sub->role_color = "3e8ef7";
                         #$sub->plan_amount = $plan_amount; #role_name
                         $sub->end_date = $sub_end_date; #end date
