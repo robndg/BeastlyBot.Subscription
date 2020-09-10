@@ -34,11 +34,6 @@
 
 <div class="row no-space" id="slider-div">
     <div class="col-md-12 text-center">
-    @if(RoleDesc::where('guild_id', $guild_id)->where('role_id', $role_id)->exists())
-        <div class="container pt-lg-30 pt-20 pt-xl-50">
-            <span class="font-size-16 font-weight-100 mt-30 px-lg-20 text-white text-break">{{ RoleDesc::where('guild_id', $guild_id)->where('role_id', $role_id)->get()[0]->description }}</span>
-        </div>
-    @endif
         <div class="font-size-20 font-weight-400 text-white pt-20 pt-lg-50">Subscribe to <span class="badge badge-primary font-size-20 ml-2" id="role_badge"><i class="icon-discord mr-2"
                                                                                   aria-hidden="true"></i> <span
                 id="role_name2"></span>
@@ -131,7 +126,7 @@
                 <div class="container">
                     <div class="row">
                         <br/>
-                        @if((auth()->user()->getDiscordHelper()->ownsGuild($guild_id)) && (!auth()->user()->canAcceptPayments()))
+                        @if((auth()->user()->getDiscordHelper()->ownsGuild($shop->guild_id)) && (!auth()->user()->canAcceptPayments()))
                         <a href="javascript:void(0)" class="btn btn-success btn-lg btn-block" data-toggle="modal" data-target="#partnerPricingModal"
                            role="button">Pay</a>
                         @else
@@ -144,12 +139,12 @@
 
             <div class="mt-25 mt-sm-25  mt-md-50 mt-lg-50 mt-xl-100 p-25 pb-md-50 draw-grad">
 
-                @if(App\Shop::where('id', $guild_id)->get()[0]->refunds_enabled)
-                <span class="font-size-26 grey-400 font-weight-100 pt-lg-15">{{ App\Shop::where('id', $guild_id)->get()[0]->refunds_days }} Day Refund Policy
+                @if($shop->refunds_enabled)
+                <span class="font-size-26 grey-400 font-weight-100 pt-lg-15">{{ $shop->refunds_days }} Day Refund Policy
                 </span>
                 @endif
-                <div>By clicking Pay you agree to our <a href="/terms" target="_blank">terms of service</a>.</div><div> You can request a refund anytime during your subscriptions first billing term. @if(App\Shop::where('id', $guild_id)->where('refunds_terms', '=', '1')->exists())<b>No questions asked.</b>@endif
-                </div><div>By server owner discretion{{ App\Shop::where('id', $guild_id)->value('refunds_terms') == '2' ?  '.' : ' with reason.'}}</div>
+                <div>By clicking Pay you agree to our <a href="/terms" target="_blank">terms of service</a>.</div><div> You can request a refund anytime during your subscriptions first billing term. @if($shop->refunds_terms == '1')<b>No questions asked.</b>@endif
+                </div><div>By server owner discretion{{ $shop->refunds_terms == '2' ?  '.' : ' with reason.' }}</div>
             </div>
 
         </div>
@@ -172,9 +167,9 @@ $(document).ready(function() {
     var in_guild = false;
 
     $(document).ready(function () {
-        socket.emit('get_guild_data', [socket_id, '{{ $guild_id }}']);
-        socket.emit('get_role_data', [socket_id, '{{ $guild_id }}', '{{ $role_id }}']);
-        socket.emit('is_user_in_guild', [socket_id, '{{ $guild_id }}', '{{ auth()->user()->DiscordOAuth->discord_id }}']);
+        socket.emit('get_guild_data', [socket_id, '{{ $shop->guild_id }}']);
+        socket.emit('get_role_data', [socket_id, '{{ $shop->guild_id }}', '{{ $role_id }}']);
+        socket.emit('is_user_in_guild', [socket_id, '{{ $shop->guild_id }}', '{{ auth()->user()->DiscordOAuth->discord_id }}']);
 
         socket.on('res_user_in_guild_' + socket_id, function(msg) {
                 in_guild = msg;
@@ -327,7 +322,7 @@ $(document).ready(function() {
             url: process_url,
             type: 'POST',
             data: {
-                'guild_id': '{{ $guild_id }}',
+                'guild_id': '{{ $shop->guild_id }}',
                 'role_id': '{{ $role_id }}',
                 'cycle': getSelectedDuration(),
                 'promotion_code': $('#couponCode').val(),
