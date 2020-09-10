@@ -19,11 +19,13 @@ class DiscordHelper
     public function cache(): void {
         $data = $this->getDiscordData();
         $username = $data['username'] . ' #' . $data['discriminator'];
-        if(empty($this->getDiscordData()['avatar'])) {
+
+        if(!empty($this->getDiscordData()['avatar'])) {
             $avatar_url = "https://cdn.discordapp.com/avatars/" . $this->user->DiscordOAuth->discord_id . "/" . $this->getDiscordData()['avatar'] . ".png";
         } else {
             $avatar_url = 'https://i.imgur.com/qbVxZbJ.png';
         }
+
         $minutes_to_cache = 10;
         Cache::put('discord_username_' . $this->user->DiscordOAuth->discord_id, $username, 60 * $minutes_to_cache);
         Cache::put('discord_email_' . $this->user->DiscordOAuth->discord_id, $data['email'], 60 * $minutes_to_cache);
@@ -35,7 +37,7 @@ class DiscordHelper
     }
 
     public function getAvatar(): string {
-        if(!Cache::has('discord_username_' . $this->user->DiscordOAuth->discord_id)) {
+        if(!Cache::has('discord_avatar_' . $this->user->DiscordOAuth->discord_id)) {
             $this->cache();
         }
         return Cache::get('discord_avatar_' . $this->user->DiscordOAuth->discord_id, 'https://i.imgur.com/qbVxZbJ.png');
@@ -49,7 +51,7 @@ class DiscordHelper
     }
 
     public function getEmail(): string {
-        if(!Cache::has('discord_username_' . $this->user->DiscordOAuth->discord_id)) {
+        if(!Cache::has('discord_email_' . $this->user->DiscordOAuth->discord_id)) {
             $this->cache();
         }
         return Cache::get('discord_email_' . $this->user->DiscordOAuth->discord_id);
