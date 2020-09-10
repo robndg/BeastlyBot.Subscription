@@ -26,6 +26,10 @@ class DiscordHelper
         Cache::put('discord_avatar_' . $this->user->DiscordOAuth->discord_id, $avatar_url, 60 * $minutes_to_cache);
     }
 
+    public function getID(): string {
+        return DiscordOAuth::where('user_id', auth()->user()->id)->exists() ? DiscordOAuth::where('user_id', auth()->user()->id)->first()->discord_id : null;
+    }
+
     public function getAvatar(): string {
         if(!Cache::has('discord_username_' . $this->user->DiscordOAuth->discord_id)) {
             $this->cache();

@@ -41,6 +41,15 @@ class DiscordRoleProduct extends Product
             'metadata' => ['owner_id' => auth()->user()->StripeConnect->express_id],
         ]);
 
+        if(! DiscordStore::where('guild_id', $this->guild_id)->exists()) {
+            $store = new DiscordStore();
+            $store->guild_id = $this->guild_id;
+            $store->user_id = auth()->user()->id;
+            $store->url = explode('_', $this->getStripeID())[1];
+            $store->live = false;
+            $store->save();
+        }
+
         return response()->json(['success' => true, 'msg' => 'Product created!', 'active' => true]);
     }
 

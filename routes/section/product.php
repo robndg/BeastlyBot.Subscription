@@ -30,7 +30,9 @@ Route::get('/product/{id}', function () {
         /* --V1
         return view('subscribe')->with('guild_id', $shop->id)->with('descriptions', \App\RoleDesc::where('guild_id', $guild_id)->get());
         */
-        return view('subscribe')->with('guild_id', $shop->guild_id)->with('descriptions', 'asd');
+        $owner_array = App\User::where('id', App\DiscordStore::where('guild_id', $guild_id)->first()->user_id)->first();
+        $shop_url = App\DiscordStore::where('guild_id', $guild_id)->first()->url;
+        return view('subscribe')->with('guild_id', $shop->guild_id)->with('descriptions', 'asd')->with('owner_array', $owner_array)->with('shop_url', $shop_url);
     });
 //});
 

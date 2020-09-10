@@ -11,19 +11,6 @@
 
 @section('content')
 
-{{--V1
-@if(App\DiscordStore::where('id', '=', $guild_id)->value('owner_id'))
-@php
-
-$get_owner_id = App\Shop::where('id', $guild_id)->value('owner_id');
-$owner_array = App\User::where('id', $get_owner_id)->get()[0];
-
-$shop_url = App\Shop::where('id', $guild_id)->value('url');
-
-@endphp
-@endif
---}}
-
 @if(auth()->user()->getDiscordHelper()->ownsGuild($guild_id))
     @if((!App\DiscordStore::where('guild_id', $guild_id)->get()[0]->live) || $owner_array->error == '2')
         <div class="bg-dark-4 text-white text-center font-size-16 font-weight-500 w-200 mx-auto card m-0 mb-30">
@@ -151,97 +138,95 @@ $shop_url = App\Shop::where('id', $guild_id)->value('url');
             socket.on('res_roles_' + socket_id, function (message) {
                 Object.keys(message).forEach(function (key) {
                     var found_desc = false;
-                    jQuery.each(role_descs, function (i, val) {
-                        if (val.role_id == key) {
-                            found_desc = true;
-                            $('#accordian_main').append(getHTML2(guild_id, key, message[key]['color'], message[key]['name'], val.description));
-                        }
-                    });
+                    // TODO: Implement role descriptions
+                    // jQuery.each(role_descs, function (i, val) {
+                    //     if (val.role_id == key) {
+                    //         found_desc = true;
+                    //         $('#accordian_main').append(getHTML2(guild_id, key, message[key]['color'], message[key]['name'], val.description));
+                    //     }
+                    // });
                     if (!found_desc)
                         $('#accordian_main').append(getHTML2(guild_id, key, message[key]['color'], message[key]['name'], null));
 
                     socket.emit('get_role_for_sale', [socket_id, guild_id, key]);
                 });
 
+                $.ajax({
+                    url: '/get-status-roles',
+                    type: 'POST',
+                    data: {
+                        'roles': message,
+                        //'guild_id': guild_id,
+                        _token: '{{ csrf_token() }}'
+                    },
+                }).done(function (msg) {
+                    Object.keys(msg).forEach(function (role) {
+                        role_id = msg[role]['product'];
+                        if(msg[role]['active']){
+                            $('#role-' + role_id).attr('hidden', false);
+                            $('#role-' + role_id).css('visibility', 'visible');
+                            $('#role-' + role_id).removeClass('role-disabled');
+                        }else{
+                            $('#role-' + role_id).remove();
+                        }
+
+                    });
+                });
+
+                $(window).on('load', function() {
+
                     $.ajax({
-                            url: '/get-status-roles',
-                            type: 'POST',
-                            data: {
-                                'roles': message,
-                                //'guild_id': guild_id,
-                                _token: '{{ csrf_token() }}'
-                            },
+                        url: '/get-special-roles',
+                        type: 'POST',
+                        data: {
+                            'roles': message,
+                            'guild_id': '{{ $guild_id }}',
+                            _token: '{{ csrf_token() }}'
+                        },
                     }).done(function (msg) {
-                        console.log(msg)
+                        //var role = msg['role']['plan']['product'];
+                        console.log(msg);
 
                         Object.keys(msg).forEach(function (role) {
-                            role_id = msg[role]['product'];
-                            if(msg[role]['active']){
-                                $('#role-' + role_id).attr('hidden', false);
-                                $('#role-' + role_id).css('visibility', 'visible');
-                                $('#role-' + role_id).removeClass('role-disabled');
-                            }else{
-                                $('#role-' + role_id).remove();
-                            }
+                            special_id = msg[role]['plan']['id'];
+                            product_name = msg[role]['plan']['amount'];
+                            product_nickname = msg[role]['plan']['nickname'];
+                            var guild_id = special_id.split('_')[0];
+                            var role_id = special_id.split('_')[1];
+                            var role_name = product_nickname.split('-')[0];
+                            var link = `/slide-special-purchase/${guild_id}/${role_id}/${special_id}/{{ auth()->user()->getDiscordHelper()->getID() }}`;
+                            special = `
+                            <div class="panel" id="role-${role_id}">
+                                <div class="panel-heading p-20 d-flex flex-row flex-wrap align-items-center justify-content-between" id="heading_${guild_id}" role="tab">
+                                    <div class="w-100 hidden-sm-down">
+                                    </div>
+                                    <div class="text-center">
+                                        <a data-toggle="collapse" href="#tab_${role_id}" data-parent="#accordian_main" aria-expanded="true" aria-controls="tab_${role_id}">
+                                            <div class="badge badge-primary badge-lg font-size-18 text-white" style="background-color:}"><i class="fab icon-discord mr-2"></i> <span>${role_name} ({{ auth()->user()->getDiscordHelper()->getUsername() }})</span></div>
+                                        </a>
+                                    </div>
+                                    <div class="w-100 hidden-sm-down">
+                                        <button data-url="${link}" data-toggle="slidePanel" type="button"
+                                        class="btn btn-sm btn-success float-right">Select <i class="icon wb-arrow-right ml-2" ></i>
+                                        </button>
+                                    </div>
+                                    <div class="w-20 hidden-md-up">
+                                        <button class="btn btn-success p-1" data-url="${link}" data-toggle="slidePanel">
+                                            <i class="icon wb-arrow-right" ></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            `
+                            $('#accordian_main').prepend(special);
+
 
                         })
 
                     })
-                    $(window).on('load', function() {
 
-                        $.ajax({
-                            url: '/get-special-roles',
-                            type: 'POST',
-                            data: {
-                                'roles': message,
-                                'guild_id': '{{ $guild_id }}',
-                                _token: '{{ csrf_token() }}'
-                            },
-                        }).done(function (msg) {
-                            //var role = msg['role']['plan']['product'];
-                            console.log(msg);
-
-                            Object.keys(msg).forEach(function (role) {
-                                special_id = msg[role]['plan']['id'];
-                                product_name = msg[role]['plan']['amount'];
-                                product_nickname = msg[role]['plan']['nickname'];
-                                var guild_id = special_id.split('_')[0];
-                                var role_id = special_id.split('_')[1];
-                                var role_name = product_nickname.split('-')[0];
-                                //var link = `/slide-special-purchase/${guild_id}/${role_id}/${special_id}/{{ auth()->user()->DiscordOAuth->discord_id }}`;
-                                var link = `/slide-special-purchase/${guild_id}/${role_id}/${special_id}/{{ auth()->user()->getDiscordHelper()->discord_id() }}`;
-                                special = `
-                                <div class="panel" id="role-${role_id}">
-                                    <div class="panel-heading p-20 d-flex flex-row flex-wrap align-items-center justify-content-between" id="heading_${guild_id}" role="tab">
-                                        <div class="w-100 hidden-sm-down">
-                                        </div>
-                                        <div class="text-center">
-                                            <a data-toggle="collapse" href="#tab_${role_id}" data-parent="#accordian_main" aria-expanded="true" aria-controls="tab_${role_id}">
-                                                <div class="badge badge-primary badge-lg font-size-18 text-white" style="background-color:}"><i class="fab icon-discord mr-2"></i> <span>${role_name} ({{ auth()->user()->getDiscordHelper()->getUsername() }})</span></div>
-                                            </a>
-                                        </div>
-                                        <div class="w-100 hidden-sm-down">
-                                            <button data-url="${link}" data-toggle="slidePanel" type="button"
-                                            class="btn btn-sm btn-success float-right">Select <i class="icon wb-arrow-right ml-2" ></i>
-                                            </button>
-                                        </div>
-                                        <div class="w-20 hidden-md-up">
-                                            <button class="btn btn-success p-1" data-url="${link}" data-toggle="slidePanel">
-                                                <i class="icon wb-arrow-right" ></i>
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                                `
-                                $('#accordian_main').prepend(special);
-
-
-                            })
-
-                        })
-
-                    });
                 });
+            });
 
         function getHTML2(guild_id, role_id, role_color, role_name, role_desc) {
             var link = `/slide-product-purchase/${guild_id}/${role_id}`;
