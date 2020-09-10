@@ -46,8 +46,6 @@ Route::get('/shop/{guild_id}/{affiliate_id}', function ($guild_id, $affiliate_id
 });
 Route::post('/get-special-roles', 'ServerController@getSpecialRoles');
 
-Route::post('/process-checkout', 'OrderController@process');
-
 Route::post('/process-special-checkout', 'OrderController@specialProcess');
 
 Route::post('/check-prices', 'ProductController@checkProductPrices');

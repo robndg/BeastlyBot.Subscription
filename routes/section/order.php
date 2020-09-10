@@ -19,3 +19,7 @@ Route::get('/slide-invoice/{id}', function($id) {
     }
 });
 
+Route::get('/checkout', 'OrderController@checkout');
+
+Route::post('/process-checkout', 'OrderController@setup');
+

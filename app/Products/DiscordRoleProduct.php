@@ -85,6 +85,9 @@ class DiscordRoleProduct extends Product
         return redirect('/shop/' . $this->guild_id);
     }
 
-
+    public function getStripePlan() {
+        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+        return \Stripe\Plan::retrieve($this->getStripeID() . '_' . $this->billing_cycle . '_r');
+    }
 
 }

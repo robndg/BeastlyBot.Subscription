@@ -30,7 +30,7 @@ class OrderController extends Controller {
                     $product = new DiscordRoleProduct($request['guild_id'], $request['role_id'], $request['billing_cycle']);
                 break;
                 case "express":
-                    $product = new ExpressProduct(null, $request['plan_id']);
+                    $product = new ExpressProduct($request['billing_cycle'] == '1' ? SiteConfig::get('MONTHLY_PLAN') : SiteConfig::get('YEARLY_PLAN'));
                 break;
                 default:
                     throw new ProductMsgException('Could not find product by that type.');
@@ -46,19 +46,34 @@ class OrderController extends Controller {
         }
 
         $stripe_customer = auth()->user()->getStripeHelper()->getCustomerAccount();
-        $checkout_data = [
-            'payment_method_types' => ['card'],
-            'subscription_data' => [
-                'application_fee_amount' => $product->getApplicationFee(),
-                'items' => [[
-                    'plan' => $product->getStripePlan()->id,
-                    'quantity' => '1'
-                ]]
-            ],
-            'success_url' => $product->getCallbackSuccessURL(),
-            'cancel_url' => $product->getCallbackCancelURL(),
-            'customer' => $stripe_customer->id,
-        ];
+        if($product->getApplicationFee() > 0) {
+            $checkout_data = [
+                'payment_method_types' => ['card'],
+                'subscription_data' => [
+                    'application_fee_percent' => $product->getApplicationFee(),
+                    'items' => [[
+                        'plan' => $product->getStripePlan()->id,
+                        'quantity' => '1'
+                    ]]
+                ],
+                'success_url' => $product->getCallbackSuccessURL(),
+                'cancel_url' => $product->getCallbackCancelURL(),
+                'customer' => $stripe_customer->id,
+            ];
+        } else {
+            $checkout_data = [
+                'payment_method_types' => ['card'],
+                'subscription_data' => [
+                    'items' => [[
+                        'plan' => $product->getStripePlan()->id,
+                        'quantity' => '1'
+                    ]]
+                ],
+                'success_url' => $product->getCallbackSuccessURL(),
+                'cancel_url' => $product->getCallbackCancelURL(),
+                'customer' => $stripe_customer->id,
+            ];
+        }
 
         // This may have to go in the second argument of Session::create
         if($product->getExpressOwnerID() != null) $checkout_data['payment_intent_data'] = ['on_behalf_of' => $product->getExpressOwnerID()];
@@ -90,7 +105,7 @@ class OrderController extends Controller {
                     $product = new DiscordRoleProduct(\request('guild_id'), \request('role_id'), \request('billing_cycle'));
                 break;
                 case "express":
-                    $product = new ExpressProduct(null, \request('plan_id'));
+                    $product = new ExpressProduct(\request('plan_id'));
                 break;
                 default:
                     throw new ProductMsgException('Could not find product by that type.');

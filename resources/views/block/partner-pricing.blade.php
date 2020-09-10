@@ -23,7 +23,7 @@
                             </div>
                         </div>
                     </div>
-        @elseif(auth()->user()->stripe_express_id !== null)
+        @elseif(!auth()->user()->getStripeHelper()->hasExpressPlan())
             @include('/block/steps')
             <div class="row mt-lg-25">
                 <div class="col-lg-8 col-md-12 offset-lg-2">
@@ -154,22 +154,32 @@
 <script type="text/javascript">
     function buyPlan(monthly) {
         $.ajax({
-            url: '/buy-plan',
+            url: '/process-checkout',
             type: 'POST',
             data: {
-                affiliate_id: -1,
-                promotion_code: '',
-                monthly: monthly,
+                'product_type': 'express',
+                'billing_cycle': monthly ? 1 : 12,
                 _token: '{{ csrf_token() }}'
             },
         }).done(function (msg) {
-            stripe.redirectToCheckout({
-                sessionId: msg['msg']
-            }).then(function (result) {
-                // If `redirectToCheckout` fails due to a browser or network
-                // error, display the localized error message to your customer
-                // using `result.error.message`.
-            });
+            if (msg['success']) {
+                swal.close();
+                stripe.redirectToCheckout({
+                    sessionId: msg['msg']
+                }).then(function (result) {
+                    // If `redirectToCheckout` fails due to a browser or network
+                    // error, display the localized error message to your customer
+                    // using `result.error.message`.
+                });
+            } else {
+                Swal.fire({
+                    title: 'Failure',
+                    text: msg['msg'],
+                    showCancelButton: false,
+                    showConfirmButton: true,
+                    target: document.getElementById('slider-div')
+                });
+            }
         });
     }
 </script>

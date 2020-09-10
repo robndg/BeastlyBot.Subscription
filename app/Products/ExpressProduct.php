@@ -4,14 +4,32 @@ namespace App\Products;
 
 use App\AlertHelper;
 use App\SiteConfig;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class ExpressProduct extends Product
 {
 
-    public function __construct(string $product_id = null, string $plan_id)
+    protected $plan_id = null;
+
+    public function __construct(string $plan_id)
     {
-        parent::__construct('express', $product_id, $plan_id);
+        parent::__construct('express');
+        $this->plan_id = $plan_id;
+    }
+
+
+
+    public function create(Request $request) {
+        return response()->json(['success' => true, 'msg' => 'Product created!', 'active' => true]);
+    }
+
+    public function delete(Request $request) {
+    }
+    public function update(Request $request) {}
+
+    public function getStripeID(): string {
+        return SiteConfig::get('EXPRESS_PROD_ID');
     }
 
     public function checkoutValidate(): void
@@ -81,7 +99,12 @@ class ExpressProduct extends Product
 
     public function getApplicationFee(): float
     {
-        return 1.5;
+        return 0;
+    }
+
+    public function getStripePlan() {
+        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+        return \Stripe\Plan::retrieve($this->plan_id);
     }
 
 }

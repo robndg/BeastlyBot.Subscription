@@ -65,7 +65,7 @@ abstract class Product
         return $this->stripe_product_obj;
     }
 
-    public function getExpressOwnerID(): string {
+    public function getExpressOwnerID() {
         if($this->stripe_product_obj != null) 
             return $this->stripe_product_obj->metadata['owner_id'];
         return null;
@@ -74,5 +74,7 @@ abstract class Product
     protected function validPrice($input): bool {
         return $input === null || $input === '' || preg_match('/^[0-9]+(?:\.[0-9]{0,2})?$/', $input);
     }
+
+    abstract public function getStripePlan();
 
 }

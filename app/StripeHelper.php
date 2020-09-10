@@ -18,8 +18,8 @@ class StripeHelper
 
     public function getSubscriptions() {
         \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
-
-        if(Session::has('subs_' . $this->user->DiscordOAuth->discord_id)) return Session::get('subs_' . $this->user->DiscordOAuth->discord_id);
+        // TODO: Session Cache not working here
+        // if(Session::has('subs_' . $this->user->DiscordOAuth->discord_id)) return Session::get('subs_' . $this->user->DiscordOAuth->discord_id);
 
         $stripe_subs = \Stripe\Subscription::all(['customer' => $this->user->StripeConnect->customer_id, 'status' => 'active']);
 
@@ -156,7 +156,10 @@ class StripeHelper
     }
 
     public function getExpressSubscription() {
+        \Log::info("GET EXPRESS");
         foreach($this->getSubscriptions() as $subscription) {
+            \Log::info("ITERATE");
+            \Log::info($subscription);
             if ($subscription->items->data[0]->plan->product === SiteConfig::get('EXPRESS_PROD_ID'))  return $subscription;
         }
 

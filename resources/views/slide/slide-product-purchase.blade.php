@@ -324,7 +324,8 @@ $(document).ready(function() {
             data: {
                 'guild_id': '{{ $shop->guild_id }}',
                 'role_id': '{{ $role_id }}',
-                'cycle': getSelectedDuration(),
+                'product_type': 'discord',
+                'billing_cycle': getSelectedDuration(),
                 'promotion_code': $('#couponCode').val(),
                 'affiliate_id': affiliate,
                 'server_icon': $('#guild_icon').attr('src'),
