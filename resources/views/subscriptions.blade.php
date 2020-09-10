@@ -46,8 +46,9 @@
                             <tbody id="activeSubsTable" data-plugin="animateList" data-animate="fade"
                             data-child="tr">
 
-
-
+                            @foreach(auth()->user()->getStripeHelper()->getSubscriptions() as $sub_array)
+                                
+                            @endforeach
                             </tbody>
                         </table>
                         <!-- pagination -->

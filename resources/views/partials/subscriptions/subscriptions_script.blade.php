@@ -2,30 +2,25 @@
         var subscriptions = JSON.parse('{!! json_encode($subscriptions) !!}');
         var finished = [];
 
-        $(document).ready(function () {
-            var discord_username, discord_discriminator;
-            socket.on('connect', function () {
-                socket.emit('get_user_data', [socket_id, '{{ auth()->user()->DiscordOAuth->discord_id }}']);
-            });
-            socket.on('res_user_data_' + socket_id, function (message) {
-                $('#avatarIconHeader').attr('src', message['avatar']);
-                discord_username = message['name'];
-                discord_discriminator = message['discriminator'];
-                $('#discord_username').text(discord_username + " #" + discord_discriminator);
-            });
+        console.log(subscriptions);
 
-            @foreach($subscriptions as $subscription)
-                var data = '{{ $subscription['items']['data'][0]['plan']['id'] }}';
-                var guild_id = data.split('_')[0];
-                var role_id = data.split('_')[1];
-                socket.emit('get_role_data', [socket_id, guild_id, role_id]);
-            @endforeach
+        $(document).ready(function () {
+            jQuery.each(subscriptions, function(i, subscription) {
+                var data = subscription['items']['data'][0]['plan']['id'];
+                if(data.includes('discord')) {
+                    console.log(data);
+                    var guild_id = data.split('_')[1];
+                    var role_id = data.split('_')[2];
+                    socket.emit('get_role_data', [socket_id, guild_id, role_id]);
+                }
+            });
 
             socket.on('res_role_data_' + socket_id, function(message) {
+                console.log(message);
                 jQuery.each(subscriptions, function(i, val) {
                     var id = val.items.data[0].plan.id;
-                    var guild_id = id.split('_')[0];
-                    var role_id = id.split('_')[1];
+                    var guild_id = id.split('_')[1];
+                    var role_id = id.split('_')[2];
                     if(guild_id === message['guild_id'] && role_id === message['id'] && !finished.includes(val.id)) {
                         finished.push(val.id);
                         var dateObj = new Date(val.current_period_end * 1000);
