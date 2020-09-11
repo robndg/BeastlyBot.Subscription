@@ -31,7 +31,7 @@ async function startLoopShort() {
     while (true) {
         await delayShort();
         subscription_handler.init_subscriptions(); //// this causes problems if not on live server
-        subscription_handler.verify_and_end_subscriptions(); // TODO: Fix this and move to loop long
+        subscription_handler.end_subscriptions(); // TODO: Fix this and move to loop long
     }
 }
 

@@ -14,9 +14,27 @@ class EventServiceProvider extends ServiceProvider
      *
      * @var array
      */
+    // protected $listen = [
+    //     Registered::class => [
+    //         SendEmailVerificationNotification::class,
+    //     ],
+    // ];
+
     protected $listen = [
-        Registered::class => [
-            SendEmailVerificationNotification::class,
+        'stripe-webhooks::invoice.payment_succeeded' => [
+            \App\Listeners\PaymentSucceeded::class,
+        ],
+        'stripe-webhooks::invoice.payment_failed' => [
+            \App\Listeners\PaymentFailed::class,
+        ],
+        'stripe-webhooks::customer.subscription.deleted' => [
+            \App\Listeners\SubscriptionCanceled::class,
+        ],
+        'stripe-webhooks::subscription_schedule.expiring' => [ // TODO: Need to test if this works
+            \App\Listeners\SubscriptionExpired::class,
+        ],
+        'stripe-webhooks::checkout.session.completed' => [
+            \App\Listeners\CheckoutSessionCompleted::class,
         ],
     ];
 

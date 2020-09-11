@@ -119,13 +119,6 @@ class OrderController extends Controller {
             AlertHelper::alertWarning($e->getError()->message);
         }
 
-        if($success) {
-            $session = \Stripe\Checkout\Session::retrieve(Session::get('checkout_id'));
-            $order = new Order();
-            $order->id = $session->subscription;
-            $order->save();
-        }
-
         Session::remove('checkout_id');
         return $success ? $product->checkoutSuccess() : $product->checkoutCancel();
     }

@@ -116,6 +116,14 @@ class StripeHelper
         return false;
     }
 
+    public function isSubscribedToID(string $id): bool {
+        foreach ($this->getSubscriptions() as $subscription) {
+            if ($subscription->id == $id) return true;
+        }
+
+        return false;
+    }
+
     public function getSubscriptionForPlan(string $id): \Stripe\Subscription {
         foreach ($this->getSubscriptions() as $subscription) {
             if ($subscription->items->data[0]->plan->id == $id) return $subscription;

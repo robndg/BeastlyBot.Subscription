@@ -13,7 +13,7 @@
 
 use Illuminate\Support\Facades\Route;
 
-// Route::stripeWebhooks('stripe_webhooks');
+Route::stripeWebhooks('stripe_webhooks');
 
 Route::get('/slide-account-type', function () {
     return view('/slide/slide-account-type');

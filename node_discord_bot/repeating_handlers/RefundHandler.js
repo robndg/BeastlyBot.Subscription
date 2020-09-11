@@ -56,32 +56,34 @@ function run() {
 
 }
 
-function refundOrder(subscription, hide) {
-    index.stripe.invoices.retrieve(subscription.latest_invoice, function(err, invoice) {
-        // simple error handling
-        if (err) {
-            task_handler.sendMessage(err.message, 3);
-            console.log(err);
-            return;
-        }
-
-        index.stripe.refunds.create( {charge: invoice.charge}, function(err, refund) {
+function refundOrder(subscription_id, hide) {
+    index.stripe.subscriptions.retrieve(subscription_id, async function(err, subscription) {
+        index.stripe.invoices.retrieve(subscription.latest_invoice, function(err, invoice) {
             // simple error handling
             if (err) {
                 task_handler.sendMessage(err.message, 3);
                 console.log(err);
                 return;
             }
-            // update the invoice to refunded=true
-            index.stripe.invoices.update(invoice.id,
-                {metadata: {refunded: true}},
-                function(err, invoice) {
-                // asynchronously called
+
+            index.stripe.refunds.create( {charge: invoice.charge}, function(err, refund) {
+                // simple error handling
+                if (err) {
+                    task_handler.sendMessage(err.message, 3);
+                    console.log(err);
+                    return;
                 }
-            );
-            if(hide === null || hide === '' || hide === undefined){
-                task_handler.sendWebNotificationFromSub(subscription, 'warning', `#${invoice.number} was refunded.`, 'bot_error_refund', `${invoice.number}`);
-            }
+                // update the invoice to refunded=true
+                index.stripe.invoices.update(invoice.id,
+                    {metadata: {refunded: true}},
+                    function(err, invoice) {
+                    // asynchronously called
+                    }
+                );
+                if(hide === null || hide === '' || hide === undefined){
+                    task_handler.sendWebNotificationFromSub(subscription, 'warning', `#${invoice.number} was refunded.`, 'bot_error_refund', `${invoice.number}`);
+                }
+            });
         });
     });
 }
