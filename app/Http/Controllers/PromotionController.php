@@ -12,6 +12,7 @@ use Discord\OAuth\Discord;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Cache;
 
 class PromotionController extends Controller {
 
@@ -29,50 +30,32 @@ class PromotionController extends Controller {
         // Grab all the Coupons that the Partner has made in the DB and send to view at bottom
         foreach(Coupon::where('owner_id', auth()->user()->id)->get() as $coupon) {
             try {
-                $stripe_promotion = \Stripe\Coupon::retrieve($coupon->id);
-                $coupons[$stripe_promotion->id] = [
-                    'id' => $stripe_promotion->id,
-                    'percent_off' => $stripe_promotion->percent_off,
-                    'amount_off' => $stripe_promotion->amount_off,
-                    'uses' => $stripe_promotion->times_redeemed,
-                    'duration' => $stripe_promotion->duration,
-                    'duration_in_months' => $stripe_promotion->duration_in_months,
-                    'max_uses' => $stripe_promotion->max_redemptions,
-                    'valid' => $stripe_promotion->valid
-                ];
+                $cache_key = 'coupon_' . $coupon->id;
+                $coupon_array = [];
+                if(Cache::has($cache_key)) {
+                    $coupon_array = Cache::get($cache_key);
+                } else {
+                    $stripe_promotion = \Stripe\Coupon::retrieve($coupon->id);
+                    $coupon_array = [
+                        'id' => $stripe_promotion->id,
+                        'percent_off' => $stripe_promotion->percent_off,
+                        'amount_off' => $stripe_promotion->amount_off,
+                        'uses' => $stripe_promotion->times_redeemed,
+                        'duration' => $stripe_promotion->duration,
+                        'duration_in_months' => $stripe_promotion->duration_in_months,
+                        'max_uses' => $stripe_promotion->max_redemptions,
+                        'valid' => $stripe_promotion->valid
+                    ];
+                    Cache::put($cache_key, $coupon_array, 60 * 10);
+                }
+
+                $coupons[$coupon->id] = $coupon_array;
             } catch (\Exception $e) {
                 if(env('APP_DEBUG')) Log::error($e);
             }
         }
 
         return view('promotions')->with('coupons', $coupons);
-    }
-    public function getPromotionsSlide() {
-        // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
-
-        $coupons = array();
-
-        // Grab all the Coupons that the Partner has made in the DB and send to view at bottom
-        foreach(Coupon::where('owner_id', auth()->user()->id)->get() as $coupon) {
-            try {
-                $stripe_promotion = \Stripe\Coupon::retrieve($coupon->id);
-                $coupons[$stripe_promotion->id] = [
-                    'id' => $stripe_promotion->id,
-                    'percent_off' => $stripe_promotion->percent_off,
-                    'amount_off' => $stripe_promotion->amount_off,
-                    'uses' => $stripe_promotion->times_redeemed,
-                    'duration' => $stripe_promotion->duration,
-                    'duration_in_months' => $stripe_promotion->duration_in_months,
-                    'max_uses' => $stripe_promotion->max_redemptions,
-                    'valid' => $stripe_promotion->valid
-                ];
-            } catch (\Exception $e) {
-                if(env('APP_DEBUG')) Log::error($e);
-            }
-        }
-
-        return view('slide.slide-promotions')->with('coupons', $coupons);
     }
 
     public function createPromotion(Request $request) {
@@ -118,6 +101,19 @@ class PromotionController extends Controller {
 
         try {
             $stripe_promotion = \Stripe\Coupon::create($promo_data);
+
+            // store coupon in cache
+            $coupon_array = [
+                'id' => $stripe_promotion->id,
+                'percent_off' => $stripe_promotion->percent_off,
+                'amount_off' => $stripe_promotion->amount_off,
+                'uses' => $stripe_promotion->times_redeemed,
+                'duration' => $stripe_promotion->duration,
+                'duration_in_months' => $stripe_promotion->duration_in_months,
+                'max_uses' => $stripe_promotion->max_redemptions,
+                'valid' => $stripe_promotion->valid
+            ];
+            Cache::put('coupon_' . $code, $coupon_array, 60 * 10);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'msg' => $e->getMessage()]);
         }
@@ -145,6 +141,9 @@ class PromotionController extends Controller {
         try {
             $coupon = \Stripe\Coupon::retrieve($id);
             $coupon->delete();
+
+            // remove coupon from cache
+            Cache::forget('coupon_' . $id);
 
             if($db_coupon !== null) $db_coupon->delete();
         } catch(\Exception $e) {
