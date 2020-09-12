@@ -13,29 +13,32 @@ class SubscriptionCanceled implements ShouldQueue
     public function handle(WebhookCall $webhookCall)
     {
         $subscription_id = $webhookCall->payload['data']['object']['items']['data'][0]['subscription'];
+        $plan_id = $webhookCall->payload['data']['object']['items']['data'][0]['plan']['id'];
 
-        $customer = $webhookCall->payload['data']['object']['customer'];
-        $customer_id = StripeConnect::where('customer_id', $customer)->first()->user_id;
-        $customer_discord_id = DiscordOAuth::where('user_id', $customer_id)->first()->discord_id;
-        $partner_id = $webhookCall->payload['data']['object']['items']['data'][0]['plan']['metadata']['user_id'];
-        $partner_discord_id = DiscordOAuth::where('user_id', $customer_id)->first()->discord_id;
-        $data = explode('_', $webhookCall->payload['data']['object']['items']['data'][0]['plan']['id']);
-       
-        if($data[0] == 'discord') {
-            $guild_id = $data[1];
-            $role_id = $data[2];
+        if(strpos($plan_id, 'discord') !== false) {
+            $customer = $webhookCall->payload['data']['object']['customer'];
+            $customer_id = StripeConnect::where('customer_id', $customer)->first()->user_id;
+            $customer_discord_id = DiscordOAuth::where('user_id', $customer_id)->first()->discord_id;
+            $partner_id = $webhookCall->payload['data']['object']['items']['data'][0]['plan']['metadata']['user_id'];
+            $partner_discord_id = DiscordOAuth::where('user_id', $customer_id)->first()->discord_id;
+            $data = explode('_', $plan_id);
+        
+            if($data[0] == 'discord') {
+                $guild_id = $data[1];
+                $role_id = $data[2];
 
-            if(!EndedSubscription::where('subscription_id', $subscription_id)->exists()) {
-                $ended_subscription = new EndedSubscription();
-                $ended_subscription->subscription_id = $subscription_id;
-                $ended_subscription->partner_id = $partner_id;
-                $ended_subscription->partner_discord_id = $partner_discord_id;
-                $ended_subscription->customer_id = $customer_id;
-                $ended_subscription->customer_discord_id = $customer_discord_id;
-                $ended_subscription->guild_id = $guild_id;
-                $ended_subscription->role_id = $role_id;
-                $ended_subscription->reason = 'cancel';
-                $ended_subscription->save();
+                if(!EndedSubscription::where('subscription_id', $subscription_id)->exists()) {
+                    $ended_subscription = new EndedSubscription();
+                    $ended_subscription->subscription_id = $subscription_id;
+                    $ended_subscription->partner_id = $partner_id;
+                    $ended_subscription->partner_discord_id = $partner_discord_id;
+                    $ended_subscription->customer_id = $customer_id;
+                    $ended_subscription->customer_discord_id = $customer_discord_id;
+                    $ended_subscription->guild_id = $guild_id;
+                    $ended_subscription->role_id = $role_id;
+                    $ended_subscription->reason = 'cancel';
+                    $ended_subscription->save();
+                }
             }
         }
     }

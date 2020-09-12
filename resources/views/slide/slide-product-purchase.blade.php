@@ -121,6 +121,7 @@
             <div>
                 <input type="text" class="form-control form-control-lg w-200 mx-auto" placeholder="Coupon Code" id="couponCode" disabled>
                 <p id="coupon_info"></p>
+                <p id="coupon_info_1"></p>
             </div>
             <div class="w-300 mt-30 mx-auto">
                 <div class="container">
@@ -213,7 +214,7 @@ $(document).ready(function() {
         function doneTyping() {
             $input.removeClass('loading');
             $.ajax({
-                url: '/bknd00/validate-coupon/',
+                url: '/validate-coupon',
                 type: 'POST',
                 data: {
                     owner_id: guild_owner,
@@ -222,24 +223,27 @@ $(document).ready(function() {
                 },
             }).done(function (msg) {
                 net_price = current_price;
-                console.log(msg);
                 if (msg['valid']) {
                     $input.removeClass('is-invalid');
                     $input.addClass('is-valid');
                     if(msg['data']['percent_off'] > 0) {
                         net_price = current_price - (current_price * (msg['data']['percent_off']/100));
                         if(net_price < 0) net_price = 0;
-                        $("#big_price_label").text(net_price);
+                        // $("#big_price_label").text(net_price);
                         $('#coupon_info').text("* " + msg['data']['percent_off'] + "% off " + (msg['data']['duration'] === 'forever' ? 'forever' : msg['data']['duration'] === 'once' ? 'for the first payment' : 'for the first ' + msg['data']['duration_in_months'] + ' months.'));
+                        $('#coupon_info_1').text('Go to checkout for updated price');
                     } else if(msg['data']['amount_off'] > 0) {
                         net_price = current_price - (msg['data']['amount_off'] / 100);
                         if(net_price < 0) net_price = 0;
-                        $("#big_price_label").text(net_price);
+                        // $("#big_price_label").text(net_price);
                         $('#coupon_info').text('* $' + (msg['data']['amount_off'] / 100) + " off " + (msg['data']['duration'] === 'forever' ? 'forever' : msg['data']['duration'] === 'once' ? 'for the first payment' : 'for the first ' + msg['data']['duration_in_months'] + ' months.'));
+                        $('#coupon_info_1').text('Go to checkout for updated price');
                     }
                 } else {
                     $input.removeClass('is-valid');
                     $input.addClass('is-invalid');
+                    $('#coupon_info').empty();
+                    $('#coupon_info_1').empty();
                 }
             });
         }
@@ -318,6 +322,8 @@ $(document).ready(function() {
         }else{
             var process_url = '/process-checkout';
         }
+
+        console.log( $('#couponCode').val());
         $.ajax({
             url: process_url,
             type: 'POST',
@@ -326,7 +332,7 @@ $(document).ready(function() {
                 'role_id': '{{ $role_id }}',
                 'product_type': 'discord',
                 'billing_cycle': getSelectedDuration(),
-                'promotion_code': $('#couponCode').val(),
+                'coupon_code': $('#couponCode').val(),
                 'affiliate_id': affiliate,
                 'server_icon': $('#guild_icon').attr('src'),
                 'guild_name': guild_name,

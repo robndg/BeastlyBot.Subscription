@@ -32,11 +32,11 @@ Route::post('/promotions-delete-coupon/{id}', 'PromotionController@deleteCoupon'
 //     return 'Invalid promotion.';
 // });
 
-Route::post('/bknd00/validate-coupon', function (\Illuminate\Http\Request $request) {
+Route::post('/validate-coupon', function (\Illuminate\Http\Request $request) {
     \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
     try {
-        $user = \App\User::where('discord_id', $request['owner_id'])->get()[0];
-        $stripe_promotion = \Stripe\Coupon::retrieve($user->id . $request['code']);
+        $user = \App\DiscordOAuth::where('discord_id', $request['owner_id'])->first();
+        $stripe_promotion = \Stripe\Coupon::retrieve($user->user_id . $request['code']);
         return response()->json(['valid' => true, 'data' => $stripe_promotion->toArray()]);
     } catch (\Exception $e) {
     }

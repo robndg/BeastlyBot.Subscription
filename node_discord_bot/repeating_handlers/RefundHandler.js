@@ -73,14 +73,8 @@ function refundOrder(subscription_id, hide) {
                     console.log(err);
                     return;
                 }
-                // update the invoice to refunded=true
-                index.stripe.invoices.update(invoice.id,
-                    {metadata: {refunded: true}},
-                    function(err, invoice) {
-                    // asynchronously called
-                    }
-                );
-                if(hide === null || hide === '' || hide === undefined){
+               
+                if (hide === null || hide === '' || hide === undefined) {
                     task_handler.sendWebNotificationFromSub(subscription, 'warning', `#${invoice.number} was refunded.`, 'bot_error_refund', `${invoice.number}`);
                 }
             });

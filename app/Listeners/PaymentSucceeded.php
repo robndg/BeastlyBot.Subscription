@@ -13,8 +13,9 @@ class PaymentSucceeded implements ShouldQueue
     public function handle(WebhookCall $webhookCall)
     {
         $reason = $webhookCall->payload['data']['object']['billing_reason'];
+        $plan_id = $webhookCall->payload['data']['object']['lines']['data'][0]['plan']['id'];
         
-        if($reason == 'subscription_create') {
+        if($reason == 'subscription_create' && strpos($plan_id, 'discord') !== false) {
             $subscription_id = $webhookCall->payload['data']['object']['lines']['data'][0]['subscription'];
 
             $customer = $webhookCall->payload['data']['object']['customer'];
@@ -22,7 +23,7 @@ class PaymentSucceeded implements ShouldQueue
             $customer_discord_id = DiscordOAuth::where('user_id', $customer_id)->first()->discord_id;
             $partner_id = $webhookCall->payload['data']['object']['lines']['data'][0]['plan']['metadata']['user_id'];
             $partner_discord_id = DiscordOAuth::where('user_id', $partner_id)->first()->discord_id;
-            $data = explode('_', $webhookCall->payload['data']['object']['lines']['data'][0]['plan']['id']);
+            $data = explode('_', $plan_id);
             
             if($data[0] == 'discord') {
                 $guild_id = $data[1];

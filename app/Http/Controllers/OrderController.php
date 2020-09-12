@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Session;
 use Stripe\Exception\InvalidRequestException;
 use App\User;
+use App\DiscordStore;
 
 class OrderController extends Controller {
 
@@ -47,33 +48,30 @@ class OrderController extends Controller {
         }
 
         $stripe_customer = auth()->user()->getStripeHelper()->getCustomerAccount();
+
+        $checkout_data = [
+            'payment_method_types' => ['card'],
+            'mode' => 'subscription',
+            'subscription_data' => [
+                'items' => [[
+                    'plan' => $product->getStripePlan()->id,
+                    'quantity' => '1'
+                ]]
+            ],
+            'success_url' => $product->getCallbackSuccessURL(),
+            'cancel_url' => $product->getCallbackCancelURL(),
+            'customer' => $stripe_customer->id,
+        ];
+
         if($product->getApplicationFee() > 0) {
-            $checkout_data = [
-                'payment_method_types' => ['card'],
-                'subscription_data' => [
-                    'application_fee_percent' => $product->getApplicationFee(),
-                    'items' => [[
-                        'plan' => $product->getStripePlan()->id,
-                        'quantity' => '1'
-                    ]]
-                ],
-                'success_url' => $product->getCallbackSuccessURL(),
-                'cancel_url' => $product->getCallbackCancelURL(),
-                'customer' => $stripe_customer->id,
-            ];
-        } else {
-            $checkout_data = [
-                'payment_method_types' => ['card'],
-                'subscription_data' => [
-                    'items' => [[
-                        'plan' => $product->getStripePlan()->id,
-                        'quantity' => '1'
-                    ]]
-                ],
-                'success_url' => $product->getCallbackSuccessURL(),
-                'cancel_url' => $product->getCallbackCancelURL(),
-                'customer' => $stripe_customer->id,
-            ];
+            $checkout_data['subscription_data']['application_fee_percent'] = $product->getApplicationFee();
+        }
+
+        if(!empty($request['coupon_code'])) {
+            if(DiscordStore::where('guild_id', $request['guild_id'])->exists()) {
+                $store = DiscordStore::where('guild_id', $request['guild_id'])->first();
+                $checkout_data['subscription_data']['coupon'] = $store->user_id . $request['coupon_code'];
+            }
         }
 
         // This may have to go in the second argument of Session::create
