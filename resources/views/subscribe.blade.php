@@ -104,6 +104,10 @@
 @if(((App\DiscordStore::where('guild_id', $guild_id)->get()[0]->live) && ($owner_array->canAcceptPayments())) || (auth()->user()->getDiscordHelper()->ownsGuild($guild_id)))
 @if($owner_array->error != ('1' || '2'))
     <script type="text/javascript">
+
+       
+
+
         var role_descs = JSON.parse('{!! json_encode($descriptions) !!}');
 
         $(document).ready(function () {
@@ -294,7 +298,7 @@
 @endif
 @endif
 
-<script>
+<script type="text/javascript">
 $(function() {
    $('#btn_copy-url').click(function() {
      $('#input_copy-url').focus();

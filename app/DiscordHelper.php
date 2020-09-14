@@ -10,6 +10,7 @@ use Wohali\OAuth2\Client\Provider\Discord;
 class DiscordHelper
 {
 
+    private $minutes_to_cache = 10;
     private $user;
 
     public function __construct(User $user){
@@ -26,10 +27,9 @@ class DiscordHelper
             $avatar_url = 'https://i.imgur.com/qbVxZbJ.png';
         }
 
-        $minutes_to_cache = 10;
-        Cache::put('discord_username_' . $this->user->DiscordOAuth->discord_id, $username, 60 * $minutes_to_cache);
-        Cache::put('discord_email_' . $this->user->DiscordOAuth->discord_id, $data['email'], 60 * $minutes_to_cache);
-        Cache::put('discord_avatar_' . $this->user->DiscordOAuth->discord_id, $avatar_url, 60 * $minutes_to_cache);
+        Cache::put('discord_username_' . $this->user->DiscordOAuth->discord_id, $username, 60 * $this->minutes_to_cache);
+        Cache::put('discord_email_' . $this->user->DiscordOAuth->discord_id, $data['email'], 60 * $this->minutes_to_cache);
+        Cache::put('discord_avatar_' . $this->user->DiscordOAuth->discord_id, $avatar_url, 60 * $this->minutes_to_cache);
     }
 
     public function getID(): string {

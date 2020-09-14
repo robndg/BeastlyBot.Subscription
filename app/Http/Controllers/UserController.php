@@ -6,6 +6,7 @@ use App\AlertHelper;
 use App\SiteConfig;
 use App\StripeHelper;
 use App\DiscordStore;
+use App\PaymentMethod;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 
@@ -580,4 +581,5 @@ class UserController extends Controller {
 
         return response()->json(['success' => true]);
     }
+
 }

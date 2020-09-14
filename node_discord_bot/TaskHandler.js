@@ -8,10 +8,12 @@ var dispute_handler = require('./repeating_handlers/DisputeHandler.js');
 var payout_handler = require('./repeating_handlers/PayoutHandler.js');
 var subscription_handler = require('./repeating_handlers/SubscriptionHandler.js');
 
+// TODO: Increaste to 15 minutes
 function delayLong() {
     return new Promise(resolve => setTimeout(resolve, 1000 * 300)); // 5 minute interval
 }
 
+// TODO: Increase to 3 minutes
 function delayShort() {
     return new Promise(resolve => setTimeout(resolve, 1000 * 10)); // 10 second interval
 }
@@ -19,7 +21,7 @@ function delayShort() {
 async function startLoopLong() {
     while (true) {
         await delayLong();
-        payout_handler.run();
+        // payout_handler.run();
         dispute_handler.run();
         session_handler.run();
         // end_subscriptions();//

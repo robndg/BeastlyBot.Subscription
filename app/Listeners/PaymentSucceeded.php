@@ -7,6 +7,8 @@ use Spatie\WebhookClient\Models\WebhookCall;
 use \App\StripeConnect;
 use \App\DiscordOAuth;
 use \App\NewSubscription;
+use \App\SiteConfig;
+use \App\ScheduledInvoicePayout;
 
 class PaymentSucceeded implements ShouldQueue
 {
@@ -14,7 +16,7 @@ class PaymentSucceeded implements ShouldQueue
     {
         $reason = $webhookCall->payload['data']['object']['billing_reason'];
         $plan_id = $webhookCall->payload['data']['object']['lines']['data'][0]['plan']['id'];
-        
+
         if($reason == 'subscription_create' && strpos($plan_id, 'discord') !== false) {
             $subscription_id = $webhookCall->payload['data']['object']['lines']['data'][0]['subscription'];
 
@@ -40,6 +42,13 @@ class PaymentSucceeded implements ShouldQueue
                     $new_subscription->role_id = $role_id;
                     $new_subscription->save();
                 }
+
+                $payout = new ScheduledInvoicePayout();
+                $payout->invoice_id = $webhookCall->payload['data']['object']['id'];
+                $payout->express_id = StripeConnect::where('user_id', $partner_id)->first()->express_id;
+                $payout->amount = $webhookCall->payload['data']['object']['amount_paid'];
+                $payout->release_date = date('Y-m-d', strtotime(date("Y-m-d"). ' + 15 days'));
+                $payout->save();
             }
         }
     }

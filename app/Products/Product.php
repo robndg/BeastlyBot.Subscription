@@ -17,7 +17,8 @@ abstract class Product
         \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
         try {
             $this->stripe_product_obj = \Stripe\Product::retrieve($this->getStripeID());
-        } catch (\Exception $e) {}
+        } catch (\Exception $e) {
+        }
     }
 
     abstract public function checkoutValidate(): void;
@@ -37,8 +38,6 @@ abstract class Product
     public function update(Request $request) {}
 
     abstract public function getCallbackParams(): array;
-
-    abstract public function getApplicationFee(): float;
 
     abstract public function getStripeID(): string;
 
@@ -66,8 +65,9 @@ abstract class Product
     }
 
     public function getExpressOwnerID() {
-        if($this->stripe_product_obj != null) 
+        if($this->stripe_product_obj != null) {
             return $this->stripe_product_obj->metadata['owner_id'];
+        }
         return null;
     }
 

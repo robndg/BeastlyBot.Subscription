@@ -97,11 +97,6 @@ class ExpressProduct extends Product
         }
     }
 
-    public function getApplicationFee(): float
-    {
-        return 0;
-    }
-
     public function getStripePlan() {
         \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
         return \Stripe\Plan::retrieve($this->plan_id);

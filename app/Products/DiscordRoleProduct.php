@@ -14,10 +14,10 @@ class DiscordRoleProduct extends Product
 
     public function __construct($guild_id, $role_id, $billing_cycle)
     {
-        parent::__construct('discord', $guild_id . '_' . $role_id, $guild_id . '_' . $role_id . '_' . $billing_cycle . '_r');
         $this->guild_id = $guild_id;
         $this->role_id = $role_id;
         $this->billing_cycle = $billing_cycle;
+        parent::__construct('discord');
     }
   
     public function checkoutValidate(): void {
@@ -64,12 +64,6 @@ class DiscordRoleProduct extends Product
     public function getCallbackParams(): array
     {
         return ['guild_id' => $this->guild_id, 'role_id' => $this->role_id, 'billing_cycle' => $this->billing_cycle];
-    }
-
-    public function getApplicationFee(): float
-    {
-        // TODO: Need to fix to 5% and make the express connect account ours so we get 5% per subscription to discord account. 
-        return 0;
     }
 
     public function getStripeID(): string

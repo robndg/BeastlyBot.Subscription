@@ -33,9 +33,6 @@ class EventServiceProvider extends ServiceProvider
         'stripe-webhooks::subscription_schedule.expiring' => [ // TODO: Need to test if this works
             \App\Listeners\SubscriptionExpired::class,
         ],
-        'stripe-webhooks::checkout.session.completed' => [
-            \App\Listeners\CheckoutSessionCompleted::class,
-        ],
     ];
 
     /**

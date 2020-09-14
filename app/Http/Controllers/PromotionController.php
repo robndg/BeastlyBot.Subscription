@@ -16,6 +16,9 @@ use Illuminate\Support\Facades\Cache;
 
 class PromotionController extends Controller {
 
+
+    private $minutes_to_cache = 10;
+
     public function __construct() {
         $this->middleware('auth');
     }
@@ -46,7 +49,7 @@ class PromotionController extends Controller {
                         'max_uses' => $stripe_promotion->max_redemptions,
                         'valid' => $stripe_promotion->valid
                     ];
-                    Cache::put($cache_key, $coupon_array, 60 * 10);
+                    Cache::put($cache_key, $coupon_array, 60 * $this->minutes_to_cache);
                 }
 
                 $coupons[$coupon->id] = $coupon_array;
@@ -113,7 +116,7 @@ class PromotionController extends Controller {
                 'max_uses' => $stripe_promotion->max_redemptions,
                 'valid' => $stripe_promotion->valid
             ];
-            Cache::put('coupon_' . $code, $coupon_array, 60 * 10);
+            Cache::put('coupon_' . $code, $coupon_array, 60 * $this->minutes_to_cache);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'msg' => $e->getMessage()]);
         }

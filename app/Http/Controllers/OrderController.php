@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Session;
 use Stripe\Exception\InvalidRequestException;
 use App\User;
 use App\DiscordStore;
+use App\StripeConnect;
 
 class OrderController extends Controller {
 
@@ -63,10 +64,6 @@ class OrderController extends Controller {
             'customer' => $stripe_customer->id,
         ];
 
-        if($product->getApplicationFee() > 0) {
-            $checkout_data['subscription_data']['application_fee_percent'] = $product->getApplicationFee();
-        }
-
         if(!empty($request['coupon_code'])) {
             if(DiscordStore::where('guild_id', $request['guild_id'])->exists()) {
                 $store = DiscordStore::where('guild_id', $request['guild_id'])->first();
@@ -74,9 +71,6 @@ class OrderController extends Controller {
             }
         }
 
-        // This may have to go in the second argument of Session::create
-        if($product->getExpressOwnerID() != null) $checkout_data['payment_intent_data'] = ['on_behalf_of' => $product->getExpressOwnerID()];
-        
         $session = \Stripe\Checkout\Session::create($checkout_data);
 
         // store the checkout ID in the customers CheckoutSession

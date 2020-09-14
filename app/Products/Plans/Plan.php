@@ -53,7 +53,8 @@ abstract class Plan
             "id" => $this->getStripeID(),
             "nickname" => $request['nickname'],
         ]);
-        
+
+
         return response()->json(['success' => true, 'msg' => 'Plan created!', 'active' => true]);
     }
     
