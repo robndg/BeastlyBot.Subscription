@@ -45,6 +45,8 @@
                 <p class="mb-0">We take great pride in excellent customer service.</p>
               </a>                
           @endfor
+          <button type="button" data-toggle="site-sidebar" data-url="/slide-ticket-create">Create</button>
+          <button type="button" data-toggle="site-sidebar" data-url="/slide-tickets-list">List</button>
           </div>
       </div>
 
