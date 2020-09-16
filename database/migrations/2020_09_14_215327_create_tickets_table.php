@@ -25,6 +25,8 @@ class CreateTicketsTable extends Migration
             $table->integer('img')->nullable();
             $table->string('url')->nullable();
             $table->string('status');
+            $table->integer('read')->default(1);
+            $table->integer('read_support')->default(0);
             $table->timestamps();
         });
     }

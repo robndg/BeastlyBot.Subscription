@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Category;
 use App\Ticket;
+use App\Comment;
 use App\User;
 use App\AlertHelper;
 use Illuminate\Http\Request;
@@ -96,11 +97,11 @@ class TicketsController extends Controller
  
         $ticket->save();
  
-       // $mailer->sendTicketInformation(Auth::user(), $ticket); 
+        $mailer->sendTicketInformation(Auth::user(), $ticket);  // will delete this -just testing, and make only for admin aware new ticket.
  
         $tickets = Ticket::where('user_id', Auth::user()->id)->paginate(10);
 
-        return response()->json(['success' => false, 'msg' => 'Message Sent!']);
+        return response()->json(['success' => true, 'msg' => 'Message Sent!']);
  
         //return view('tickets.user_tickets', compact('tickets'))->with("status", "Your message has been sent!");
         
@@ -109,9 +110,14 @@ class TicketsController extends Controller
 
     public function userTickets()
     {
-        $sort = "created_at";
+        $sort = "updated_at";
         $srt = "DESC";
-        $tickets = Ticket::where('user_id', Auth::user()->id)->orderBy($sort, $srt)->paginate(10);
+
+        if(Auth::user()->admin == 1){
+            $tickets = Ticket::where('user_id', Auth::user()->id)->orWhere('status','!=','closed')->orderBy($sort, $srt)->paginate(10);
+        }else{
+            $tickets = Ticket::where('user_id', Auth::user()->id)->orderBy($sort, $srt)->paginate(10);
+        }
 
        // $tickets = Ticket::where('category_id',1)->whereIn('selected_id', Listing::where('realtor', 2)->get()->pluck('id')->toArray())->paginate(10); //Auth::user()->id
  
@@ -127,14 +133,22 @@ class TicketsController extends Controller
     public function show($ticket_id)
     {
         $ticket = Ticket::where('ticket_id', $ticket_id)->firstOrFail();
+        if(Auth::user()->id == $ticket->user_id || Auth::user()->admin == 1){
+            $ticket = Ticket::where('ticket_id', $ticket_id)->firstOrFail();
 
-        $photos = NULL;
-        $selected = NULL;
-        if($ticket->category_id == 1 && $ticket->selected_id != 0){
-            $selected = Listing::where('id',$ticket->selected_id)->first();
-            $photos = Photos::where('gallery', 3)->orderBy('order')->get();
+            if(Auth::user()->admin == 1){
+                $ticket->read_support = 1;
+                $ticket->save();
+            }else {
+                $ticket->read = 1;
+                $ticket->save();
+            }
+            
+            return view('slide.ticket.slide-ticket-show', compact('ticket'));
+        }else{
+            $tickets = Ticket::where('user_id', Auth::user()->id)->orderBy($sort, $srt)->paginate(10);
+            return view('slide.ticket.slide-tickets-list', compact('ticket'));
         }
-        return view('tickets.show', compact('ticket'))->with('selected', $selected)->with('photos', $photos);
     }
 
     public function close($ticket_id, AppMailer $mailer)
@@ -184,5 +198,49 @@ class TicketsController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+
+    public function postComment(Request $request, AppMailer $mailer)
+    {
+        $this->validate($request, [
+            'comment' => 'required'
+        ]);
+        $ticket_id = $request->input('ticket_id');
+
+        $ticket = Ticket::where('id', $ticket_id)->first();
+
+        if(Auth::user()->id == $ticket->user_id || Auth::user()->admin == 1){
+
+            $comment = Comment::create([
+                'ticket_id' => $ticket_id,
+                'user_id' => Auth::user()->id,
+                'comment' => $request->input('comment')
+            ]);
+
+            if(Auth::user()->admin == 1){
+                $ticket->status = "Team Reply";
+                $ticket->read = 0;
+                $ticket->read_support = 1;
+                $ticket->save();
+            }else {
+                $ticket->status = "Commented";
+                $ticket->read = 1;
+                $ticket->read_support = 0;
+                $ticket->save();
+            }
+            // send mail if the user commenting is not the ticket owner
+            /*if($comment->ticket->user->id !== Auth::user()->id) {
+                $mailer->sendTicketComments($comment->ticket->user, Auth::user(), $comment->ticket, $comment);
+            }else{
+                $mailer->sendTicketCommentsToAdmin($comment->ticket->user, $comment->ticket, $comment);
+            }*/
+            return response()->json(['success' => $comment, 'msg' => 'Message Sent!']);
+        }else{
+            return response()->json(['success' => false, 'msg' => 'You cannot reply to that ticket!']);
+        }
+
+        
+        //return redirect()->back()->with("status", "Your reply has been sent.");
     }
 }

@@ -9,6 +9,8 @@ use \App\DiscordOAuth;
 use \App\NewSubscription;
 use \App\SiteConfig;
 use \App\ScheduledInvoicePayout;
+use \App\DiscordStore;
+use \App\Subscription;
 
 class PaymentSucceeded implements ShouldQueue
 {
@@ -16,39 +18,60 @@ class PaymentSucceeded implements ShouldQueue
     {
         $reason = $webhookCall->payload['data']['object']['billing_reason'];
         $plan_id = $webhookCall->payload['data']['object']['lines']['data'][0]['plan']['id'];
+        $paid = $webhookCall->payload['data']['object']['paid'];
 
-        if($reason == 'subscription_create' && strpos($plan_id, 'discord') !== false) {
+        if($paid && strpos($plan_id, '_') !== false) {
             $subscription_id = $webhookCall->payload['data']['object']['lines']['data'][0]['subscription'];
-
-            $customer = $webhookCall->payload['data']['object']['customer'];
-            $customer_id = StripeConnect::where('customer_id', $customer)->first()->user_id;
-            $customer_discord_id = DiscordOAuth::where('user_id', $customer_id)->first()->discord_id;
-            $partner_id = $webhookCall->payload['data']['object']['lines']['data'][0]['plan']['metadata']['user_id'];
-            $partner_discord_id = DiscordOAuth::where('user_id', $partner_id)->first()->discord_id;
             $data = explode('_', $plan_id);
             
             if($data[0] == 'discord') {
+                $customer = $webhookCall->payload['data']['object']['customer'];
+                $customer_id = StripeConnect::where('customer_id', $customer)->first()->user_id;
+                $customer_discord_id = DiscordOAuth::where('user_id', $customer_id)->first()->discord_id;
+                $partner_id = $webhookCall->payload['data']['object']['lines']['data'][0]['plan']['metadata']['user_id'];
+                $partner_discord_id = DiscordOAuth::where('user_id', $partner_id)->first()->discord_id;
+
                 $guild_id = $data[1];
                 $role_id = $data[2];
+                $discord_store = DiscordStore::where("guild_id", $guild_id)->first();
 
-                if(!NewSubscription::where('subscription_id', $subscription_id)->exists()) {
-                    $new_subscription = new NewSubscription();
-                    $new_subscription->subscription_id = $subscription_id;
-                    $new_subscription->partner_id = $partner_id;
-                    $new_subscription->partner_discord_id = $partner_discord_id;
-                    $new_subscription->customer_id = $customer_id;
-                    $new_subscription->customer_discord_id = $customer_discord_id;
-                    $new_subscription->guild_id = $guild_id;
-                    $new_subscription->role_id = $role_id;
-                    $new_subscription->save();
+                if($reason == 'subscription_create') {
+                    if(!NewSubscription::where('subscription_id', $subscription_id)->exists()) {
+                        $new_subscription = new NewSubscription();
+                        $new_subscription->subscription_id = $subscription_id;
+                        $new_subscription->partner_id = $partner_id;
+                        $new_subscription->partner_discord_id = $partner_discord_id;
+                        $new_subscription->customer_id = $customer_id;
+                        $new_subscription->customer_discord_id = $customer_discord_id;
+                        $new_subscription->guild_id = $guild_id;
+                        $new_subscription->role_id = $role_id;
+                        $new_subscription->save();
+                    }
+
+                    $subscription = new Subscription();
+                    $subscription->id = $subscription_id;
+                    $subscription->stripe_connect_id = StripeConnect::where('user_id', $partner_id)->first()->id;
+                    $subscription->latest_invoice_id = $webhookCall->payload['data']['object']['id'];
+                    $subscription->latest_invoice_paid_at = date('Y-m-d');
+                    $subscription->latest_invoice_amount = $webhookCall->payload['data']['object']['amount_paid'];
+                    $subscription->connection_type = 1;
+                    $subscription->connection_id = DiscordOAuth::where('user_id', $partner_id)->first()->id;
+                    $subscription->store_id = $discord_store->id;
+                    $subscription->product_id = $webhookCall->payload['data']['object']['lines']['data'][0]['plan']['product'];
+                    $subscription->refund_enabled = $discord_store->refunds_enabled;
+                    $subscription->refund_days = $discord_store->refunds_days;
+                    $subscription->refund_terms = $discord_store->refunds_terms;
+                    $subscription->metadata = ['role_id' => $role_id];
+                    $subscription->active = 1;
+                    $subscription->save();
+                } else if($reason == 'subscription_cycle') {
+                    $subscription = Subscription::where('id', $subscription_id)->first();
+                    $subscription->latest_invoice_id = $webhookCall->payload['data']['object']['id']; 
+                    $subscription->latest_invoice_paid_at = date('Y-m-d');
+                    $subscription->latest_invoice_amount = $webhookCall->payload['data']['object']['amount_paid'];
+                    $subscription->save();
                 }
-
-                $payout = new ScheduledInvoicePayout();
-                $payout->invoice_id = $webhookCall->payload['data']['object']['id'];
-                $payout->express_id = StripeConnect::where('user_id', $partner_id)->first()->express_id;
-                $payout->amount = $webhookCall->payload['data']['object']['amount_paid'];
-                $payout->release_date = date('Y-m-d', strtotime(date("Y-m-d"). ' + 15 days'));
-                $payout->save();
+               
             }
         }
     }

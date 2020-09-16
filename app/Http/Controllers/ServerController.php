@@ -14,6 +14,8 @@ use DateTime;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Stripe\Exception\InvalidRequestException;
+use App\DiscordHelper;
+use App\Subscription;
 
 class ServerController extends Controller {
 
@@ -42,13 +44,33 @@ class ServerController extends Controller {
             return redirect('/dashboard');
         }
 
+        $discord_store = null;
+
         if(! DiscordStore::where('guild_id', $id)->exists()) {
             $discord_store = new DiscordStore(['guild_id' => $id, 'url' => $id, 'user_id' => auth()->user()->id]);
         } else {
             $discord_store = DiscordStore::where('guild_id', $id)->first();
         }
 
-        return view('server')->with('id', $id)->with('shop', $discord_store)->with('has_order', false);
+        $discord_helper = new DiscordHelper(auth()->user());
+        $roles = $discord_helper->getRoles($id);
+
+        $active = array();
+        $subscribers = [];
+        foreach($roles as $role) {
+            // TODO: Do some caching here so we don't have to keep grabbing the stripe product, maybe do it in the Product class itself for getStripeProduct
+            $discord_product = new DiscordRoleProduct($id, $role->id, null);
+            $stripe_product = $discord_product->getStripeProduct();
+            if($stripe_product != null && $stripe_product->active) {
+                array_push($active, $role->id);
+                $subscribers[$role->id] = Subscription::where('store_id', $discord_store->id)->where('active', 1)->where('metadata', 'LIKE', '%' . $role->id . '%')->count();
+            } else {
+                $subscribers[$role->id] = 0;
+            }
+        }
+
+        // TODO: Member count not working. Returns null in guild for some reason, so does members. Have to use old code to update member count
+        return view('server')->with('id', $id)->with('shop', $discord_store)->with('has_order', false)->with('roles', $roles)->with('active_roles', $active)->with('guild', $discord_helper->getGuild($id))->with('subscribers', $subscribers);
     }
 
     /* --------------------------------------------------------------------

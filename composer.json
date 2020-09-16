@@ -15,9 +15,10 @@
         "laravel/framework": "^7.24",
         "laravel/tinker": "^2.0",
         "laravel/ui": "^2.0",
+        "restcord/restcord": "dev-master",
         "spatie/laravel-stripe-webhooks": "^2.3",
         "stripe/stripe-php": "^7.28",
-        "wohali/oauth2-discord-new": "^1.0"
+        "wohali/oauth2-discord-new": "^1.1"
     },
     "require-dev": {
         "facade/ignition": "^2.0",

@@ -11,3 +11,6 @@ Route::get('/slide-ticket-create', 'TicketsController@create');
 Route::post('/bknd000/new-ticket-post', 'TicketsController@store')->name('newTicketPost');
 
 Route::get('/slide-tickets-list', 'TicketsController@userTickets');
+
+Route::get('/slide-ticket-show/{id}', 'TicketsController@show');
+Route::post('/bknd000/ticket-reply-post', 'TicketsController@postComment');

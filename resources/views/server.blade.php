@@ -10,14 +10,14 @@
                 <div class="d-flex flex-row flex-wrap align-items-center col-xxl-7 col-xl-7 col-lg-6 col-md-12 col-sm-12">
                     <div class="white w-80 ml-lg-30">
                         <a class="avatar avatar-lg" href="javascript:void(0)">
-                            <img id="server_icon" src="" alt="...">
+                            <img id="server_icon" src="https://cdn.discordapp.com/icons/{{ $id }}/{{ $guild->icon }}.png?size=256" alt="...">
                         </a>
                     </div>
                     <div class="counter counter-md counter text-left">
                         <div class="counter-number-group">
-                            <span class="counter-number" id="server_name">...</span>
+                            <span class="counter-number" id="server_name">{{ $guild->name }}</span>
                         </div>
-                        <div class="counter-label text-capitalize font-size-16" id="member_count">... Members
+                        <div class="counter-label text-capitalize font-size-16" id="member_count">0 Members
                         </div>
                     </div>
                 </div>
@@ -101,8 +101,6 @@
         $('#live-switch, #test-switch').on('click', function() {
             $('#live-switch, #test-switch').attr('disabled', true);
             var live = $(this).data('status');
-
-            console.log(live);
 
         @if(auth()->user()->getStripeHelper()->hasActiveExpressPlan())
             Toast.fire({

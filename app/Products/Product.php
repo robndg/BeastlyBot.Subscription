@@ -59,7 +59,9 @@ abstract class Product
         if($this->stripe_product_obj == null) {
             try {
                 $this->stripe_product_obj = \Stripe\Product::retrieve($this->getStripeID());
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+                \Log::info($e);
+            }
         }
         return $this->stripe_product_obj;
     }

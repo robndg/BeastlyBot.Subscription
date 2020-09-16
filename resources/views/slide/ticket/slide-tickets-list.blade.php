@@ -1,58 +1,38 @@
     
-  <header class="slidePanel-header bg-primary-600">
+  <header class="slidePanel-header bg-indigo-600">
     <div class="slidePanel-actions" aria-label="actions" role="group">
-        <button type="button" class="btn btn-icon btn-pure btn-inverse slidePanel-close actions-top icon wb-close"
+        <button type="button" class="btn btn-icon btn-pure btn-inverse slidePanel-close actions-top icon wb-close" id="slide-close"
         aria-hidden="true"></button>
+        <button type="button" class="btn btn-icon btn-pure btn-inverse actions-top icon wb-plus mr-30" id="slide-create"
+      aria-hidden="true" data-url="/slide-ticket-create" data-toggle="slidePanel"></button>
+      <button type="button" class="btn btn-icon btn-pure btn-inverse actions-top icon wb-chevron-left mr-60 d-none" id="slide-help"
+      aria-hidden="true" data-url="/slide-help-titles" data-toggle="site-sidebar"></button>
     </div>
-    <h1>Send Ticket</h1>
+    <h1><i class="icon wb-chat"></i> Support</h1>
 </header>
 <div class="site-sidebar-tab-content tab-content">
+
     <div class="tab-pane fade active show" id="sidebar-help">
-        @if (session('status'))
-           <div class="alert alert-success">
-               {{ session('status') }}
-           </div>
-        @endif
-        <div>
-        <form role="form" method="POST" action="{{ route('newTicketPost') }}">
-        {!! csrf_field() !!}
-            <div class="form-group pb-0 mb-5">
-              <div class="input-group input-group-lg">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">?</span>
-                </div>
-                <input type="text" class="form-control" id="ticket-title" name="title" placeholder="Message title...">
-              </div>
-            </div>
+        <div class="mt-15">
+        
+                    @if($tickets->isEmpty())
+                        <!--<p>You have not created any tickets.</p>-->
+                    @else
 
-            <div class="form-group pb-0 mb-5">
-              <div class="input-group input-group-lg">
-                <div class="input-group-prepend">
-                  <span class="input-group-text">?</span>
-                </div>
-                <select id="category" type="category" class="form-control" name="category">
-                    <option value="">Select Category</option>
-                    @foreach ($categories as $category)
-                        @if(isset($type))
-                        <option value="{{ $category->id }}" @if($category->id == $type)selected @endif>{{ $category->name }}</option>
-                        @else
-                        <option value="{{ $category->id }}">{{ $category->name }}</option>
-                        @endif
+                    <div class="list-group no-select pt-0" id="helpList">
+                    @foreach($tickets as $ticket)
+                        <a class="list-group-item flex-column align-items-start px-10 py-10" data-toggle="slidePanel" data-url="/slide-ticket-show/{{ $ticket->ticket_id }}">
+                            <div class="float-right"><p class="mb-0"><span class="badge badge-success bg-{{ $ticket->status == 'Team Reply' ? 'green-600' : 'indigo-600' }} mr-1">{{ $ticket->status }}</span>{{-- <small>{{ $ticket->updated_at->diffForHumans() }}--}}</small></p> 
+                            </div>
+                            <h4 class="list-group-item-heading mt-0 mb-5">{{ Str::limit($ticket->title, 150) }}</h4>
+                            <p class="mb-0">{{ Str::limit($ticket->message, 115) }}</p>
+                        </a>
                     @endforeach
-                </select>
-              </div>
-            </div>
+                    {{ $tickets->render() }}
 
-            <div class="form-group pb-0 mb-5">
+                    @endif
 
-                <textarea rows="6" id="message" class="form-control" name="message"></textarea>
 
-            </div>
-
-            <button type="submit" class="btn btn-block btn-dark">Send</button>
-
-            
-         </form>
          
       </div>
 
@@ -61,6 +41,11 @@
 </div>
 
 <script>
+
+    if(window.location.href.includes('help')) {
+        $("#slide-help").removeClass('d-none')
+    };
+
 
     if((!window.location.href.includes('guide-opened')) && window.location.href.includes('server')) {
         setTimeout(function(){

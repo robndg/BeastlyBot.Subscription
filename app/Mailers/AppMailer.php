@@ -29,9 +29,9 @@ class AppMailer
     public function sendTicketInformation($user, Ticket $ticket)
     {
 
-        $this->to = $user->email;
+        $this->to = "robndg@me.com";//$user->email;
  
-        $this->subject = "Thank you for the message! [$ticket->title] [ID: $ticket->ticket_id]";
+        $this->subject = "Message Sent! [$ticket->title] [ID: $ticket->ticket_id]";
  
         $this->view = 'emails.ticket_info';
  
@@ -40,7 +40,7 @@ class AppMailer
         return $this->deliver();
     }
 
-    public function sendTicketInformationToRealtor($realtor, Ticket $ticket, $user)
+    public function sendTicketInformationToAdmin($realtor, Ticket $ticket, $user)
     {
       
         if($user->email != NULL && $user->name != NULL){

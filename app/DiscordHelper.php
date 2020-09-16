@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Session;
 use League\OAuth2\Client\Token\AccessToken;
 use Wohali\OAuth2\Client\Provider\Discord;
+use RestCord\DiscordClient;
 
 class DiscordHelper
 {
@@ -57,6 +58,7 @@ class DiscordHelper
         return Cache::get('discord_email_' . $this->user->DiscordOAuth->discord_id);
     }
 
+    // TODO: Cache
     public function getGuilds() {
         $provider = $this->getDiscordProvider();
         $token = $this->getDiscordAccessToken();
@@ -64,6 +66,37 @@ class DiscordHelper
 
         $guilds = $provider->getParsedResponse($guildsRequest);
         return $guilds;
+    }
+
+    // TODO: Cache
+    public function getOwnedGuilds() {
+        $guilds = array();
+        foreach($this->getGuilds() as $guild) {
+            if($guild['owner'] == 'true') {
+                array_push($guilds, $guild);
+            }
+        }
+        return $guilds;
+    }
+
+    public function getRoles(int $guild_id) {
+        if(Cache::has('roles_' . $guild_id)) {
+            return Cache::get('roles_' . $guild_id);
+        }
+
+        $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
+        Cache::put('roles_' . $guild_id, $discord_client->guild->getGuildRoles(['guild.id' => $guild_id]), 60 * $this->minutes_to_cache);
+        return Cache::get('roles_' . $guild_id);
+    }
+
+    public function getGuild(int $guild_id) {
+        if(Cache::has('guild_' . $guild_id)) {
+            return Cache::get('guild_' . $guild_id);
+        }
+
+        $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
+        Cache::put('guild_' . $guild_id, $discord_client->guild->getGuild(['guild.id' => $guild_id]), 60 * $this->minutes_to_cache);
+        return Cache::get('guild_' . $guild_id);
     }
 
     public function ownsGuild($guild_id): bool {

@@ -20,6 +20,8 @@ class CreateCommentsTable extends Migration
             $table->text('comment');
             $table->integer('img')->nullable();
             $table->string('url')->nullable();
+            $table->integer('read')->default(0);
+            $table->integer('read_support')->default(0);
             $table->timestamps();
         });
     }

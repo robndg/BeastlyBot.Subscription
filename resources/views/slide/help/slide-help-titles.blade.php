@@ -3,6 +3,8 @@
     <div class="slidePanel-actions" aria-label="actions" role="group">
         <button type="button" class="btn btn-icon btn-pure btn-inverse slidePanel-close actions-top icon wb-close"
         aria-hidden="true"></button>
+        <button type="button" class="btn btn-icon btn-pure btn-inverse actions-top icon wb-chat mr-30" id="slide-tickets"
+      aria-hidden="true" data-url="/slide-tickets-list" data-toggle="site-sidebar"></button>
     </div>
     <h1>Help</h1>
 </header>

@@ -58,6 +58,15 @@
                 {{-- <li class="nav-item dropdown"> --}}
                 {{--     @include('partials.messages') --}}
                 {{-- </li> --}}
+
+     
+                <li class="nav-item">
+                   <a class="nav-link" href="#?messages" data-toggle="slidePanel" data-url="/slide-tickets-list" title="Messages">
+                    <i class="icon wb-chat" aria-hidden="true"></i>
+                    <span class="badge badge-pill badge-default up">{{ App\Ticket::where('user_id', auth()->user()->id)->where('read', 0)->get()->count() }}</span>
+                    </a>
+                </li>
+        
                 <li class="nav-item">
                     <a class="nav-link navbar-avatar" href="javascript:void(0)" data-toggle="site-sidebar" data-url="/slide-account-settings" role="button">
                         <span class="avatar avatar-online">

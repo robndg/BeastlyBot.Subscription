@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateScheduledInvoicePayoutsTable extends Migration
+class CreatePaidOutInvoicesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,9 @@ class CreateScheduledInvoicePayoutsTable extends Migration
      */
     public function up()
     {
-        Schema::create('scheduled_invoice_payouts', function (Blueprint $table) {
-            $table->id();
-            $table->string('invoice_id')->unique();
-            $table->string('express_id');
-            $table->bigInteger('amount');
-            $table->string('release_date');
+        Schema::create('paid_out_invoices', function (Blueprint $table) {
+            $table->string('id')->unique();
+            $table->string('sub_id');
             $table->timestamps();
         });
     }
@@ -30,6 +27,6 @@ class CreateScheduledInvoicePayoutsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('scheduled_invoice_payouts');
+        Schema::dropIfExists('paid_out_invoices');
     }
 }

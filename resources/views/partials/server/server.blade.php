@@ -27,7 +27,42 @@
                     <table class="table" data-plugin="animateList"
                         data-animate="fade"
                         data-child="tr">
-                        <tbody id="roles_table"></tbody>
+                        <tbody id="roles_table">
+                            @foreach($roles as $role) 
+                           
+                            @php
+                            $active = in_array($role->id, $active_roles);
+                            @endphp
+
+                            <tr class="role @if($active) active-role @else inactive-role d-none @endif" id="{{ $id . '_' . $role->id }}">
+                                <td class="pl-15">
+                                    <div class="content text-left">
+                                        <span class="badge badge-primary badge-lg" style="background-color: #{{ dechex($role->color) }}"><i class="icon-discord mr-2" aria-hidden="true"></i>
+                                        <span>{{ $role->name }}</span></span>
+                                    </div>
+                                </td>
+                                <td class="info-role w-20 grey-4" style="display:none; visiblity:hidden">
+                                    <i class="icon wb-payment" id="active-cell_{{ $role->id }}" aria-hidden="true" data-toggle="tooltip" data-original-title="Subscriptions Enabled"></i>
+                                </td>
+                                <td class="info-role w-200 pr-lg-10 text-right">
+                                    <div class="time"><span id="sub_count_{{ $role->id }}">{{ $subscribers[$role->id] }}</span> Sub<span class="hidden-md-down">scription</span><span id="sub-suffix_{{ $role->id }}">s</span></div>
+                                    <div class="identity d-none" id="status_{{ $id }}_{{ $role->id }}"><i class="icon wb-medium-point yellow-500" id="state_color_{{ $role->id }}" aria-hidden="true"></i><span id="state_{{ $role->id }}">@if($active) Active @else Inactive @endif</span></div>
+                                </td>
+                                <td class="cell-120 cell-sm-120 toggle-role d-none">
+                                    <button type="button" class="btn btn-icon @if($active) btn-primary @else disabled btn-dark @endif py-md-20 w-p100" disabled="@if($active) true @else false @endif" id="product-settings_{{ $id }}_{{ $role->id }}" data-url="/slide-roles-settings/{{ $id }}/{{ $role->id }}" data-toggle="slidePanel"><i class="icon wb-more-horizontal" aria-hidden="true"></i></button>
+                                </td>
+                                <td class="cell-60 hidden-md-up settings-role" data-toggle="slidePanel" data-url="/slide-roles-settings/{{ $id }}/{{ $role->id }}">
+                                    <button class="btn btn-primary btn-icon" data-toggle="tooltip" data-original-title="Settings"><i class="icon wb-more-horizontal" aria-hidden="true"></i></button>
+                                </td>
+                                <td class="cell-120 pr-15 hidden-sm-down settings-role" data-toggle="slidePanel" data-url="/slide-roles-settings/{{ $id }}/{{ $role->id }}">
+                                    <button class="btn btn-block btn-primary btn-icon py-20" data-toggle="tooltip" data-original-title="Settings"><i class="icon wb-more-horizontal" aria-hidden="true"></i></button>
+                                </td>
+                                <td class="cell-100 cell-sm-100 toggle-role d-none text-right">
+                                    <button type="button" class="btn btn-primary btn-icon btn-round py-md-20 w-p80 animation-scale-up @if($active) active @endif toggle-btn-trigger" id="toggle-product_{{ $id }}_{{ $role->id }}" data-role_id="{{ $role->id }}"><i class="icon @if($active) wb-plus @else wb-check @endif text-white" aria-hidden="true" id="toggle-product-icon_{{ $id }}_{{ $role->id }}"></i></button>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
                     </table>
                 <!-- <div class="card card-hover" data-toggle="slidePanel" data-url="/slide-list-products/{{ $id }}"><i class="icon wb-plus"></i> Shop Product
                     </div>-->
