@@ -7,18 +7,6 @@
     var is_enabled = 'inactive-role';
 
     $(document).ready(function () {
-        var socket_id = '{{ uniqid() }}';
-
-        socket.emit('get_guild_data', [socket_id, '{{ $id }}']);
-
-        socket.on('res_guild_data_' + socket_id, function (message) {
-            var name = message['name'];
-            Global.name = name;
-            var iconURL = message['iconURL'];
-            var memberCount = message['memberCount'];
-            $('#member_count').text(memberCount + ' Members');
-        });
-
         $(document).on('click', '.toggle-btn-trigger', function (e) {
 
             e.preventDefault();

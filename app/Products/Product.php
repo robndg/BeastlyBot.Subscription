@@ -4,6 +4,7 @@ namespace App\Products;
 
 use App\SiteConfig;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 abstract class Product 
 {
@@ -14,11 +15,21 @@ abstract class Product
     public function __construct(string $product_type)
     {
         $this->product_type = $product_type;
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
-        try {
-            $this->stripe_product_obj = \Stripe\Product::retrieve($this->getStripeID());
-        } catch (\Exception $e) {
+
+        if(Cache::has('product_' . $this->getStripeID())) {
+            if(Cache::get('product_' . $this->getStripeID()) != 'null') {
+                $this->stripe_product_obj = Cache::get('product_' . $this->getStripeID());
+            }
+        } else {
+            \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+            try {
+                $this->stripe_product_obj = \Stripe\Product::retrieve($this->getStripeID());
+                Cache::put('product_' . $this->getStripeID(), $this->stripe_product_obj, 60 * 10);
+            } catch (\Exception $e) {
+                Cache::put('product_' . $this->getStripeID(), "null", 60 * 10);
+            }
         }
+        
     }
 
     abstract public function checkoutValidate(): void;
@@ -56,13 +67,6 @@ abstract class Product
     }
 
     public function getStripeProduct() {
-        if($this->stripe_product_obj == null) {
-            try {
-                $this->stripe_product_obj = \Stripe\Product::retrieve($this->getStripeID());
-            } catch (\Exception $e) {
-                \Log::info($e);
-            }
-        }
         return $this->stripe_product_obj;
     }
 

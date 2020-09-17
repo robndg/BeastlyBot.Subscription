@@ -44,17 +44,31 @@
                             <th class="cell-100 hidden-md-up"></th>
                         </tr>
                     </thead>
-                    <tbody id="servers-table"></tbody>
-                </table>
-                <!--<table class="table">
-                    <tbody>
-                        <tr>
-                            <td class="text-center" onClick="document.location.href='/server/${key}';">
-                                Add Server
+                    <tbody id="servers-table">
+                        @foreach($guilds as $guild)
+                        <tr onClick="document.location.href='/server/{{ $guild['id'] }}';" data-key="{{ $guild['id'] }}">
+                            <td class="cell-100 pl-15 pl-lg-30">
+                                <a class="avatar avatar-lg" href="javascript:void(0)">
+                                <img src="https://cdn.discordapp.com/icons/{{ $guild['id'] }}/{{ $guild['icon'] }}.png?size=256" alt="...">
+                                </a>
+                            </td>
+                            <td>
+                                <div class="title">{{ $guild['name'] }}</div>
+                            </td>
+                            <td class="cell-150 hidden-md-down text-center">
+                                @if(\App\DiscordStore::where('guild_id', $guild['id'])->exists())
+                                <div class="time" id="subCount{{ $guild['id'] }}">{{ sizeof(\App\Http\Controllers\ServerController::getUsersRoles(\App\DiscordStore::where('guild_id', $guild['id'])->first()->id)) }} Subscribers</div>
+                                @else
+                                <div class="time" id="subCount{{ $guild['id'] }}">0 Subscribers</div>
+                                @endif
+                            </td>
+                            <td class="cell-100 hidden-md-up">
+                                <button class="btn btn-link">Settings</button>
                             </td>
                         </tr>
+                        @endforeach
                     </tbody>
-                </table>-->
+                </table>
             </div>
         </div>
 
@@ -64,20 +78,6 @@
 
 
 @section('scripts')
-
-<script type="text/javascript">
-    setInterval(function(){
-        if(window.location.href.includes('refresh')) {
-            @include('partials/servers/servers_script')
-        }
-    }, 2000);
-</script>
-
-<script type="text/javascript">
-    $(document).ready(function() {
-        @include('partials/servers/servers_script')
-    });
-</script>
 
     <script type="text/javascript">
     $('#Addbtn').click(function(){

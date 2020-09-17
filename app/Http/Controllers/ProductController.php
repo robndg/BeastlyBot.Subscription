@@ -96,6 +96,7 @@ class ProductController extends Controller {
         }
     }
 
+    // TODO: Fix this, this won't work properly
     public static function getPricesForRole($guild_id, $role_id) {
         $prices = [];
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
@@ -104,13 +105,14 @@ class ProductController extends Controller {
             $key = 'price_' . $guild_id . '_' . $role_id . '_' . $duration;
             if(! Cache::has($key)) {
                 $discord_plan = new DiscordPlan(new DiscordRoleProduct($guild_id, $role_id, $duration), 'month', $duration);
-                if($discord_plan->getStripePlan() != null)
+                if($discord_plan->getStripePlan() != null) {
                     Cache::put($key, $discord_plan->getStripePlan()->amount / 100, 60 * 5);
-                else 
+                } else {
                     Cache::put($key, 0, 60 * 5);
+                }
             }
 
-            $prices[$duration] = Cache::get($key, 0);
+            $prices[$duration] = Cache::get($key);
         }
         return $prices;
     }
@@ -134,6 +136,40 @@ class ProductController extends Controller {
         $product_role->description = $description;
         $product_role->save();
         return response()->json(['success' => true]);
+    }
+
+    public function getShop($guild_id) {
+        if(!DiscordStore::where('url', $guild_id)->exists()) {
+            return abort(404);
+        }
+
+        $owner_array = \App\User::where('id', \App\DiscordStore::where('guild_id', $guild_id)->first()->user_id)->first();
+        $shop_url = \App\DiscordStore::where('guild_id', $guild_id)->first()->url;
+
+        $discord_helper = new \App\DiscordHelper(auth()->user());
+        $discord_store = DiscordStore::where('url', $guild_id)->first();
+ 
+        $roles = $discord_helper->getRoles($guild_id);
+ 
+        $active = array();
+        $subscribers = [];
+ 
+        foreach($roles as $role) {
+            $subscribers[$role->id] = Cache::get('subscribers_' . $role->id);
+            $discord_product = new DiscordRoleProduct($guild_id, $role->id, null);
+            $stripe_product = $discord_product->getStripeProduct();
+            if($stripe_product != null && $stripe_product->active) {
+                array_push($active, $role->id);
+                $subscribers[$role->id] = \App\Subscription::where('store_id', $discord_store->id)->where('active', 1)->where('metadata', 'LIKE', '%' . $role->id . '%')->count();
+            } else {
+                $subscribers[$role->id] = 0;
+            }
+        }
+
+
+        $banned = $discord_helper->isUserBanned($guild_id, \App\DiscordOAuth::where('user_id', auth()->user()->id)->first()->discord_id);
+
+        return view('subscribe')->with('guild_id', $discord_store->guild_id)->with('descriptions', 'asd')->with('owner_array', $owner_array)->with('shop_url', $shop_url)->with('roles', $roles)->with('active', $active)->with('guild', $discord_helper->getGuild($guild_id))->with('banned', $banned);
     }
 
 }

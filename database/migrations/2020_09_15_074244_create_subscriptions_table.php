@@ -16,7 +16,9 @@ class CreateSubscriptionsTable extends Migration
         Schema::create('subscriptions', function (Blueprint $table) {
             $table->string('id')->unique();
             
-            $table->integer('stripe_connect_id');
+            $table->bigInteger('user_id');
+            $table->bigInteger('partner_id');
+            $table->bigInteger('stripe_connect_id');
 
             // Invoices
             $table->integer('status')->default(1); // maybe 1 good, 2 overdue, 3 cancelled, 4 disputed
@@ -31,7 +33,7 @@ class CreateSubscriptionsTable extends Migration
             // Partner/Store/Product Info
             $table->integer('connection_type')->default(1); // 1 discord, 2 twitter etc
             $table->integer('connection_id'); // links to ex) discord_o_auths ID
-            $table->integer('store_id'); // links to ex) discord_store ID
+            $table->bigInteger('store_id'); // links to ex) discord_store ID
             $table->string('product_id'); // links to ex) product_roles ID
             $table->integer('active')->default(0); // 0 role not yet enabled, 1 active, 2 no longer active ex) set by Discord JS
 
@@ -43,6 +45,7 @@ class CreateSubscriptionsTable extends Migration
             $table->json('metadata');
 
             $table->integer('visible')->default(1); // can use to hide on site
+            $table->string('current_period_end'); // + 15 days and CRON goes
         });
     }
 

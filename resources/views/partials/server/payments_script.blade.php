@@ -1,74 +1,8 @@
 <script type="text/javascript">
     var guild_id = '{{ $id }}';
-    var roles = null;
     var loaded_payments = false;
     var loaded_disputes = false;
 
-    $(document).ready(function () {
-        var socket_id = '{{ uniqid() }}';
-        roles = [];
-        socket.emit('get_roles', [socket_id, guild_id]);
-
-        socket.on('res_roles_' + socket_id, function (msg) {
-            roles = msg;
-            // Populate roles array because we will need the roles array later
-            Object.keys(roles).forEach(function (key) {
-                roles[key] = {
-                    name: roles[key]['name'],
-                    color: roles[key]['color']
-                };
-            });
-
-        });
-    });
-
-    function loadPayments() {
-        $('#payments-btn').addClass('active');
-        $('#disputes-btn').removeClass('active');
-        $('#disputes_table').hide();
-        if(loaded_disputes) {
-            $('#payments_table').show();
-            return;
-        }
-        $('#btn_payments-refresh').addClass('spinning');
-        $('#disputes_table').hide();
-        loaded_payments = true;
-        $.ajax({
-            url: `/get-transactions`,
-            type: 'GET',
-            data: {
-                roles: roles,
-                guild: guild_id,
-                _token: '{{ csrf_token() }}'
-            },
-        }).done(function (response) {
-            for (var i = 0; i < response.length; i++) {
-                var invoice = response[i];
-
-                var id = invoice['id'];
-                var number = invoice['number'];
-                var description = invoice['lines']['data'][0]['description'];
-                var status = invoice['status'];
-                var status_color = status == 'paid' ? 'success' : 'default';
-                var html = `
-                    <a class="list-group-item flex-column align-items-start" href="javascript:void(0)"
-                    data-url="/slide-invoice/${id}" data-toggle="slidePanel">
-                        <span class="badge badge-pill text-capitalize badge-${status_color}">${status}</span> 
-                        <span class="badge badge-pill badge-primary badge-outline mr-2 hidden-sm-down">#${number}</span>
-                        <span class="badge badge-first badge-pill badge-success mr-15"><i class="wb wb-arrow-down"></i></span>
-                        <div><p class="desc">${description}</p></div>
-                    </a>                   
-                `;
-                $('#btn_payments-refresh').removeClass('spinning');
-                if($('#btn-disputes').hasClass('active')){
-                    $('#payments_table').append(html);
-                }else{
-                    $('#payments_table').append(html).show();
-                }
-            }
-            $('#payments-loading_table').hide();
-        });
-    }
 
     function loadDisputes() {
         $('#disputes-btn').addClass('active');

@@ -30,6 +30,7 @@
                         <tbody id="roles_table">
                             @foreach($roles as $role) 
                            
+                            @if($role->name !== '@everyone')
                             @php
                             $active = in_array($role->id, $active_roles);
                             @endphp
@@ -61,29 +62,11 @@
                                     <button type="button" class="btn btn-primary btn-icon btn-round py-md-20 w-p80 animation-scale-up @if($active) active @endif toggle-btn-trigger" id="toggle-product_{{ $id }}_{{ $role->id }}" data-role_id="{{ $role->id }}"><i class="icon @if($active) wb-plus @else wb-check @endif text-white" aria-hidden="true" id="toggle-product-icon_{{ $id }}_{{ $role->id }}"></i></button>
                                 </td>
                             </tr>
+                            @endif
                             @endforeach
                         </tbody>
                     </table>
-                <!-- <div class="card card-hover" data-toggle="slidePanel" data-url="/slide-list-products/{{ $id }}"><i class="icon wb-plus"></i> Shop Product
-                    </div>-->
-                {{-- <div class="card card-block card-hover mb-25" data-toggle="slidePanel" data-url="/slide-list-products/{{ $id }}"> --}}           
                 </div>
-                <!--<div class="panel-footer">
-                    <div class="card card-block card-hover my-5 save-products d-none btn_save-roles" id="btn_save-products">
-                        <div class="counter counter-lg counter-inverse blue-grey-300 vertical-align">
-                        <div class="vertical-align-middle">
-                            <span class="counter-number">Save Roles</span>
-                        </div>
-                        </div>
-                    </div>
-                    <div class="card card-block card-hover my-5 save-products btn_edit-roles" id="btn_edit-roles">
-                        <div class="counter counter-lg counter-inverse blue-grey-300 vertical-align">
-                        <div class="vertical-align-middle">
-                            <span class="counter-number">Show Roles</span>
-                        </div>
-                        </div>
-                    </div>
-                </div>-->
             </div>
         </div>
 
@@ -97,7 +80,7 @@
                         </div>
                         <p>&#8205;</p>
                     </div>
-                    <div class="panel-actions panel-actions-keep" onclick="fillRecentPayments();">
+                    <div class="panel-actions panel-actions-keep" onclick="fillRecentPayments('{{ $shop->id }}');">
                         <button type="button" class="btn btn-sm btn-dark btn-icon btn-round" id="btn_recent-refresh"
                                 data-toggle="tooltip" data-original-title="Refresh">
                             <i class="icon wb-refresh" aria-hidden="true"></i>
@@ -108,12 +91,29 @@
                     <div data-role="container">
                         <div data-role="content" class="p-0">
                             <table class="table mb-0" data-plugin="animateList" data-animate="fade" data-child="tr">
-                                <tbody class="table bg-grey-3 loading-bg">
-                                    @if($has_order)
-                                    @include('partials/server/loaders/new-payments')
-                                    @endif                            
+                                <tbody class="table bg-grey-3 loading-bg" hidden>
+                                    @include('partials/server/loaders/new-payments')                
                                 </tbody>
                                 <tbody id="recent-transactions-table">
+                                    @foreach(\App\Subscription::where('store_id', $shop->id)->whereDay('latest_invoice_paid_at', '=', date('d'))->whereMonth('latest_invoice_paid_at', '=', date('m'))->whereYear('latest_invoice_paid_at', '=', date('Y'))->get() as $sub) 
+                                    @php
+                                        $discord_id = \App\DiscordOAuth::where('user_id', $sub->user_id)->first()->discord_id;
+                                        $discord_helper = new \App\DiscordHelper(\App\User::where('id', $sub->user_id)->first());
+
+                                        $start = new DateTime($sub->latest_invoice_paid_at);
+                                        $end = new DateTime('NOW');
+                                        $interval = $end->diff($start);
+                                        $days = $interval->format('%d');
+                                        $hours = 24 * $days + $interval->format('%h');
+                                        $minutes = $interval->format('%i');
+
+                                    @endphp
+                                    <tr data-url="/slide-invoice?id={{ $sub->latest_invoice_id }}&user_id={{ $sub->user_id }}&role_id={{ $sub->metadata['role_id'] }}&guild_id={{ $id }}" data-toggle="slidePanel">
+                                        <td class="w-120 font-size-12 pl-20">@if($hours < 1) {{ $minutes . ' minutes ago.' }} @else {{ $hours . ' hours ago.' }} @endif</td>
+                                        <td class="content"><div>{{ $discord_helper->getUsername() }}</div></td>
+                                        <td class="green-600 w-80">+ ${{ number_format($sub->latest_invoice_amount / 100, 2, '.', ',') }}</td>
+                                    </tr>
+                                    @endforeach  
                                 </tbody>
                             </table>
                         </div>

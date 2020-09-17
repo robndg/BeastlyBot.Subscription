@@ -43,7 +43,7 @@
               <div class="badge badge-lg badge-primary bg-{{ $ticket->status == 'Team Reply' ? 'green-600' : 'indigo-600' }} float-right my-1" id="step1">{{ $ticket->status }}</div>
                 <ul class="timeline timeline-icon mb-0">
                     
-                    <li class="timeline-period bg-indigo-600 rounded text-white">{{ $ticket->message }}</li>
+                    <li class="timeline-period bg-indigo-600 rounded text-white"><b>{{ $ticket->user->getDiscordHelper()->getUsername() }}:</b> {{ $ticket->message }}</li>
 
                     @if($ticket->comments->count() > 0)
                     @foreach($ticket->comments as $comment)
@@ -61,6 +61,9 @@
                                       <i class="icon wb-reply"></i>
                                       @endif
                                     </div>
+                                    @if($ticket->user->id != $comment->user_id)
+                                    <div class="badge badge-lg badge-primary {{ $comment->user->admin == 1 ? 'bg-green-600' : 'bg-indigo-600' }} my-1" id="step1">Support Team</div>
+                                    @endif
                                     @endif
                                     <div class="timeline-content">
                                         <div class="card card-article card-shadow @if(!$loop->last) mb-0 @endif">

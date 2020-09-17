@@ -50,16 +50,6 @@
     var guild_id = '{{ $guild_id }}';
     var role_id = '{{ $role_id }}';
     var Global = {};
-    $(document).ready(function () {
-        socket.emit('get_role_data', [socket_id, '{{ $guild_id }}', '{{ $role_id }}']);
-
-        socket.on('res_role_data_' + socket_id, function (message) {
-            $('#role_name').text(message['name']);
-            var r_name = message['name'];
-            Global.role_name = r_name;
-        });
-
-    });
 
     // TODO: For now we close the slide but we need to turn off the switcheries
     function updatePrices() {

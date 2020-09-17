@@ -110,38 +110,6 @@
                 $('#duration_months_input').val(0);
             }
         });
-
-        var roles = [];
-
-        socket.emit('get_guilds', [socket_id, '{{ auth()->user()->DiscordOAuth->discord_id }}']);
-
-        socket.on('res_guilds_' + socket_id, function (message) {
-            Object.keys(message).forEach(function (key) {
-                socket.emit('get_roles', [socket_id, key]);
-
-                var html = `
-                <optgroup label="` + message[key]['name'] + `" id="optgroup-` + key + `"></optgroup>
-                `;
-
-                $('#coupon-active-roles').append(html);
-            });
-        });
-
-        socket.on('res_roles_' + socket_id, function (message) {
-            roles = message;
-            Object.keys(message).forEach(function (key) {
-                socket.emit('get_role_for_sale', [socket_id, message[key]['guild_id'], key]);
-            });
-        });
-
-        socket.on('res_role_for_sale_' + socket_id, function (message) {
-            if (message['for_sale']) {
-                var html = `
-                <option value="` + message['role_id'] + `" id="` + message['role_id'] + `">` + roles[message['role_id']]['name'] + `</option>
-                `;
-                $('#optgroup-' + message['guild_id']).append(html);
-            }
-        });
     });
 </script>
 

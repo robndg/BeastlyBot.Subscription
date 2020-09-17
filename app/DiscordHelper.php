@@ -58,17 +58,20 @@ class DiscordHelper
         return Cache::get('discord_email_' . $this->user->DiscordOAuth->discord_id);
     }
 
-    // TODO: Cache
     public function getGuilds() {
+        if(Cache::has('guilds_' . auth()->user()->id)) {
+            return Cache::get('guilds_' . auth()->user()->id);
+        }
+
         $provider = $this->getDiscordProvider();
         $token = $this->getDiscordAccessToken();
         $guildsRequest = $provider->getAuthenticatedRequest('GET', $provider->getResourceOwnerDetailsUrl($token) . '/guilds', $token);
 
         $guilds = $provider->getParsedResponse($guildsRequest);
-        return $guilds;
+        Cache::put('guilds_' . auth()->user()->id, $guilds, 60 * 5);
+        return Cache::get('guilds_' . auth()->user()->id);
     }
 
-    // TODO: Cache
     public function getOwnedGuilds() {
         $guilds = array();
         foreach($this->getGuilds() as $guild) {
@@ -79,6 +82,23 @@ class DiscordHelper
         return $guilds;
     }
 
+    public function isUserBanned(int $guild_id, int $user_id) {
+        $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
+        foreach($discord_client->guild->getGuildBans(['guild.id' => $guild_id]) as $ban) {
+            if($ban->user->id == $user_id) return true;
+        }
+        return false;
+    }
+
+    public function isMember(int $guild_id, int $user_id) {
+        $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
+        foreach($discord_client->guild->listGuildMembers(['guild.id' => $guild_id]) as $member) {
+            if($member->user->id == $user_id) return true;
+        }
+        return false;
+    }
+
+
     public function getRoles(int $guild_id) {
         if(Cache::has('roles_' . $guild_id)) {
             return Cache::get('roles_' . $guild_id);
@@ -87,6 +107,27 @@ class DiscordHelper
         $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
         Cache::put('roles_' . $guild_id, $discord_client->guild->getGuildRoles(['guild.id' => $guild_id]), 60 * $this->minutes_to_cache);
         return Cache::get('roles_' . $guild_id);
+    }
+
+    public function getRole(int $guild_id, int $role_id) {
+        if(Cache::has('roles_' . $guild_id)) {
+            foreach(Cache::get('roles_' . $guild_id) as $role) {
+                if($role->id == $role_id) {
+                    return $role;
+                }
+            }
+        }
+
+        $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
+        Cache::put('roles_' . $guild_id, $discord_client->guild->getGuildRoles(['guild.id' => $guild_id]), 60 * $this->minutes_to_cache);
+
+        foreach(Cache::get('roles_' . $guild_id) as $role) {
+            if($role->id == $role_id) {
+                return $role;
+            }
+        }
+
+        return null;
     }
 
     public function getGuild(int $guild_id) {
@@ -99,13 +140,18 @@ class DiscordHelper
         return Cache::get('guild_' . $guild_id);
     }
 
-    public function ownsGuild($guild_id): bool {
-        if(DiscordStore::where('guild_id', $guild_id)->exists()) {
-            $store = DiscordStore::where('guild_id', $guild_id)->first();
-            if($store->user_id == auth()->user()->id) return true;
+    public function ownsGuild(int $guild_id): bool {
+        $discord_o_auth = DiscordOAuth::where('user_id', auth()->user()->id)->first();
+        return $this->getGuild($guild_id)->owner_id == $discord_o_auth->discord_id;
+    }
+
+    public function getUser(int $discord_id) {
+        if(Cache::has('discord_user_' . $discord_id)) {
+            return Cache::get('discord_user_' . $discord_id);
         }
-        
-        return false;
+        $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
+        Cache::put('discord_user_' . $discord_id, $discord_client->user->getUser(['user.id' => $discord_id], 60 * 5));
+        return Cache::get('discord_user_' . $discord_id);
     }
 
     private function getDiscordData() {

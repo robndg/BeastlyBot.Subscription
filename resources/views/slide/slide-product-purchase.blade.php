@@ -1,4 +1,4 @@
-<header class="slidePanel-header bg-blue-600 draw-grad-up" id="bg_badge">
+<header class="slidePanel-header bg-blue-600 draw-grad-up">
     <button id="payment-success" type="button"
             class="btn btn-icon btn-pure btn-inverse actions-top icon wb-chevron-left"
             aria-hidden="true" data-url="/slide-product-purchase-success" data-toggle="slidePanel" hidden
@@ -15,18 +15,15 @@
 
         <div class="col-sm-2 col-4">
             <a class="avatar avatar-xxl" href="javascript:void(0)">
-                <img id="discord_icon"
-                     src="{{ auth()->user()->getDiscordHelper()->getAvatar() }}"
-                     alt="...">
+                <img src="{{ $discord_helper->getAvatar() }}" alt="...">
             </a>
         </div>
         <div class="col-sm-8 col-8">
-            <h1 class="pt-10 pl-10" id="discord_username" style="color: white;">{{ auth()->user()->getDiscordHelper()->getUsername() }}</h1>
-           <div class="badge badge-lg badge-primary font-size-20"><i class="icon-discord mr-2"
-                                                                                  aria-hidden="true"></i> <span
-                id="role_name">Loading...</span>
-            </div>
-            {{--            <p>Logged in <span class="badge badge-outline ml-5 badge-light">Switch</span></p>--}}
+            <h1 class="pt-20" style="color: white;">{{ $discord_helper->getUsername() }}</h1>
+            <!-- <div class="badge badge-lg font-size-20" style="color: white;background-color: #{{ dechex($role->color) }};">
+                <i class="icon-discord mr-2" aria-hidden="true"></i> 
+                <span>{{ $role->name }}</span>
+            </div> -->
         </div>
     </div>
 </header>
@@ -34,90 +31,56 @@
 
 <div class="row no-space" id="slider-div">
     <div class="col-md-12 text-center">
-        <div class="font-size-20 font-weight-400 text-white pt-20 pt-lg-50">Subscribe to <span class="badge badge-primary font-size-20 ml-2" id="role_badge"><i class="icon-discord mr-2"
-                                                                                  aria-hidden="true"></i> <span
-                id="role_name2"></span>
+        <div class="font-size-20 font-weight-400 text-white pt-20 pt-lg-50">Subscribe to <span class="badge font-size-20 ml-2" style="color: white;background-color: #{{ dechex($role->color) }};"><i class="icon-discord mr-2" aria-hidden="true"></i> <span>{{ $role->name }}</span>
         </span>
 
     </div>
         <div class="pt-0 pt-md-25 pt-lg-25 pt-xl-50">
             <div class="row mx-auto">
-                    <div class="col-12 card border-0">
-                        <div class="card-body">
-                            <div class="row text-center">
-                                <div class="col-12">
+                <div class="col-12 card border-0">
+                    <div class="card-body">
+                        <div class="row text-center">
+                            <div class="col-12">
 
+                            </div>
+
+                            @php
+                            $first = true;
+                            @endphp
+
+                            @foreach($plans as $plan)
+
+                            
+                            <div class="col-6 col-md-3 mx-auto">
+                                <div class="card vertical-align h-150 mt-15 mt-md-0" >
+                                    <div class="text-center vertical-align-middle font-size-16 pb-15">
+                                            <h4 class="font-weight-200 pt-5">{{ $plan->interval_cycle }} @if($plan->interval_cycle > 1)Months @else Month @endif</h4>
+                                        <i class="wb-triangle-down font-size-24 mb-10 blue-600"></i>
+                                        <div>
+                                        
+                                            <span class="font-size-16">${{ number_format(($plan->getStripePlan()->amount / 100), 2, '.', ',') }}</span>
+                                        </div>
+
+                                    </div>
+                                    @if($first)
+                                    <input id="inputRadios{{ $plan->interval_cycle }}Months" name="inputRadios"  onclick="updatePrices('{{ $plan->interval_cycle }}', '{{ ($plan->getStripePlan()->amount / 100) }}')" type="radio" class="to-labelauty" data-plugin="labelauty" data-labelauty=" " checked />
+                                    @php
+                                    $first = false;
+                                    @endphp
+                                    @else
+                                    <input id="inputRadios{{ $plan->interval_cycle }}Months"  name="inputRadios" onclick="updatePrices('{{ $plan->interval_cycle }}', '{{ ($plan->getStripePlan()->amount / 100) }}')" type="radio" class="to-labelauty" data-plugin="labelauty" data-labelauty=" " />
+                                    @endif
                                 </div>
-                                @for($i = 0; $i < 13; $i += 1)
-                                @if($i === 1 || $i === 3 || $i === 6 || $i === 12)
-                                @if($special_id)
-                                    @if($prices[$i] > -1)
-                                    <div class="col-6 col-md-3 mx-auto">
-                                        <div class="card vertical-align h-150 mt-15 mt-md-0" id="{{ $i }}-card">
-                                            <div class="text-center vertical-align-middle font-size-16 pb-15">
-                                                    <h4 class="font-weight-200 pt-5">{{ $i }} @if($i > 1)Months @else Month @endif</h4>
-                                                    {{-- <div class="input-group w-60 mx-auto">
-                                                        <input type="radio" class="to-labelauty" onclick="updatePrices('{{ $prices[$i] }}')" id="inputRadios{{ $i }}month"
-                                                        name="inputRadios" data-plugin="labelauty"
-                                                        data-labelauty=" "/>
-                                                    </div> --}}
-                                                <i class="wb-triangle-down font-size-24 mb-10 blue-600"></i>
-                                                <div>
-                                                    <span class="font-size-16">${{ $prices[$i] }}</span>
-                                                </div>
-
-                                            </div>
-                                            <input type="radio" class="to-labelauty" onclick="updatePrices('{{ $prices[$i] }}')" id="inputRadios{{ $i }}month"
-                                        name="inputRadios" data-plugin="labelauty"
-                                        data-labelauty=" "/>
-                                        </div>
-                                    </div>
-                                    @endif
-                                @else
-                                    @if($prices[$i] > 0)
-                                    <div class="col-6 col-md-3 mx-auto">
-                                        <div class="card vertical-align h-150 mt-15 mt-md-0" id="{{ $i }}-card">
-                                            <div class="text-center vertical-align-middle font-size-16 pb-15">
-                                                    <h4 class="font-weight-200 pt-5">{{ $i }} @if($i > 1)Months @else Month @endif</h4>
-                                                    {{-- <div class="input-group w-60 mx-auto">
-                                                        <input type="radio" class="to-labelauty" onclick="updatePrices('{{ $prices[$i] }}')" id="inputRadios{{ $i }}month"
-                                                        name="inputRadios" data-plugin="labelauty"
-                                                        data-labelauty=" "/>
-                                                    </div> --}}
-                                                <i class="wb-triangle-down font-size-24 mb-10 blue-600"></i>
-                                                <div>
-                                                    <span class="font-size-16">${{ $prices[$i] }}</span>
-                                                </div>
-
-                                            </div>
-                                            <input type="radio" class="to-labelauty" onclick="updatePrices('{{ $prices[$i] }}')" id="inputRadios{{ $i }}month"
-                                        name="inputRadios" data-plugin="labelauty"
-                                        data-labelauty=" "/>
-                                        </div>
-                                    </div>
-                                    @endif
-                                @endif
-                                @endif
-                                @endfor
-
                             </div>
+
+                            @endforeach
                         </div>
-                    </div> {{--
-                @for($i = 0; $i < 13; $i += 1)
-                    @if($i === 1 || $i === 3 || $i === 6 || $i === 12)
-                        @if($prices[$i] > 0)
-                            <div class="form-group col-6 col-md-3 mx-auto">
-                                <input type="radio" class="to-labelauty" onclick="updatePrices('{{ $prices[$i] }}')" id="inputRadios{{ $i }}month"
-                                       name="inputRadios" data-plugin="labelauty"
-                                       data-labelauty="{{ $i }} @if($i > 1)Months @else Month @endif"/>
-                            </div>
-                        @endif
-                    @endif
-                @endfor  --}}
+                    </div>
+                </div>
             </div>
         </div>
         <div class="pt-0 pt-md-25 pt-lg-25 pt-xl-50">
-            <h3 class="mt-0 pb-md-10 text-white">Total: <span class="font-weight-200">$<span id="big_price_label">0</span></span></h3>
+            <h3 class="mt-0 pb-md-10 text-white">Total: <span class="font-weight-200">$<span id="big_price_label">{{ number_format(($plans[0]->getStripePlan()->amount / 100), 2, '.', ',') }}</span></span></h3>
             <div>
                 <input type="text" class="form-control form-control-lg w-200 mx-auto" placeholder="Coupon Code" id="couponCode" disabled>
                 <p id="coupon_info"></p>
@@ -127,7 +90,7 @@
                 <div class="container">
                     <div class="row">
                         <br/>
-                        @if((auth()->user()->getDiscordHelper()->ownsGuild($shop->guild_id)) && (!auth()->user()->canAcceptPayments()))
+                        @if(($discord_helper->ownsGuild($store->guild_id)) && (!auth()->user()->canAcceptPayments()))
                         <a href="javascript:void(0)" class="btn btn-success btn-lg btn-block" data-toggle="modal" data-target="#partnerPricingModal"
                            role="button">Pay</a>
                         @else
@@ -140,12 +103,12 @@
 
             <div class="mt-25 mt-sm-25  mt-md-50 mt-lg-50 mt-xl-100 p-25 pb-md-50 draw-grad">
 
-                @if($shop->refunds_enabled)
-                <span class="font-size-26 grey-400 font-weight-100 pt-lg-15">{{ $shop->refunds_days }} Day Refund Policy
+                @if($store->refunds_enabled)
+                <span class="font-size-26 grey-400 font-weight-100 pt-lg-15">{{ $store->refunds_days }} Day Refund Policy
                 </span>
                 @endif
-                <div>By clicking Pay you agree to our <a href="/terms" target="_blank">terms of service</a>.</div><div> You can request a refund anytime during your subscriptions first billing term. @if($shop->refunds_terms == '1')<b>No questions asked.</b>@endif
-                </div><div>By server owner discretion{{ $shop->refunds_terms == '2' ?  '.' : ' with reason.' }}</div>
+                <div>By clicking Pay you agree to our <a href="/terms" target="_blank">terms of service</a>.</div><div> You can request a refund anytime during your subscriptions first billing term. @if($store->refunds_terms == '1')<b>No questions asked.</b>@endif
+                </div><div>By server owner discretion{{ $store->refunds_terms == '2' ?  '.' : ' with reason.' }}</div>
             </div>
 
         </div>
@@ -154,41 +117,12 @@
     </div>
 </div>
 
-<script>
-$(document).ready(function() {
-    $('#inputRadios1month').trigger('click');
-});
-</script>
 <script type="text/javascript">
     var token = '{{ csrf_token() }}';
-    var duration = 1;
-    var guild_name, role_name, special_id;
-    var guild_owner;
     var current_price, net_price;
-    var in_guild = false;
+    var is_member = '{{ $discord_helper->isMember($guild->id, $discord_helper->getID()) }}';
 
     $(document).ready(function () {
-        socket.emit('get_guild_data', [socket_id, '{{ $shop->guild_id }}']);
-        socket.emit('get_role_data', [socket_id, '{{ $shop->guild_id }}', '{{ $role_id }}']);
-        socket.emit('is_user_in_guild', [socket_id, '{{ $shop->guild_id }}', '{{ auth()->user()->DiscordOAuth->discord_id }}']);
-
-        socket.on('res_user_in_guild_' + socket_id, function(msg) {
-                in_guild = msg;
-        });
-
-        socket.on('res_guild_data_' + socket_id, function (message) {
-            guild_name = message['name'];
-            guild_owner = message['owner'];
-            console.log(message);
-        });
-
-        socket.on('res_role_data_' + socket_id, function (message) {
-            role_name = message['name'];
-            $('#role_name').text(message['name']);
-            $('#role_name2').text(message['name']);
-            $('#role_badge').css('background-color', message['color']);
-            // $('#bg_badge').css('background-color', message['color']);
-        });
 
         /**
          * ALL THE CODE FOR THE COUPON CODE BOX
@@ -217,7 +151,7 @@ $(document).ready(function() {
                 url: '/validate-coupon',
                 type: 'POST',
                 data: {
-                    owner_id: guild_owner,
+                    owner_id: '{{ $guild->owner_id }}',
                     code: $input.val(),
                     _token: '{{ csrf_token() }}'
                 },
@@ -250,7 +184,7 @@ $(document).ready(function() {
 
     });
 
-    function updatePrices(value) {
+    function updatePrices(interval, value) {
         current_price = value;
         net_price = value;
         $("#big_price_label").text(formatMoney(net_price, 2, ".", ","));
@@ -258,13 +192,18 @@ $(document).ready(function() {
         $('#couponCode').attr('disabled', false);
         $('#payButton').attr('disabled', false);
         $('#coupon_info').text('');
+
+        $('#inputRadios1Months').removeAttr('checked');
+        $('#inputRadios3Months').removeAttr('checked');
+        $('#inputRadios6Months').removeAttr('checked');
+        $('#inputRadios12Months').removeAttr('checked');
     }
 
     function getSelectedDuration() {
-        var duration_1_month = $('#inputRadios1month');
-        var duration_3_month = $('#inputRadios3month');
-        var duration_6_month = $('#inputRadios6month');
-        var duration_12_month = $('#inputRadios12month');
+        var duration_1_month = $('#inputRadios1Months');
+        var duration_3_month = $('#inputRadios3Months');
+        var duration_6_month = $('#inputRadios6Months');
+        var duration_12_month = $('#inputRadios12Months');
 
         if (duration_1_month !== undefined && duration_1_month.is(':checked')) return 1;
         if (duration_3_month !== undefined && duration_3_month.is(':checked')) return 3;
@@ -286,10 +225,8 @@ $(document).ready(function() {
             (decPlaces ? decSep + Math.abs(number - i).toFixed(decPlaces).slice(2) : "");
     }
 
-
-
     function beginCheckout() {
-        if(!in_guild && role_name) {
+        if(!is_member) {
             Swal.fire({
                 title: 'Not a member!',
                 text: 'Please join the server before purchasing any roles.',
@@ -309,35 +246,23 @@ $(document).ready(function() {
             allowOutsideClick: () => !Swal.isLoading(),
             target: document.getElementById('slider-div')
         });
-        swal.showLoading();
 
-        var affiliate = 0;
+        Swal.showLoading();
 
-        @if(isset($affiliate_id))
-            affiliate = '{{ $affiliate_id }}';
-        @endif
+        var process_url = '/process-checkout';
 
-        if(special_id != null){
-            var process_url = '/process-special-checkout';
-        }else{
-            var process_url = '/process-checkout';
-        }
-
-        console.log( $('#couponCode').val());
         $.ajax({
             url: process_url,
             type: 'POST',
             data: {
-                'guild_id': '{{ $shop->guild_id }}',
-                'role_id': '{{ $role_id }}',
+                'guild_id': '{{ $store->guild_id }}',
+                'role_id': '{{ $role->id }}',
                 'product_type': 'discord',
                 'billing_cycle': getSelectedDuration(),
                 'coupon_code': $('#couponCode').val(),
-                'affiliate_id': affiliate,
                 'server_icon': $('#guild_icon').attr('src'),
-                'guild_name': guild_name,
-                'role_name': role_name,
-                'special_id': special_id,
+                'guild_name': '{{ $guild->name }}',
+                'role_name': '{{ $role->name }}',
                 _token: '{{ csrf_token() }}'
             },
         }).done(function (msg) {

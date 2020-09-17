@@ -4,8 +4,6 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/promotions', 'PromotionController@getPromotionsPage');
 
-Route::get('/slide-promotions', 'PromotionController@getPromotionsSlide');
-
 Route::get('/slide-promotions-add-coupon', function () {
     return view('/slide/slide-promotions-add-coupon');
 });

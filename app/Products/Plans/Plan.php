@@ -4,6 +4,7 @@ namespace App\Products\Plans;
 
 use App\Products\ProductMsgException;
 use App\SiteConfig;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
 
 abstract class Plan 
@@ -19,9 +20,22 @@ abstract class Plan
         $this->interval = $interval;
         $this->interval_cycle = $interval_cycle;
         if(('day' && 'week' && 'year' && 'month') != $interval) throw new ProductMsgException('Invalid interval.');
-        try {
-            $this->stripe_plan_obj = \Stripe\Plan::retrieve($this->getStripeID());
-        } catch (\Exception $e) {}
+
+
+        if(Cache::has('plan_' . $this->getStripeID())) {
+            if(Cache::get('plan_' . $this->getStripeID()) != 'null') {
+                $this->stripe_plan_obj = Cache::get('plan_' . $this->getStripeID());
+            }
+        } else {
+            \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+            try {
+                $this->stripe_plan_obj = \Stripe\Plan::retrieve($this->getStripeID());
+                Cache::put('plan_' . $this->getStripeID(), $this->stripe_plan_obj, 60 * 10);
+            } catch (\Exception $e) {
+                Cache::put('plan_' . $this->getStripeID(), "null", 60 * 10);
+            }
+        }
+        
     }
 
     public function getProduct(): \App\Products\Product {
@@ -41,7 +55,7 @@ abstract class Plan
 
         if($price < 1) return;
 
-        \Stripe\Plan::create([
+        $plan = \Stripe\Plan::create([
             "amount" => $price * 100,
             "interval" => $this->interval,
             "interval_count" => $this->interval_cycle,
@@ -54,6 +68,7 @@ abstract class Plan
             "nickname" => $request['nickname'],
         ]);
 
+        Cache::put('plan_' . $this->getStripeID(), $plan, 60 * 10);
 
         return response()->json(['success' => true, 'msg' => 'Plan created!', 'active' => true]);
     }
@@ -67,6 +82,7 @@ abstract class Plan
         \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
         try {
             if($this->getStripePlan() !== null) {
+                Cache::forget('plan_' . $this->getStripeID());
                 $this->getStripePlan()->delete();
             }
         } catch(\Exception $e) {}
@@ -77,12 +93,6 @@ abstract class Plan
     abstract public function getStripeID(): string;
 
     public function getStripePlan() {
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
-        if($this->stripe_plan_obj == null) {
-            try {
-                $this->stripe_plan_obj = \Stripe\Plan::retrieve($this->getStripeID());
-            } catch (\Exception $e) {}
-        }
         return $this->stripe_plan_obj;
     }
 

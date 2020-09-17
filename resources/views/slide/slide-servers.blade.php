@@ -35,22 +35,34 @@
     <div class="page-content-table app-beast">
         <div class="page-main">
             <table class="table" data-plugin="animateList" data-animate="fade" data-child="tr">
-                <tbody id="servers-table"></tbody>
-            </table>
-            <!--<table class="table">
-                <tbody>
-                    <tr>
-                        <td class="text-center" onClick="document.location.href='/server/${key}';">
-                            Add Server
+                <tbody id="servers-table">
+                    @foreach($guilds as $guild)
+                    <tr onClick="document.location.href='/server/{{ $guild['id'] }}';" data-key="{{ $guild['id'] }}">
+                        <td class="cell-100 pl-15 pl-lg-30">
+                            <a class="avatar avatar-lg" href="javascript:void(0)">
+                            <img src="https://cdn.discordapp.com/icons/{{ $guild['id'] }}/{{ $guild['icon'] }}.png?size=256" alt="...">
+                            </a>
+                        </td>
+                        <td>
+                            <div class="title">{{ $guild['name'] }}</div>
+                        </td>
+                        <td class="cell-150 hidden-md-down text-center">
+                            @if(\App\DiscordStore::where('guild_id', $guild['id'])->exists())
+                            <div class="time" id="subCount{{ $guild['id'] }}">{{ sizeof(\App\Http\Controllers\ServerController::getUsersRoles(\App\DiscordStore::where('guild_id', $guild['id'])->first()->id)) }} Subscribers</div>
+                            @else
+                            <div class="time" id="subCount{{ $guild['id'] }}">0 Subscribers</div>
+                            @endif
+                        </td>
+                        <td class="cell-100 hidden-md-up">
+                            <button class="btn btn-link">Settings</button>
                         </td>
                     </tr>
+                    @endforeach
                 </tbody>
-            </table>-->
+            </table>
         </div>
     </div>
-    <script>
-    @include('partials/servers/servers_script')
-    </script>
+ 
     <script type="text/javascript">
     setTimeout(function(){
     if(window.location.href.includes('click-first=true')) {
@@ -98,40 +110,6 @@
 
     },1500);
 
-    </script>
-
-    <script type="text/javascript">
-    $('#Addbtn').click(function(){ // add bot button
-        window.setInterval(function(){
-            if( $('#servers-table tr').length == 0 ) { // run if 0
-
-            var guild_id = null, role_id = null;
-            socket.emit('get_guilds', [socket_id, '{{ auth()->user()->DiscordOAuth->discord_id }}']);
-
-            socket.on('res_guilds_' + socket_id, function (message) {
-                $('#servers-table').empty();
-
-                Object.keys(message).forEach(function (key) {
-
-                    @include('partials/servers/servers_html')
-
-                    $('#servers-table').append(html);
-                    socket.emit('get_guild_subs', [socket_id, key]);
-                });
-            });
-
-            socket.on('res_guild_subs_' + socket_id, function (message) {
-                var guild_id = message['id'];
-                var sub_count = message['count'];
-                $('#subCount' + guild_id).text(sub_count + ' Subscribers');
-            });
-
-
-            }else{
-                clearInterval()  // clear if not 0
-            }
-        }, 2000)
-    });
     </script>
 
 @include('partials/clear_script')

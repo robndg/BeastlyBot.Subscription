@@ -51,19 +51,19 @@
 
             <!-- nav-tabs -->
             <ul class="site-sidebar-nav nav nav-tabs nav-tabs-line bg-blue-grey-100" role="tablist">
-                <li class="nav-item" onclick="fillRecentPayments();">
+                <li class="nav-item">
                     <a class="nav-link active" data-toggle="tab" href="#tab-server" role="tab">
                         <i class="icon icon-shop" aria-hidden="true"></i>
                         <h5>Your Shop</h5>
                     </a>
                 </li>
-                <li class="nav-item" onclick="javascript:loadSubs();">
+                <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#tab-subscribers" role="tab">
                         <i class="icon wb-user" aria-hidden="true"></i>
                         <h5>Subscribers</h5>
                     </a>
                 </li>
-                <li class="nav-item" onclick="javascript:loadPayments();">
+                <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#tab-payments" role="tab">
                         <i class="icon wb-stats-bars" aria-hidden="true"></i>
                         <h5>Payments</h5>

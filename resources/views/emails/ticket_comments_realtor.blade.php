@@ -10,7 +10,7 @@
 </p>
  
 ---
-<p>Replied by: {{ $realtor->f_name }} {{ $realtor->l_name }}</p>
+<p>Replied by: {{ $category->name }} [Beastly Team]</p>
  
 <p>Title: {{ $ticket->title }}</p>
 <p>Ticket ID: {{ $ticket->ticket_id }}</p>

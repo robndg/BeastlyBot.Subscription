@@ -28,6 +28,7 @@
                             <p class="mb-0">{{ Str::limit($ticket->message, 115) }}</p>
                         </a>
                     @endforeach
+                    </div>
                     {{ $tickets->render() }}
 
                     @endif

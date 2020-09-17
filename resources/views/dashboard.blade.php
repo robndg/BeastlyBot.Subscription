@@ -276,7 +276,7 @@
               <p class="mb-1 font-weight-100">Shop</p>
             </div>-->
             <div class="col-6 col-sm-3">
-                <a href="javascript:void(0);" class="card card-block card-hover" id="servers-block" data-toggle="slidePanel" data-url="/slide-servers">
+                <a href="javascript:void(0);" class="card card-block card-hover" id="servers-block" data-toggle="slidePanel" data-url="/servers?slide=true">
                     <div class="counter counter-lg counter-inverse blue-grey-100 vertical-align h-md-100 h-only-xs-100 h-only-sm-100">
                       <div class="vertical-align-middle">
                         <div class="counter-icon mb-15"><i class="icon icon-shop text-white font-size-50 mb--10" aria-hidden="true"></i></div>
@@ -287,7 +287,7 @@
             </div>
 
             <div class="col-6 col-sm-3">
-                <a href="javascript:void(0);" class="card card-block card-hover" data-toggle="slidePanel" data-url="/slide-promotions">
+                <a href="javascript:void(0);" class="card card-block card-hover" data-toggle="slidePanel" data-url="/promotions?slide=true">
                     <div class="counter counter-lg counter-inverse blue-grey-100 vertical-align h-md-100 h-only-xs-100 h-only-sm-100">
                       <div class="vertical-align-middle">
                         <div class="counter-icon mb-15"><i class="icon icon-gift1 text-white font-size-50 mb--10" aria-hidden="true"></i></div>
@@ -440,108 +440,6 @@
 
 @section('scripts')
 
-<script type="text/javascript">
-   // var guild_id = null, role_id = null;
-    $(document).ready(function () {
-        socket.emit('get_other_guilds', [socket_id, '{{ auth()->user()->DiscordOAuth->discord_id }}']);
-
-        socket.on('res_other_guilds_' + socket_id, function (message) {
-            $('#guilds_down').empty();
-
-            Object.keys(message).forEach(function (key) {
-                if((message[key]['shop']) == true){
-                  var html = `
-                  <li class="list-group-item px-5">
-                      <div class="d-flex align-items-start">
-                        <div class="pl-2 pr-10">
-                          <a class="avatar avatar-lg" href="javascript:void(0)">
-                            <img class="img-fluid" src="${message[key]['iconURL']}" alt="...">
-                          </a>
-                        </div>
-                        <div class="media-body">
-                          <h5 class="mt-5 mb-5">${message[key]['name']}</h5>
-                          <small>${message[key]['memberCount']} Members</small>
-                        </div>
-                        <div class="pl-5">
-                          <button type="button" class="btn btn-primary mt-5" onclick="window.location.href = '{{ SiteConfig::get('APP_URL') }}/shop/${key}';">Shop</button>
-                        </div>
-                      </div>
-                    </li>
-                    `;
-                  } 
-                $('#guilds-dropdown').append(html);
-            });
-        });
-
-    });
-</script>
-
-<script type="text/javascript">
-        var subscriptions = JSON.parse('{!! json_encode($subscriptions) !!}');
-        var finished = [];
-
-        $(document).ready(function () {
-            var discord_username, discord_discriminator;
-            socket.on('connect', function () {
-                socket.emit('get_user_data', [socket_id, '{{ auth()->user()->DiscordOAuth->discord_id }}']);
-            });
-            socket.on('res_user_data_' + socket_id, function (message) {
-                $('#avatarIconHeader').attr('src', message['avatar']);
-                discord_username = message['name'];
-                discord_discriminator = message['discriminator'];
-                $('#discord_username').text(discord_username + " #" + discord_discriminator);
-            });
-        });
-
-            /* REMOVED in V2 */
-            /*V1
-            @foreach($subscriptions as $subscription)
-                var data = '{{ $subscription['items']['data'][0]['plan']['id'] }}';
-                var guild_id = data.split('_')[0];
-                var role_id = data.split('_')[1];
-                socket.emit('get_role_data', [socket_id, guild_id, role_id]);
-            @endforeach
-
-            socket.on('res_role_data_' + socket_id, function(message) {
-                jQuery.each(subscriptions, function(i, val) {
-                    var id = val.items.data[0].plan.id;
-                    var guild_id = id.split('_')[0];
-                    var role_id = id.split('_')[1];
-                    if(guild_id === message['guild_id'] && role_id === message['id'] && !finished.includes(val.id)) {
-                        finished.push(val.id);
-                        var dateObj = new Date(val.current_period_end * 1000);
-                        var month = dateObj.getUTCMonth() + 1; //months from 1-12
-                        var day = dateObj.getUTCDate();
-                        var year = dateObj.getUTCFullYear();
-                        var newdate = month + "/" + day + "/" + year;
-
-                        $('#subscriptionsSlider').append(getHTMLSubs(i, message['guild_name'], message['name'], message['color'], message['guild_id'], toTitleCase(val.status), newdate));
-                    }
-                });
-            });
-
-
-
-        function toTitleCase(str) {
-            return str.replace(/\w\S8/g, function(txt){ ###!!! replace 8 with *
-                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
-            });
-        }
-
-        function getHTMLSubs(sub_id, guild_name, role_name, role_color, guild_id, status, date_end) {
-            var status_color = status == 'Active' ? 'green-500' : 'yellow-500';
-            var status_payment = status == 'Active' ? '' : 'd-none';
-            return html = `
-                <div>
-                  <div class="text-center mt-lg-40" onclick="window.location.href = '/account/subscriptions';">
-                    <span class="badge badge-primary badge-lg font-size-20" style="background-color: ` + role_color + `">` + role_name + `</span>
-                    <p class="font-weight-100">` + guild_name + `</p>
-                  </div>
-                </div>
-            `;
-         */
-    </script>
-
 <script>
 
 $(document).on("click", ".open-notification", function () {
@@ -563,17 +461,18 @@ $(document).on("click", ".open-notification", function () {
      // it is unnecessary to have to manually call the modal.
      // $('#addBookDialog').modal('show');
 
-                $.ajax({
-                    url: '/bknd00/mark-notification-read/' + id,
-                    type: 'GET',
-                    data: {
-                        _token: '{{ csrf_token() }}'
-                    },
-                }).done(function (msg) {
-                  $('#not1fication_' + id).blur().addClass('read').removeClass('unread');
-                });
+      $.ajax({
+          url: '/bknd00/mark-notification-read/' + id,
+          type: 'GET',
+          data: {
+              _token: '{{ csrf_token() }}'
+          },
+      }).done(function (msg) {
+        $('#not1fication_' + id).blur().addClass('read').removeClass('unread');
+      });
 
 });
+
 $('#notifications_modal').on('hide.bs.modal', function() {
         var id = $(this).data('id');
         $(".modal.notification #noti_type").addClass('badge-info').removeClass('fade badge-success badge-warning badge-danger');
@@ -582,215 +481,22 @@ $('#notifications_modal').on('hide.bs.modal', function() {
 </script>
 
 
-    <script type="text/javascript">
-      $(window).on('load', function() {
-        $("#subscriptionsSlider").slick({
-          arrows:false,
-          autoplay:true
-        });
-      });
-    </script>
-  <script type="text/javascript">
-    setTimeout(function(){
-    if(window.location.href.includes('open-servers=true')) {
-        $('#servers-block').click()
-        }
-    },1800);
-    </script>
-
-
-////<script>
-
-// $(document).ready(function () {
-//         fetchNotifications();
-
-//         $('#notification_count_1').text('0');
-
-//         function fetchNotifications() {
-//         $.ajax({
-//             url: '/bknd00/get_notifications',
-//             type: 'GET',
-//             data: {
-//                 _token: '{{ csrf_token() }}'
-//             },
-//         }).done(function (msg) {
-//             //$('#notification_count_1').addClass('badge-default').removeClass('badge-primary');
-//             $('#notification_count_1-pg').text(msg['unread_count']);
-
-//             msg['notifications'].reverse().forEach(notification => {
-//                 if($('#not1fication_' + notification['id']).length) {
-//                 } else {
-//                     var color = 'blue';
-
-//                     if(notification['type'] == 'success') {
-//                         color = 'green';
-//                     } else if(notification['type'] == 'warning') {
-//                         color = 'yellow';
-//                     } else if(notification['type'] == 'error') {
-//                         color = 'red';
-//                     }
-//                     if(notification['read']==true){
-//                       read = 'read'
-//                     }else{
-//                       read = 'unread'
-//                     }
-
-//                     var timeDiff = timeDiffStr(new Date(notification['created_at'] * 1000).getTime(), (new Date()).getTime());
-
-//                     var html = `
-//                         <a class="list-group-item dropdown-item px-15 m-0 open-notification ${read}" href="#notifications_modal" id="not1fication_${notification['id']}" data-id="${notification['id']}" data-type="${notification['type']}" data-message="${notification['message']}">
-//                             <div class="media">
-//                                 <div class="pr-10">
-//                                     <i class="icon wb-order bg-${color}-600 white icon-circle"
-//                                     aria-hidden="true"></i>
-//                                 </div>
-//                                 <div class="media-body">
-//                                     <h6 class="media-heading text-truncate" title="${notification['message']}">${notification['message']}</h6>
-//                                     <time class="media-meta">${timeDiff}</time>
-//                                 </div>
-//                             </div>
-//                         </a>
-//                     `;
-
-//                     $('#notifications-dropdown').prepend(html);
-//                 }
-//             });
-//         });
-//     }
-
-//     setInterval(fetchNotifications, 2000);
-//     });
-
-
-
-//</script>
-
-{{--
 <script type="text/javascript">
-    var guild_id = null, role_id = null;
-    $(document).ready(function () {
-        socket.emit('get_guilds', [socket_id, '{{ auth()->user()->DiscordOAuth->discord_id }}']);
-
-        socket.on('res_guilds_' + socket_id, function (message) {
-            $('#servers-table-side').empty();
-
-            Object.keys(message).forEach(function (key) {
-
-                var html = `
-                <li class="list-group-item px-5">
-                    <div class="d-flex align-items-start">
-                      <div class="pl-2 pr-10">
-                        <a class="avatar avatar-lg" href="javascript:void(0)">
-                          <img class="img-fluid" src="${message[key]['iconURL']}" alt="...">
-                        </a>
-                      </div>
-                      <div class="media-body">
-                        <h5 class="mt-5 mb-5">${message[key]['name']}</h5>
-                        <small>${message[key]['memberCount']} Members</small>
-                      </div>
-                      <div class="pl-5">
-                        <button type="button" class="btn btn-primary mt-5" onclick="window.location.href = '{{ SiteConfig::get('APP_URL') }}/server/${key}';">Shop</button>
-                      </div>
-                    </div>
-                  </li>
-                  `;
-
-                $('#servers-table-side').append(html);
-            });
-        });
-
+  $(window).on('load', function() {
+    $("#subscriptionsSlider").slick({
+      arrows:false,
+      autoplay:true
     });
-</script> --}}
-@endsection
-{{-- @foreach(Refund::where('owner_id', (auth()->User()->id))->get() as $refundrequest)
-@if(!$refundrequest->decision)
+  });
+</script>
+
 <script type="text/javascript">
   setTimeout(function(){
-        Swal.fire({
-            title: "New Refund Request",
-            html: "User: {{ $refundrequest->getUser()->getDiscordUsername() }}<br>Role: {{ $refundrequest->role_name }}<br>Purchase Date: {{ Carbon::createFromTimestamp($refundrequest->start_date)->toDateTimeString() }}@if(($refundrequest->refunds_enabled) == '1')<br><br><b>Your Refund Policy: </b>{{ $refundrequest->refund_days }} days, @if(($refundrequest->refund_terms) == '1')No Questions Asked @endif @if(($refundrequest->refund_terms) == '2')by server owner discretion with reason. @endif @endif",
-            // html: "<b>Refund Policy:</b> 15 days by server owner discretion with reason.<br>Username: SnowFalls<br>Role: VIP Member<br>Purchase Date: 05/06/19<br>Reason: Here is the request reason the user entered",
-            footer: '<span class=\"text-white text-center\"><div class=\"checkbox-custom checkbox-default\"><input type=\"checkbox\" id=\"sub_ban\" name=\\"inputSub_ban\" autocomplete=\"off\"><label for=\"inputSub_ban\">Ban user from future purchases?</label></div></span>',
-            type: 'warning',
-            allowOutsideClick: false,
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Yes, accept refund!',
-            cancelButtonText: 'No, deny request.',
-            target: document.getElementById('slider-div')
-        }).then(function(result){
-            if($("#sub_ban").is(':checked')) {
-                var subBan = "1";
-            }else{
-                var subBan = "0";
-            }
-            if (result.value) {
-                $.ajax({
-                    url: '/request-subscription-decision',
-                    type: 'POST',
-                    data: {
-                        sub_id: '{{ $refundrequest->sub_id }}',
-                        issued: '1',
-                        ban: subBan,
-                        _token: '{{ csrf_token() }}'
-                    },
-                }).done(function (msg) {
-                    if (msg['success']) {
-                        Swal.fire({
-                            title: 'Thank you.',
-                            text: 'User notified, subscription cancelled and role removed. Refund queued.',
-                            //input: 'checkbox',
-                            //inputPlaceholder: 'Ban user from future purchases?',
-                            type: 'success',
-                            showCancelButton: false,
-                        }).then(result => {
-                            $('#close-slide').click();
-                        });
-                    } else {
-                        Swal.fire({
-                            title: 'Oops!',
-                            text: msg['msg'],
-                            type: 'warning',
-                            showCancelButton: false,
-                        });
-                    }
-                })
-            }else if(result.dismiss == 'cancel'){
-
-              $.ajax({
-                    url: '/request-subscription-decision',
-                    type: 'POST',
-                    data: {
-                        sub_id: '{{ $refundrequest->sub_id }}',
-                        issued: '0',
-                        ban: subBan,
-                        _token: '{{ csrf_token() }}'
-                    },
-                  }).done(function (msg) {
-                    if (msg['success']) {
-                        Swal.fire({
-                            title: 'Success!',
-                            text: 'Refund denied. User notified, subscription was not cancelled. Thank you.',
-                            //input: 'checkbox',
-                            //inputPlaceholder: 'Ban user from future purchases?',
-                            type: 'success',
-                            showCancelButton: false,
-                        }).then(result => {
-                            $('#close-slide').click();
-                        });
-                    } else {
-                        Swal.fire({
-                            title: 'Oops!',
-                            text: msg['msg'],
-                            type: 'warning',
-                            showCancelButton: false,
-                        });
-                    }
-                  })
-              }
-          })
-    },3000);
+  if(window.location.href.includes('open-servers=true')) {
+      $('#servers-block').click()
+      }
+  },1800);
 </script>
-@endif
-@endforeach --}}
+
+@endsection
+

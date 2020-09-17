@@ -16,6 +16,10 @@ class CreatePaidOutInvoicesTable extends Migration
         Schema::create('paid_out_invoices', function (Blueprint $table) {
             $table->string('id')->unique();
             $table->string('sub_id');
+	    $table->double('amount');
+	    $table->integer('connection_type');
+	    $table->integer('connection_id');
+	    $table->integer('store_id');
             $table->timestamps();
         });
     }

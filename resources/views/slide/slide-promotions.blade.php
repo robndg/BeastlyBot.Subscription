@@ -27,11 +27,7 @@
 
             @include('partials/promotions/promotions_table')
 
-            <!-- pagination -->
-            <!--  <ul data-plugin="paginator" data-total="50" data-skin="pagination-gap"></ul> -->
         </div>
     </div>
-
-@include('partials/promotions/promotions_script')
 
 @include('partials/clear_script')

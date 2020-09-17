@@ -6,7 +6,7 @@
 </head>
 <body>
 <p>
-Heads up {{ ucfirst($realtor->f_name) }}. A message has been opened for your property listing. The details of your ticket are shown below:
+Heads up Beastly Team, {{ $department->name }}. A message has been opened. The details of your ticket are shown below:
 </p>
  
 <p>Title: {{ $ticket->title }}</p>

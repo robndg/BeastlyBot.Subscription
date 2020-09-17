@@ -58,6 +58,9 @@ class PromotionController extends Controller {
             }
         }
 
+        if(\request('slide') == 'true') {
+            return view('slide.slide-promotions')->with('coupons', $coupons);
+        }
         return view('promotions')->with('coupons', $coupons);
     }
 

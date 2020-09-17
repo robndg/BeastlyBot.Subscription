@@ -4,7 +4,7 @@
                 aria-hidden="true"></button>
     </div>
     <h1>Invoice</h1>
-    <p>@if($invoice->lines->data[0]->plan->metadata['stripe_express_id'] == auth()->user()->stripe_express_id && $invoice->metadata['refunded'] != 'true') @if($invoice->metadata['paid_out'] == 'true')<span class="badge badge-success">Paid Out</span>@else <span class="badge badge-primary">Pending</span> @endif @else <span class="badge badge-primary">@if($invoice->metadata['refunded'] == 'true')Refunded @else {{ $invoice->status }} @endif</span> @endif</p>
+    <p>@if($invoice->metadata['refunded'] == 'true')<span class="badge badge-danger">Refunded</span> @else @if($invoice->paid == 'true')<span class="badge badge-success">Paid</span>@else <span class="badge badge-warning">Unpaid</span> @endif @endif</p>
 </header>
 
 <div class="page-content">
@@ -50,7 +50,7 @@
                 <table class="table text-center">
                     <thead>
                     <tr>
-                        {{--                        <th class="text-center">#</th>--}}
+           
                         <th>Guild</th>
                         <th>Role</th>
                         <th>Paid</th>
@@ -60,10 +60,10 @@
                     <tbody>
                     <tr>
                         <td  id="guild_name">
-                            {{ explode('_', $invoice->lines->data[0]['plan']->product)[0] }}
+                            {{ $guild->name }}
                         </td>
                         <td  id="role_name">
-                            {{ explode('_', $invoice->lines->data[0]['plan']->product)[1] }}
+                            <span class="badge m-5" style="color: white;background-color: #{{ dechex($role->color) }};">{{ $role->name }}</span>
                         </td>
                         <td>
                             ${{ number_format($invoice->amount_paid/100, 2, '.', ',') }}
@@ -110,22 +110,5 @@
     </div>
     <!-- End Panel -->
 </div>
-
-<script type="text/javascript">
-    var guild_id = $('#guild_name').text().replace(/\s/g, '');
-    var role_id = $('#role_name').text().replace(/\s/g, '');
-    $(document).ready(function () {
-        socket.emit('get_guild_data', [socket_id, guild_id]);
-        socket.emit('get_role_data', [socket_id, guild_id, role_id]);
-
-        socket.on('res_guild_data_' + socket_id, function (message) {
-            $('#guild_name').text(message['name']);
-        });
-
-        socket.on('res_role_data_' + socket_id, function (message) {
-            $('#role_name').text(message['name']);
-        });
-    });
-</script>
 
 @include('partials/clear_script')

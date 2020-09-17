@@ -4,6 +4,7 @@ namespace App\Mailers;
  
 use App\Ticket;
 use App\User;
+use App\DiscordHelper;
 use Illuminate\Contracts\Mail\Mailer;
 use Illuminate\Support\Facades\Log;
  
@@ -40,21 +41,21 @@ class AppMailer
         return $this->deliver();
     }
 
-    public function sendTicketInformationToAdmin($realtor, Ticket $ticket, $user)
+    public function sendTicketInformationToDepartment($department, Ticket $ticket, $user)
     {
       
-        if($user->email != NULL && $user->name != NULL){
-            $this->fromAddress = $user->email;
-            $this->fromName = $user->name;
+        if($user->getDiscordHelper()->getEmail() != NULL && $user->getDiscordHelper()->getUsername() != NULL){
+            $this->fromAddress = $user->getDiscordHelper()->getEmail();
+            $this->fromName = $user->getDiscordHelper()->getUsername();
         }
 
-        $this->to = $realtor->email;
+        $this->to = $department->email;
  
         $this->subject = "$ticket->title [ID: $ticket->ticket_id]";
  
         $this->view = 'emails.ticket_info_realtor';
  
-        $this->data = compact('realtor', 'ticket', 'user');
+        $this->data = compact('department', 'ticket', 'user');
  
         return $this->deliver();
     }
@@ -68,7 +69,7 @@ class AppMailer
             $this->fromName = $realtor->f_name . ' [Beastly Support]';
         }*/
 
-        $this->to = $ticketOwner->email;
+        $this->to = $ticketOwner->getDiscordHelper()->getEmail();
  
         $this->subject = "RE: $ticket->title [ID: $ticket->ticket_id]";
  
@@ -79,21 +80,21 @@ class AppMailer
         return $this->deliver();
     }
 
-    public function sendTicketCommentsToRealtor($ticketOwner, $realtor, Ticket $ticket, $comment)
+    public function sendTicketCommentsToDepartment($ticketOwner, $category, Ticket $ticket, $comment)
     {
 
-        if($ticketOwner->email != NULL && $ticketOwner->name != NULL){
-            $this->fromAddress = $ticketOwner->email;
-            $this->fromName = $ticketOwner->name;
+        if($ticketOwner->getDiscordHelper()->getEmail() != NULL && $ticketOwner->getDiscordHelper()->getUsername() != NULL){
+            $this->fromAddress = $ticketOwner->getDiscordHelper()->getEmail();
+            $this->fromName = $ticketOwner->getDiscordHelper()->getUsername();
         }
 
-        $this->to = $realtor->email; // realtor(user)
+        $this->to = $category->email; // realtor(user)
  
         $this->subject = "RE: $ticket->title [ID: $ticket->ticket_id]";
  
         $this->view = 'emails.ticket_comments_realtor';
  
-        $this->data = compact('ticketOwner', 'realtor', 'ticket', 'comment');
+        $this->data = compact('ticketOwner', 'category', 'ticket', 'comment');
  
         return $this->deliver();
     }

@@ -17,8 +17,6 @@
                         <div class="counter-number-group">
                             <span class="counter-number" id="server_name">{{ $guild->name }}</span>
                         </div>
-                        <div class="counter-label text-capitalize font-size-16" id="member_count">0 Members
-                        </div>
                     </div>
                 </div>
                 <div
@@ -49,19 +47,19 @@
 
             <!-- nav-tabs -->
             <ul class="site-sidebar-nav nav nav-tabs nav-tabs-line bg-grey-3" role="tablist">
-                <li class="nav-item" onclick="fillRecentPayments();">
+                <li class="nav-item">
                     <a class="nav-link active show" data-toggle="tab" href="#tab-server" role="tab">
                         <i class="icon icon-shop" aria-hidden="true"></i>
                         <h5>Your Shop</h5>
                     </a>
                 </li>
-                <li class="nav-item" onclick="javascript:loadSubs();">
+                <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#tab-subscribers" role="tab">
                         <i class="icon wb-user" aria-hidden="true"></i>
                         <h5>Subscribers</h5>
                     </a>
                 </li>
-                <li class="nav-item" onclick="javascript:loadPayments();">
+                <li class="nav-item">
                     <a class="nav-link" data-toggle="tab" href="#tab-payments" role="tab">
                         <i class="icon wb-stats-bars" aria-hidden="true"></i>
                         <h5>Payments</h5>
@@ -83,13 +81,6 @@
             <!--  <ul data-plugin="paginator" data-total="50" data-skin="pagination-gap"></ul> -->
         </div>
     </div>
-<!--
-    <div class="site-action hidden-sm-down" data-plugin="actionBtn">
-        <button type="button" class="site-action-toggle btn-raised btn btn-primary" id="btn-store2"
-                onclick="window.open('{{ SiteConfig::get('APP_URL') }}/shop/{{ $shop->url }}')">
-            <i class="front-icon icon-shop animation-scale-up mr-2" aria-hidden="true"></i>Store Front
-        </button>
-    </div>-->
 
 @endsection
 
@@ -180,74 +171,21 @@
 
 
 $('#partnerPricingModal').on('hidden.bs.modal', function () {
-            if ($('#live-switch').hasClass('active')) {
-                $("#test-switch").addClass('btn-primary active').removeClass('btn-success');
-                $("#live-switch").addClass('btn-primary').removeClass('active btn-success');
-                $('#icon-store1').addClass("blue-600").removeClass("green-600");
-                $('#btn-store1').removeClass("btn-success");
-                $('#btn-store2').addClass("btn-primary").removeClass("btn-success");
-            }
-        });
+    if ($('#live-switch').hasClass('active')) {
+        $("#test-switch").addClass('btn-primary active').removeClass('btn-success');
+        $("#live-switch").addClass('btn-primary').removeClass('active btn-success');
+        $('#icon-store1').addClass("blue-600").removeClass("green-600");
+        $('#btn-store1').removeClass("btn-success");
+        $('#btn-store2').addClass("btn-primary").removeClass("btn-success");
+    }
+});
 
-/*
-$(document).ready(function() {
-        $('#test-switch').on('click', function() {
+</script>
 
-        Swal.fire({
-            title: 'Test Mode...',
-            // type: 'info',
-            showCancelButton: false,
-            showConfirmButton: false,
-            allowOutsideClick: false
-        });
+@include('partials.server.roles_script')
+@include('partials.server.server_script')
+@include('partials.server.payments_script')
 
-        Swal.showLoading();
-
-        var base_url = "{{ SiteConfig::get('APP_URL') }}/shop/";
-        var live = $("#basic-test").val();
-
-        $.ajax({
-            url: `/save-go-live`,
-            type: 'POST',
-            data: {
-                id: '{{ $shop->id }}',
-                live: $("#basic-test").val(),
-                _token: '{{ csrf_token() }}'
-            },
-        }).done(function (msg) {
-            if(msg['success']) {
-                Swal.fire({
-                    title: 'Done!',
-                    type: 'success',
-                    showCancelButton: false,
-                    showConfirmButton: true,
-                });
-
-                $("#test-switch").addClass('btn-primary', 'active').removeClass('btn-success');
-                $("#live-switch").addClass('btn-primary').removeClass('btn-success', 'active');
-                setTimeout(function(){
-                    $("#test-switch").removeClass('focus');
-                    $('#btn-store1').removeClass("btn-success");
-                    $('#icon-store1').addClass("blue-600").removeClass("green-600");;
-                    $('#btn-store2').addClass("btn-primary").removeClass("btn-success");
-                },2000)
-            } else {
-                Swal.fire({
-                    title: 'Test Mode...',
-                    text: msg['msg'],
-                    type: 'warning',
-                    showCancelButton: false,
-                    showConfirmButton: true,
-                });
-            }
-        });
-    })
-}) */
-    </script>
-    @include('partials.server.roles_script')
-    @include('partials.server.subscribers_script')
-    @include('partials.server.server_script')
-    @include('partials.server.payments_script')
 @if(auth()->user()->error == '2' && $shop->live)
 <script type="text/javascript">
         setTimeout(function(){

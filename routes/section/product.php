@@ -2,14 +2,32 @@
 
 use App\Shop;
 use App\DiscordStore;
+use App\DiscordHelper;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
+use App\Products\DiscordRoleProduct;
+use App\Products\Plans\DiscordPlan;
 
 Route::get('/slide-product-purchase/{guild_id}/{role_id}', function($guild_id, $role_id) {
     if(\request('affiliate_id') !== null) {
         return view('slide.slide-product-purchase')->with('shop', DiscordStore::where('guild_id', $guild_id)->first())->with('role_id', $role_id)->with('prices', ProductController::getPricesForRole($guild_id, $role_id))->with('affiliate_id', \request('affiliate_id'));
     }
-    return view('slide.slide-product-purchase')->with('shop', DiscordStore::where('guild_id', $guild_id)->first())->with('role_id', $role_id)->with('special_id', null)->with('prices', ProductController::getPricesForRole($guild_id, $role_id));
+
+    $discord_helper = new DiscordHelper(auth()->user());
+    $guild = $discord_helper->getGuild($guild_id);
+    $role = $discord_helper->getRole($guild_id, $role_id);
+    $plans = array();
+
+    foreach(array(1, 3, 6, 12) as $months) {
+        $discord_product = new DiscordRoleProduct($guild_id, $role_id, $months);
+        $plan = new DiscordPlan($discord_product, 'month', $months);
+
+        if($plan->getStripePlan() != null) {
+            array_push($plans, $plan);
+        }
+    }
+
+    return view('slide.slide-product-purchase')->with('guild', $guild)->with('plans', $plans)->with('discord_helper', $discord_helper)->with('role', $role)->with('store', DiscordStore::where('guild_id', $guild_id)->first());
 });
 
 Route::get('/slide-special-purchase/{guild_id}/{role_id}/{special_id}/{discord_id}', function($guild_id, $role_id, $special_id, $discord_id) {
@@ -21,19 +39,7 @@ Route::get('/product/{id}', function () {
 });
 //Route::group(['domain' => 'shop.'.env('APP_URL')], function () {
 //Route::group(['domain' => 'beastly.store'], function () {
-    Route::get('/shop/{guild_id}', function ($guild_id) {
-        if(!DiscordStore::where('url', $guild_id)->exists()) {
-            return abort(404);
-        }
-
-        $shop = DiscordStore::where('url', $guild_id)->get()[0];
-        /* --V1
-        return view('subscribe')->with('guild_id', $shop->id)->with('descriptions', \App\RoleDesc::where('guild_id', $guild_id)->get());
-        */
-        $owner_array = App\User::where('id', App\DiscordStore::where('guild_id', $guild_id)->first()->user_id)->first();
-        $shop_url = App\DiscordStore::where('guild_id', $guild_id)->first()->url;
-        return view('subscribe')->with('guild_id', $shop->guild_id)->with('descriptions', 'asd')->with('owner_array', $owner_array)->with('shop_url', $shop_url);
-    });
+    Route::get('/shop/{guild_id}', 'ProductController@getShop');
 //});
 
 Route::get('/shop/{guild_id}/{affiliate_id}', function ($guild_id, $affiliate_id) {

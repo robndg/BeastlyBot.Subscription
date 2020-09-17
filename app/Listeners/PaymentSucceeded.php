@@ -52,7 +52,7 @@ class PaymentSucceeded implements ShouldQueue
                     $subscription->id = $subscription_id;
                     $subscription->stripe_connect_id = StripeConnect::where('user_id', $partner_id)->first()->id;
                     $subscription->latest_invoice_id = $webhookCall->payload['data']['object']['id'];
-                    $subscription->latest_invoice_paid_at = date('Y-m-d');
+                    $subscription->latest_invoice_paid_at = date('Y-m-d H:i:s');
                     $subscription->latest_invoice_amount = $webhookCall->payload['data']['object']['amount_paid'];
                     $subscription->connection_type = 1;
                     $subscription->connection_id = DiscordOAuth::where('user_id', $partner_id)->first()->id;
@@ -63,12 +63,16 @@ class PaymentSucceeded implements ShouldQueue
                     $subscription->refund_terms = $discord_store->refunds_terms;
                     $subscription->metadata = ['role_id' => $role_id];
                     $subscription->active = 1;
+                    $subscription->user_id = $customer_id;
+                    $subscription->partner_id = $partner_id;
+                    $subscription->current_period_end = date("Y-m-d", $webhookCall->payload['data']['object']['lines']['data'][0]['period']['end']);
                     $subscription->save();
                 } else if($reason == 'subscription_cycle') {
                     $subscription = Subscription::where('id', $subscription_id)->first();
                     $subscription->latest_invoice_id = $webhookCall->payload['data']['object']['id']; 
-                    $subscription->latest_invoice_paid_at = date('Y-m-d');
+                    $subscription->latest_invoice_paid_at = date('Y-m-d H:i:s');
                     $subscription->latest_invoice_amount = $webhookCall->payload['data']['object']['amount_paid'];
+                    $subscription->current_period_end = date("Y-m-d", $webhookCall->payload['data']['object']['lines']['data'][0]['period']['end']);
                     $subscription->save();
                 }
                

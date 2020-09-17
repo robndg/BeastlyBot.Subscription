@@ -97,10 +97,10 @@ class TicketsController extends Controller
  
         $ticket->save();
  
-        $mailer->sendTicketInformation(Auth::user(), $ticket);  // will delete this -just testing, and make only for admin aware new ticket.
+        $mailer->sendTicketInformationToDepartment($category, $ticket, Auth::user());  
  
         $tickets = Ticket::where('user_id', Auth::user()->id)->paginate(10);
-
+        
         return response()->json(['success' => true, 'msg' => 'Message Sent!']);
  
         //return view('tickets.user_tickets', compact('tickets'))->with("status", "Your message has been sent!");
@@ -230,11 +230,12 @@ class TicketsController extends Controller
                 $ticket->save();
             }
             // send mail if the user commenting is not the ticket owner
-            /*if($comment->ticket->user->id !== Auth::user()->id) {
+            if($comment->ticket->user->id !== Auth::user()->id) {
                 $mailer->sendTicketComments($comment->ticket->user, Auth::user(), $comment->ticket, $comment);
             }else{
-                $mailer->sendTicketCommentsToAdmin($comment->ticket->user, $comment->ticket, $comment);
-            }*/
+                $category_email = Category::where('id', $ticket->category_id)->first();
+                $mailer->sendTicketCommentsToDepartment($comment->ticket->user, $category_email, $comment->ticket, $comment);
+            }
             return response()->json(['success' => $comment, 'msg' => 'Message Sent!']);
         }else{
             return response()->json(['success' => false, 'msg' => 'You cannot reply to that ticket!']);
