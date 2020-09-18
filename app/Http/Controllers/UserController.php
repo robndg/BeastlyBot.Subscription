@@ -9,6 +9,7 @@ use App\DiscordStore;
 use App\PaymentMethod;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class UserController extends Controller {
 
@@ -16,51 +17,32 @@ class UserController extends Controller {
         $this->middleware('auth');
     }
 
-    public function getDashboard() {
-        $stripe_helper = auth()->user()->getStripeHelper();
-
-        // get all active subscriptions for user and put into cleaned up array
-        $subscriptions = array();
-        foreach ($stripe_helper->getSubscriptions() as $subscription) {
-            $subscriptions[$subscription->id] = $subscription->toArray();
-        }
-        
-        if (auth()->user()->StripeConnect->express_id){
-            return view('dashboard')->with('subscriptions', $subscriptions)->with('balance', $stripe_helper->getBalance())->with('stripe_login_link', $stripe_helper->getLoginURL());
-        }else{
-            return view('dashboard')->with('subscriptions', $subscriptions);
-        }
-    }
-
     public static function getViewWithInvoices(string $view, int $num_of_invoices) {
-
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
-        
         $stripe_helper = auth()->user()->getStripeHelper();
+       
+        if(Cache::has('user_invoices_' . auth()->user()->id)) {
+            $invoices = Cache::get('user_invoices_' . auth()->user()->id);
+        } else {
+            \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
 
-        // get last 100 most recent invoices for this customer
-        $invoices = \Stripe\Invoice::all([
-            'limit' => $num_of_invoices,
-            'customer' => auth()->user()->StripeConnect->customer_id
-        ]);
+            $invoices = \Stripe\Invoice::all([
+                'limit' => $num_of_invoices,
+                'customer' => auth()->user()->StripeConnect->customer_id
+            ]);
 
-        $invoices_array = $invoices->toArray()['data'];
+            $invoices_array = $invoices->toArray()['data'];
 
-       // sort the invoices in ASC order
-        usort($invoices_array, function($a, $b) {
-            return $b['created'] <=> $a['created'];
-        });
+            // sort the invoices in ASC order
+            usort($invoices_array, function($a, $b) {
+                return $b['created'] <=> $a['created'];
+            });
 
-        return view($view)->with('stripe_login_link', $stripe_helper->getLoginURL())->with('invoices', $invoices_array);
+            Cache::put('user_invoices_' . auth()->user()->id, $invoices_array, 60 * 10);
+        }
+
+        return view($view)->with('stripe_login_link', $stripe_helper->getLoginURL())->with('invoices', Cache::get('user_invoices_' . auth()->user()->id, array()));
     }
 
-    public static function getViewWithSubscriptions(string $view) {
-        $stripe_helper = auth()->user()->getStripeHelper();
-        $subscriptions = array();
-        foreach ($stripe_helper->getSubscriptions() as $subscription) $subscriptions[$subscription->id] = $subscription->toArray();
-        return view($view)->with('subscriptions', $subscriptions);
-    }
-    
     public function getPayoutSlide($stripe_account_id) {
 
         \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));

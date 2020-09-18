@@ -14,7 +14,7 @@
                                             @if(auth()->user()->getStripeHelper()->hasActiveExpressPlan())
                                             <div class="font-size-16 font-weight-200 mt-1">Active Until {{ gmdate("m-d-Y", Auth::user()->getPlanExpiration()) }}</div>
                                             <hr class="mb-10 mt-1">
-                                            <a href="/servers?click-first=true"><button type="button" class="btn btn-block btn-success"><i class="icon-shop" aria-hidden="true"></i>
+                                            <a href="/servers"><button type="button" class="btn btn-block btn-success"><i class="icon-shop" aria-hidden="true"></i>
                                                     <br>My Servers</button></a>
                                             @else
                                             <h4 class="font-weight-300 mt-20">You're ready to go live and start earning!</h4>

@@ -32,10 +32,6 @@
     <div class="tab-pane fade active show" id="sidebar-settings-user">
         <div>
             @include('partials/settings/settings_user')
-
-            {{-- @if(auth()->user()->getStripeHelper()->isExpressUser())
-            <a class="text-center mt-20" data-toggle="tab" href="#sidebar-settings-stripe" role="tab">Live Settings</a>
-            @endif--}}
         </div>
     </div>
     <div class="tab-pane fade" id="sidebar-settings-payments">

@@ -25,7 +25,7 @@ Route::group(['middleware' => ['auth', 'web']], function () {
     });
 
     Route::get('/account/subscriptions', function() {
-        return UserController::getViewWithSubscriptions('subscriptions');
+        return view('subscriptions')->with('discord_helper', new \App\DiscordHelper(auth()->user()));
     });
 
     Route::get('/slide-account-subscriptions', function() {
@@ -56,7 +56,8 @@ Route::group(['middleware' => ['auth', 'web']], function () {
 
     Route::get('/buy-plan-cancel', 'UserController@checkoutExpressPlanFailure');
 
-    Route::get('/slide-account-subscription-settings/{sub_id}', function ($sub_id) {
+    Route::get('/slide-account-subscription-settings', function () {
+        $id = \request('id');
         \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
 
         $role_name = \request('role_name');
@@ -64,7 +65,7 @@ Route::group(['middleware' => ['auth', 'web']], function () {
         $role_color = \request('role_color');
 
         try {
-            $sub = \Stripe\Subscription::retrieve($sub_id);
+            $sub = \Stripe\Subscription::retrieve($id);
             $latest_invoice = \Stripe\Invoice::retrieve($sub->latest_invoice);
 
             $diff = time() - $sub->start_date;

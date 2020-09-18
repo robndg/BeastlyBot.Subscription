@@ -35,24 +35,6 @@ class StripeConnectController extends Controller
             $user->StripeConnect->express_id = $stripe_account->id;
             $user->StripeConnect->save();
             AlertHelper::alertSuccess('Stripe account created! You can now accept payments.');
-            \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
-            // Set payout schedule to 7 days automatically by default
-            \Stripe\Account::update(
-                $stripe_account->id,
-                [
-                    'settings' =>
-                    [
-                        'payouts' =>
-                        [
-                            'schedule' =>
-                            [
-                                'delay_days' => SiteConfig::get('STRIPE_PAYOUT_DELAY'),
-                                'interval' => 'daily'
-                            ]
-                        ]
-                    ]
-                ]
-            );
             return redirect('/dashboard#open-servers=true');
         } else {
             AlertHelper::alertError('This is not a US account or you have already connected an account.');

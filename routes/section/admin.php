@@ -9,6 +9,10 @@ Route::group(['middleware' => ['App\Http\Middleware\AdminMiddleware']], function
         return view('admin/dash');
     });
 
+    Route::get('/bot_gateway', function() {
+        return view('bot_gateway');
+    });
+
     Route::view('/admin/site/settings', 'admin.site_settings');
 
     Route::post('/admin/update_settings', 'AdminController@setSiteConfigValue');

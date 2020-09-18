@@ -18,7 +18,7 @@ if(process.env.MYSQL_SOCKET != null) {
         supportBigNumbers: true,
         bigNumberStrings: true
     });
-    console.log('Connected to MySQL Socket! (' + process.env.MYSQL_DB + ')');
+    console.log('Connected to MySQL Socket! (DB: ' + process.env.MYSQL_DB + ')');
 } else {
     mysqlConnection =  mysql.createConnection({
         host: process.env.MYSQL_HOST,
@@ -28,7 +28,7 @@ if(process.env.MYSQL_SOCKET != null) {
         supportBigNumbers: true,
         bigNumberStrings: true
     });
-    console.log('Connected to MySQL! (' + process.env.MYSQL_DB + ')');
+    console.log('Connected to MySQL! (DB: ' + process.env.MYSQL_DB + ')');
 }
 
 bot.registry.registerGroup('random', 'Random');
@@ -39,12 +39,12 @@ bot.login(process.env.DISCORD_KEY);
 module.exports = {getRoles, getGuilds, getGuildData, getRoleData, bot, mysqlConnection, stripe, getOtherGuilds};
 
 // Start the web socket
-var socketHandler = require('./SocketHandler.js');
-socketHandler.start();
+// var socketHandler = require('./SocketHandler.js');
+// socketHandler.start();
 // // Start the PayPal loop
-var taskHandler = require('./TaskHandler.js');
-taskHandler.startLoopLong();
-taskHandler.startLoopShort();
+// var taskHandler = require('./TaskHandler.js');
+// taskHandler.startLoopLong();
+// taskHandler.startLoopShort();
 
 /**
  * Called when the bot is done initializing

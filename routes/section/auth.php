@@ -15,4 +15,9 @@ Route::get('/logout', function () {
     return redirect('/');
 })->name('logout');
 
-Route::get('/dashboard','UserController@getDashboard');
+Route::get('/dashboard', function() {
+    $stripe_helper = auth()->user()->getStripeHelper();
+    $discord_helper = new \App\DiscordHelper(auth()->user());
+
+    return view('dashboard')->with('stripe_helper', $stripe_helper)->with('discord_helper', $discord_helper);
+});

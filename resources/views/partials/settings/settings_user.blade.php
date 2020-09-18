@@ -4,7 +4,7 @@
     <div class="p-30 text-center">
         <a class="avatar avatar-xxl" href="javascript:void(0)">
             <img
-                 src="{{ auth()->user()->getDiscordHelper()->getUsername() }}"
+                 src="{{ auth()->user()->getDiscordHelper()->getAvatar() }}"
                  alt="...">
         </a>
         <h5>{{ auth()->user()->getDiscordHelper()->getUsername() }}</h5>

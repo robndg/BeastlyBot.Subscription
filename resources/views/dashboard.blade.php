@@ -27,9 +27,9 @@
           </div>
           <div class="counter-number-group mb-5">
             <span class="counter-number-related">$</span>
-            <span class="counter-number">{{ number_format(($balance->available[0]->amount)/100, 2, '.', ',') }}</span>
+            <span class="counter-number">{{ number_format(($stripe_helper->getBalance()->available[0]->amount)/100, 2, '.', ',') }}</span>
             {{--v1 <button type="button" class="btn btn-primary btn-sm btn-link float-right" data-toggle="site-sidebar" data-url="/slide-payout/{{ auth()->user()->stripe_express_id }}">View Pending</button>--}}
-            <button type="button" class="btn btn-success btn-sm float-right ladda-button" data-style="slide-up" data-plugin="ladda" onclick="window.open('{{ $stripe_login_link }}', '_blank');">
+            <button type="button" class="btn btn-success btn-sm float-right ladda-button" data-style="slide-up" data-plugin="ladda" onclick="window.open('{{ $stripe_helper->getLoginURL() }}', '_blank');">
                 <span class="ladda-label">Payouts <i class="wb-arrow-right ml-1"></i></span>
                 <span class="ladda-spinner"></span>
             </button>
@@ -140,14 +140,29 @@
                               </div>
                             </div>
                           @endif
-                          @foreach(auth()->user()->getStripeHelper()->getSubscriptionsList() as $sub_list)
+                          @foreach(auth()->user()->getStripeHelper()->getSubscriptions('active') as $subscription)
+
+                            @php
+                                $plan_id = $subscription['items']['data'][0]['plan']['id'];
+                            @endphp
+
+                            @if(strpos($plan_id, 'discord_') !== false)
+
+                            @php
+                                $data = explode('_', $plan_id);
+                                $guild = $discord_helper->getGuild($data[1]);
+                                $role = $discord_helper->getRole($data[1], $data[2]);
+                            @endphp
+
                           <div>
                             <div class="text-center mt-lg-30" onclick="window.location.href = '/account/subscriptions';">
-                              <div class="badge badge-primary badge-lg font-size-18 text-truncate" style="background-color: {{ $sub_list->role_color }}">{{ $sub_list->role_name }}</div>
+                              <div class="badge badge-primary badge-lg font-size-18 text-truncate" style="color: white;background-color: #{{ dechex($role->color) }};">{{ $role->name }}</div>
                               <div class="d-block wb-check green-600 pt-1"></div>
-                              <p class="font-weight-100 mt--3">{{ gmdate("M d Y", $sub_list->end_date) }}</p>
+                              <p class="font-weight-100 mt--3">{{ date("m-d-Y", $subscription['current_period_end']) }}</p>
                             </div>
                           </div>
+
+                          @endif
                           @endforeach
 
                           </div>

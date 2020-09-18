@@ -46,9 +46,42 @@
                             <tbody id="activeSubsTable" data-plugin="animateList" data-animate="fade"
                             data-child="tr">
 
-                            @foreach(auth()->user()->getStripeHelper()->getSubscriptions() as $sub_array)
-                                
+                            @foreach(auth()->user()->getStripeHelper()->getSubscriptions('active') as $subscription)
+
+                            @php
+                                $plan_id = $subscription['items']['data'][0]['plan']['id'];
+                            @endphp
+
+                            @if(strpos($plan_id, 'discord_') !== false)
+
+                            @php
+                                $data = explode('_', $plan_id);
+                                $guild = $discord_helper->getGuild($data[1]);
+                                $role = $discord_helper->getRole($data[1], $data[2]);
+                            @endphp
+
+                            <tr id="subscription_{{ $subscription['id'] }}" data-url="/slide-account-subscription-settings?id={{ $subscription['id'] }}" data-toggle="slidePanel">
+                                <td class="cell-200 text-left">
+                                    <h4>{{ $guild->name }}</h4>
+                                </td>
+                                <td class="text-left">
+                                    <span class="badge badge-primary text-left" style="color: white;background-color: #{{ dechex($role->color) }};">{{ $role->name }}</span>
+                                </td>
+                                <td class="cell-30">
+                                    <i class="icon wb-payment grey-4 green-500" aria-hidden="true"></i>
+                                </td>
+                                <td class="cell-150 text-right">
+                                    <div class="time">{{ date("m-d-Y", $subscription['current_period_end']) }}</div>
+                                    <div class="identity">Active<i class="icon ml-2 mt-1 wb-medium-point green-500" aria-hidden="true"></i>
+                                    </div>
+                                </td>
+                                <td class="cell-30 hidden-md-down">
+                                </td>
+                            </tr>
+                            @endif
+                            
                             @endforeach
+
                             </tbody>
                         </table>
                         <!-- pagination -->
@@ -68,7 +101,42 @@
                             <tbody id="inactiveSubsTable" data-plugin="animateList" data-animate="fade"
                             data-child="tr">
 
+                            @foreach(auth()->user()->getStripeHelper()->getSubscriptions('canceled') as $subscription)
 
+                            @php
+                                $plan_id = $subscription['items']['data'][0]['plan']['id'];
+                            @endphp
+
+                            @if(strpos($plan_id, 'discord_') !== false)
+
+                            @php
+                                $data = explode('_', $plan_id);
+                                $guild = $discord_helper->getGuild($data[1]);
+                                $role = $discord_helper->getRole($data[1], $data[2]);
+                            @endphp
+
+                            <tr id="subscription_{{ $subscription['id'] }}" data-url="/slide-account-subscription-settings?id={{ $subscription['id'] }}" data-toggle="slidePanel">
+                                <td class="cell-200 text-left">
+                                    <h4>{{ $guild->name }}</h4>
+                                </td>
+                                <td class="text-left">
+                                    <span class="badge badge-primary text-left" style="color: white;background-color: #{{ dechex($role->color) }};">{{ $role->name }}</span>
+                                </td>
+                                <td class="cell-30">
+                                    <i class="icon wb-payment grey-4 red-500" aria-hidden="true"></i>
+                                </td>
+                                <td class="cell-150 text-right">
+                                    <div class="time">{{ date("m-d-Y", $subscription['current_period_end']) }}</div>
+                                    <div class="identity">Canceled<i class="icon ml-2 mt-1 wb-medium-point red-500" aria-hidden="true"></i>
+                                    </div>
+                                </td>
+                                <td class="cell-30 hidden-md-down">
+                                </td>
+                            </tr>
+                            @endif
+                            
+                            @endforeach
+                            
 
                             </tbody>
                         </table>
@@ -87,9 +155,6 @@
 @endsection
 
 @section('scripts')
-
-    @include('partials/subscriptions/subscriptions_script')
-
     <script>
         $('#rolesTable tr').each(function() {
             $(this).first().attr('data-step', '2');

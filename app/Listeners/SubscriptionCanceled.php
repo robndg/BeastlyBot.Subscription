@@ -7,6 +7,7 @@ use Spatie\WebhookClient\Models\WebhookCall;
 use \App\EndedSubscription;
 use \App\StripeConnect;
 use \App\DiscordOAuth;
+use RestCord\DiscordClient;
 
 class SubscriptionCanceled implements ShouldQueue
 {
@@ -21,23 +22,30 @@ class SubscriptionCanceled implements ShouldQueue
             $customer_discord_id = DiscordOAuth::where('user_id', $customer_id)->first()->discord_id;
             $partner_id = $webhookCall->payload['data']['object']['items']['data'][0]['plan']['metadata']['user_id'];
             $partner_discord_id = DiscordOAuth::where('user_id', $customer_id)->first()->discord_id;
+            $discord_helper = new \App\DiscordHelper(\App\User::where('id', $customer_id)->first());
             $data = explode('_', $plan_id);
         
             if($data[0] == 'discord') {
+                Cache::forget('customer_subscriptions_active_' . $customer_id);
+                Cache::forget('customer_subscriptions_canceled_' . $customer_id);
+                
                 $guild_id = $data[1];
                 $role_id = $data[2];
 
-                if(!EndedSubscription::where('subscription_id', $subscription_id)->exists()) {
-                    $ended_subscription = new EndedSubscription();
-                    $ended_subscription->subscription_id = $subscription_id;
-                    $ended_subscription->partner_id = $partner_id;
-                    $ended_subscription->partner_discord_id = $partner_discord_id;
-                    $ended_subscription->customer_id = $customer_id;
-                    $ended_subscription->customer_discord_id = $customer_discord_id;
-                    $ended_subscription->guild_id = $guild_id;
-                    $ended_subscription->role_id = $role_id;
-                    $ended_subscription->reason = 'cancel';
-                    $ended_subscription->save();
+                try {
+                    $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
+                    $discord_client->guild->removeGuildMemberRole([
+                        'guild.id' => intval($guild_id),
+                        'role.id' => intval($role_id),
+                        'user.id' => intval($customer_discord_id)
+                    ]);
+
+                    $guild = $discord_helper->getGuild($guild_id);
+                    $role = $discord_helper->getRole($guild_id, $role_id);
+
+                    $discord_helper->sendMessage('Your subscription to the ' . $role->name . ' role in the ' . $guild->name . ' server was canceled. I removed the role from your account.');
+                } catch(\Exception $e) {
+                    $discord_helper->sendMessage('Uh-oh! Something went wrong in removing the role from your account. Don\'t worry, I still canceled the subscription for you.');
                 }
             }
         }

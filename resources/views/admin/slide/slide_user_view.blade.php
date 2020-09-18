@@ -214,7 +214,7 @@
       <table class="table table-hover" data-plugin="animateList" data-animate="fade" data-child="tr">
         <tbody id="rolesTable">
 
-              <tr id="role_settings_1" data-url="/slide-account-subscription-settings/${sub_id}" data-toggle="slidePanel">
+              <tr id="role_settings_1" data-url="/slide-account-subscription-settings?id=${sub_id}" data-toggle="slidePanel">
                     <!-- if slide panel wont work here i can add a button to remove them or we can do a swal -->
                     <td class="cell-30 responsive-hide">
 

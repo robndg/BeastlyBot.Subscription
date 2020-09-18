@@ -133,6 +133,10 @@ class ServerController extends Controller {
             }
         }
 
+        // TODO: Sort data in ASC order
+        // usort($invoices_array, function($a, $b) {
+        //     return $b['created'] <=> $a['created'];
+        // });
 
         // TODO: Member count not working. Returns null in guild for some reason, so does members. Have to use old code to update member count
         return view('server')->with('id', $id)->with('shop', $discord_store)->with('has_order', false)->with('roles', $roles)->with('active_roles', $active)->with('guild', $discord_helper->getGuild($id))->with('subscribers', $subscribers)->with('total_payout', $total_payout)->with('pending_payout', $pending_payout)->with('pending_payment', $pending_payment)->with('users_roles', $users_roles)->with('invoices', $invoices)->with('subscriptions', $subscriptions);

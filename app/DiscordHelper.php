@@ -34,7 +34,7 @@ class DiscordHelper
     }
 
     public function getID(): string {
-        return DiscordOAuth::where('user_id', auth()->user()->id)->exists() ? DiscordOAuth::where('user_id', auth()->user()->id)->first()->discord_id : null;
+        return DiscordOAuth::where('user_id', $this->user->id)->exists() ? DiscordOAuth::where('user_id', $this->user->id)->first()->discord_id : null;
     }
 
     public function getAvatar(): string {
@@ -59,17 +59,28 @@ class DiscordHelper
     }
 
     public function getGuilds() {
-        if(Cache::has('guilds_' . auth()->user()->id)) {
-            return Cache::get('guilds_' . auth()->user()->id);
+        if(Cache::has('guilds_' . $this->user->id)) {
+            return Cache::get('guilds_' . $this->user->id);
         }
 
         $provider = $this->getDiscordProvider();
         $token = $this->getDiscordAccessToken();
         $guildsRequest = $provider->getAuthenticatedRequest('GET', $provider->getResourceOwnerDetailsUrl($token) . '/guilds', $token);
 
+        $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
         $guilds = $provider->getParsedResponse($guildsRequest);
-        Cache::put('guilds_' . auth()->user()->id, $guilds, 60 * 5);
-        return Cache::get('guilds_' . auth()->user()->id);
+        $guilds_array = array();
+        
+        foreach($guilds as $guild) {
+            try {
+                $discord_client->guild->getGuildRoles(['guild.id' => intval($guild['id'])]);
+                array_push($guilds_array, $guild);
+            } catch(\Exception $e) {
+            }
+        }
+
+        Cache::put('guilds_' . $this->user->id, $guilds_array, 60 * 5);
+        return Cache::get('guilds_' . $this->user->id);
     }
 
     public function getOwnedGuilds() {
@@ -141,7 +152,7 @@ class DiscordHelper
     }
 
     public function ownsGuild(int $guild_id): bool {
-        $discord_o_auth = DiscordOAuth::where('user_id', auth()->user()->id)->first();
+        $discord_o_auth = DiscordOAuth::where('user_id', $this->user->id)->first();
         return $this->getGuild($guild_id)->owner_id == $discord_o_auth->discord_id;
     }
 
@@ -152,6 +163,12 @@ class DiscordHelper
         $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
         Cache::put('discord_user_' . $discord_id, $discord_client->user->getUser(['user.id' => $discord_id], 60 * 5));
         return Cache::get('discord_user_' . $discord_id);
+    }
+
+    public function sendMessage($message) {
+        $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
+        $channel = $discord_client->user->createDm(['recipient_id' => intval($this->getID())]);
+        $discord_client->channel->createMessage(['channel.id' => $channel->id, 'content' => $message]);
     }
 
     private function getDiscordData() {

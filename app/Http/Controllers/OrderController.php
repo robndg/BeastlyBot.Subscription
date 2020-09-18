@@ -27,6 +27,7 @@ class OrderController extends Controller {
         if (! auth()->user()->hasStripeAccount()) 
             return response()->json(['success' => false, 'msg' => 'You do not have a linked stripe account.']);
 
+
         try {
             switch ($request['product_type']) {
                 case "discord":
@@ -38,6 +39,10 @@ class OrderController extends Controller {
                 default:
                     throw new ProductMsgException('Could not find product by that type.');
                 break;
+            }
+
+            if(auth()->user()->getStripeHelper()->isSubscribedToProduct($product->getStripeProduct()->id)) {
+                throw new ProductMsgException('You are already subscribed to that product.');
             }
 
             $product->checkoutValidate();
