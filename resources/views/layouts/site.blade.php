@@ -200,7 +200,7 @@
                                 <i class="icon-discord"></i>
                                 Dash<span class="ds-sm-none">board</span></a>
                             @else
-                                <a href="{{ ('https://discordapp.com/api/oauth2/authorize?client_id=' . env('DISCORD_CLIENT_ID') . '&redirect_uri=' . env('APP_URL') . '/discord_oauth&response_type=code&scope=' . env('DISCORD_OAUTH_SCOPE')) }}">
+                                <a href="{{ env('DISCORD_OAUTH_URL') }}">
                                 <i class="icon-discord"></i> Login<span
                                         class="ds-sm-none"> with Discord</span></a>
                             @endauth

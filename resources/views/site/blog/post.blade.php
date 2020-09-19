@@ -246,7 +246,7 @@
                     <div class="col-lg-10 offset-lg-1">
                         <div class="section-title">
                             <h3><span><a
-                                        href="{{ 'https://discordapp.com/api/oauth2/authorize?client_id=' . env('DISCORD_CLIENT_ID') . '&redirect_uri=' . '/discord_oauth&response_type=code&scope=' . env('DISCORD_OAUTH_SCOPE') }}">Login</a> to Leave a Comment</span>
+                                        href="{{ env('DISCORD_OAUTH_URL') }}">Login</a> to Leave a Comment</span>
                             </h3>
                         </div>
                     </div>
