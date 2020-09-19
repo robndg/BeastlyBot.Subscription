@@ -101,7 +101,7 @@ class StripeHelper
 
     public function getExpressSubscription() {
         foreach($this->getSubscriptions('active') as $subscription) {
-            if ($subscription->items->data[0]->plan->id == env('LIVE_MONTHLY_PLAN_ID') 
+            if ($subscription->items->data[0]->product->id == env('LIVE_MONTHLY_PLAN_ID') 
             || $subscription->items->data[0]->plan->id == env('LIVE_YEARLY_PLAN_ID'))  return $subscription;
         }
 

@@ -26,7 +26,7 @@
         </form>-->
         <form>
         <button type="button" class="btn btn-lg btn-tagged social-discord ladda-button" data-style="slide-up" data-plugin="ladda"
-        onclick="window.location.href='{{ ('https://discordapp.com/api/oauth2/authorize?client_id=' . env('DISCORD_CLIENT_ID') . '&redirect_uri=' . env('APP_URL') . '/discord_oauth&response_type=code&scope=' . env('DISCORD_OAUTH_SCOPE')) }}'">
+        onclick="window.location.href='{{ env('DISCORD_OAUTH_URL') }}'">
             <span class="btn-tag"><i class="icon icon-discord" aria-hidden="true"></i></span>
             <span class="ladda-label">Login with Discord</span>
             <span class="ladda-spinner"></span>
