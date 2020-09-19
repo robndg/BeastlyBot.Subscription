@@ -8,6 +8,7 @@ use \App\EndedSubscription;
 use \App\StripeConnect;
 use \App\DiscordOAuth;
 use RestCord\DiscordClient;
+use Illuminate\Support\Facades\Cache;
 
 class SubscriptionCanceled implements ShouldQueue
 {
@@ -28,7 +29,7 @@ class SubscriptionCanceled implements ShouldQueue
             if($data[0] == 'discord') {
                 Cache::forget('customer_subscriptions_active_' . $customer_id);
                 Cache::forget('customer_subscriptions_canceled_' . $customer_id);
-                
+
                 $guild_id = $data[1];
                 $role_id = $data[2];
 

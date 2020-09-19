@@ -33,8 +33,8 @@
                                 </button>
                             </div>
                             <button type="button" class="site-action-toggle btn btn-lg btn-dark btn-icon btn-inverse mr-15 ml-15" id="btn-store1"
-                                data-toggle="tooltip" data-original-title="{{ SiteConfig::get('SHOP_URL') }}/{{ $shop->url }}"
-                                onclick="window.open('{{ SiteConfig::get('SHOP_URL') }}/{{ $shop->url }}')"><i class="front-icon icon-shop @if($shop->live)green-600 @else blue-600 @endif animation-scale-up" id="icon-store1" aria-hidden="true"></i><span class="font-size-14 ml-2">Go to Store</span>
+                                data-toggle="tooltip" data-original-title="{{ env('APP_URL') }}/shop/{{ $shop->url }}"
+                                onclick="window.open('{{ env('APP_URL') }}/shop/{{ $shop->url }}')"><i class="front-icon icon-shop @if($shop->live)green-600 @else blue-600 @endif animation-scale-up" id="icon-store1" aria-hidden="true"></i><span class="font-size-14 ml-2">Go to Store</span>
                             </button>
                     </div>
                     <button type="button" class="btn mt-0 ml-30 btn-sm btn-icon btn-dark btn-round mr-lg-30"

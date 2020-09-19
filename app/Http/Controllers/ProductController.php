@@ -138,25 +138,23 @@ class ProductController extends Controller {
         return response()->json(['success' => true]);
     }
 
-    public function getShop($guild_id) {
-        if(!DiscordStore::where('url', $guild_id)->exists()) {
+    public function getShop($url) {
+        if(! DiscordStore::where('url', $url)->exists()) {
             return abort(404);
         }
 
-        $owner_array = \App\User::where('id', \App\DiscordStore::where('guild_id', $guild_id)->first()->user_id)->first();
-        $shop_url = \App\DiscordStore::where('guild_id', $guild_id)->first()->url;
-
+        $discord_store = \App\DiscordStore::where('url', $url)->first();
+        $owner_array = \App\User::where('id', $discord_store->first()->user_id)->first();
         $discord_helper = new \App\DiscordHelper(auth()->user());
-        $discord_store = DiscordStore::where('url', $guild_id)->first();
  
-        $roles = $discord_helper->getRoles($guild_id);
+        $roles = $discord_helper->getRoles($discord_store->guild_id);
  
         $active = array();
         $subscribers = [];
  
         foreach($roles as $role) {
             $subscribers[$role->id] = Cache::get('subscribers_' . $role->id);
-            $discord_product = new DiscordRoleProduct($guild_id, $role->id, null);
+            $discord_product = new DiscordRoleProduct($discord_store->guild_id, $role->id, null);
             $stripe_product = $discord_product->getStripeProduct();
             if($stripe_product != null && $stripe_product->active) {
                 array_push($active, $role->id);
@@ -167,9 +165,9 @@ class ProductController extends Controller {
         }
 
 
-        $banned = $discord_helper->isUserBanned($guild_id, \App\DiscordOAuth::where('user_id', auth()->user()->id)->first()->discord_id);
+        $banned = $discord_helper->isUserBanned($discord_store->guild_id, \App\DiscordOAuth::where('user_id', auth()->user()->id)->first()->discord_id);
 
-        return view('subscribe')->with('guild_id', $discord_store->guild_id)->with('descriptions', 'asd')->with('owner_array', $owner_array)->with('shop_url', $shop_url)->with('roles', $roles)->with('active', $active)->with('guild', $discord_helper->getGuild($guild_id))->with('banned', $banned);
+        return view('subscribe')->with('guild_id', $discord_store->guild_id)->with('descriptions', 'asd')->with('owner_array', $owner_array)->with('shop_url', $discord_store->url)->with('roles', $roles)->with('active', $active)->with('guild', $discord_helper->getGuild($discord_store->guild_id))->with('banned', $banned);
     }
 
 }
