@@ -33,7 +33,7 @@ class ProductController extends Controller {
             }
             // TODO: Handle create and update as default case
             // find the action to execute
-            \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+            \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
             switch($request['action']) {
                 case "create":
                     return $product->create($request);
@@ -71,7 +71,7 @@ class ProductController extends Controller {
                 break;
             }
             // find the action to execute
-            \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+            \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
             switch($request['action']) {
                 case "create":
                     return $plan->create($request);

@@ -82,7 +82,7 @@ class DiscordRoleProduct extends Product
     }
 
     public function getStripePlan() {
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
         return \Stripe\Plan::retrieve($this->getStripeID() . '_' . $this->billing_cycle . '_r');
     }
 

@@ -34,7 +34,7 @@ Route::get('/slide-special-roles-settings/{guild_id}/{role_id}/{type}/{discord_i
 Route::get('/slide-roles-prices/{guild_id}/{role_id}', 'ServerController@getSlideRolePrices');
 
 Route::get('/slide-server-member', function () {
-    \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+    \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
     $discord_helper = new \App\DiscordHelper(\App\User::where('id', \request('user_id'))->first());
     $discord_store = \App\DiscordStore::where('id', \request('store_id'))->first();
     $invoices = [];

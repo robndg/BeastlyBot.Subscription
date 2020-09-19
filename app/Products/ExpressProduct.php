@@ -65,7 +65,7 @@ class ExpressProduct extends Product
     public function changePlan(string $new_plan_id)
     {
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
  
         $stripe_helper = auth()->user()->getStripeHelper();
 
@@ -98,7 +98,7 @@ class ExpressProduct extends Product
     }
 
     public function getStripePlan() {
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
         return \Stripe\Plan::retrieve($this->plan_id);
     }
 

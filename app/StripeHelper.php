@@ -21,7 +21,7 @@ class StripeHelper
         if(Cache::has($cache_key)) {
             return Cache::get($cache_key);
         } else {
-            \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+            \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
             $stripe_subs = \Stripe\Subscription::all(['customer' => $this->user->StripeConnect->customer_id, 'status' => $status, 'limit' => 100]);
             Cache::put($cache_key, $stripe_subs, 60 * 10);
         }
@@ -69,7 +69,7 @@ class StripeHelper
 
     public function getStripeEmail(): string {
         if (Session::has('stripe_email')) return Session::get('stripe_email');
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
 
         try {
             Session::put('stripe_email', $this->getCustomerAccount()->email);
@@ -81,7 +81,7 @@ class StripeHelper
     }
 
     public function getCustomerAccount(): \Stripe\Customer {
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
         try {
             return \Stripe\Customer::retrieve($this->user->StripeConnect->customer_id);
         } catch (ApiErrorException $e) {
@@ -91,17 +91,18 @@ class StripeHelper
 
     public function isSubscriptionMonthly(): bool {
         $active_plan = $this->getExpressSubscription();
-        return $active_plan !== null && $active_plan->id == SiteConfig::get('MONTHLY_PLAN');
+        return $active_plan !== null && $active_plan->id == env('LIVE_MONTHLY_PLAN_ID');
     }
 
     public function isSubscriptionYearly(): bool {
         $active_plan = $this->getExpressSubscription();
-        return $active_plan !== null && $active_plan->id == SiteConfig::get('YEARLY_PLAN');
+        return $active_plan !== null && $active_plan->id == env('LIVE_YEARLY_PLAN_ID');
     }
 
     public function getExpressSubscription() {
         foreach($this->getSubscriptions('active') as $subscription) {
-            if ($subscription->items->data[0]->plan->product === SiteConfig::get('EXPRESS_PROD_ID'))  return $subscription;
+            if ($subscription->items->data[0]->plan->id == env('LIVE_MONTHLY_PLAN_ID') 
+            || $subscription->items->data[0]->plan->id == env('LIVE_YEARLY_PLAN_ID'))  return $subscription;
         }
 
         return null;
@@ -122,7 +123,7 @@ class StripeHelper
 
     public function getBalance() {
         if(Cache::has('balance_' . $this->user->StripeConnect->express_id)) return Cache::get('balance_' . $this->user->StripeConnect->express_id, 0);
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
         $balance = \Stripe\Balance::retrieve(
             ['stripe_account' => $this->user->StripeConnect->express_id]
         );
@@ -131,13 +132,13 @@ class StripeHelper
     }
 
     public function getLoginURL(): string {
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
         return $this->isExpressUser() ? \Stripe\Account::createLoginLink($this->user->StripeConnect->express_id)->url : null;
     }
 
     public static function getAccountFromStripeConnect(string $code): \Stripe\Account {
         $token_request_body = array(
-            'client_secret' => SiteConfig::get('STRIPE_SECRET'),
+            'client_secret' => env('STRIPE_CLIENT_SECRET'),
             'grant_type' => 'authorization_code',
             'client_id' => SiteConfig::get('STRIPE_KEY'),
             'code' => $code,
@@ -151,7 +152,7 @@ class StripeHelper
         $resp = json_decode(curl_exec($req), true);
         curl_close($req);
 
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
 
         return \Stripe\Account::retrieve($resp['stripe_user_id']);
     }

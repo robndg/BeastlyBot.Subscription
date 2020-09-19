@@ -58,7 +58,7 @@ Route::group(['middleware' => ['auth', 'web']], function () {
 
     Route::get('/slide-account-subscription-settings', function () {
         $id = \request('id');
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
 
         $role_name = \request('role_name');
         $guild_name = \request('guild_name');

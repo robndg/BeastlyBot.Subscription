@@ -62,7 +62,7 @@ class DiscordOAuthController extends Controller {
             // if the authenticated user does not have a strip account we need to create one for them
             if (! StripeConnect::where('user_id', $user->id)->exists()) {
                 // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-                \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+                \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
 
                 $customers_with_email = \Stripe\Customer::all(['limit' => 1, 'email' => $discord_user->getEmail()]);
                 $stripe_account = null;

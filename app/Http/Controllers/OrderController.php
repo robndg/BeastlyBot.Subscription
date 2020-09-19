@@ -34,7 +34,7 @@ class OrderController extends Controller {
                     $product = new DiscordRoleProduct($request['guild_id'], $request['role_id'], $request['billing_cycle']);
                 break;
                 case "express":
-                    $product = new ExpressProduct($request['billing_cycle'] == '1' ? SiteConfig::get('MONTHLY_PLAN') : SiteConfig::get('YEARLY_PLAN'));
+                    $product = new ExpressProduct($request['billing_cycle'] == '1' ? env('LIVE_MONTHLY_PLAN_ID') : env('LIVE_YEARLY_PLAN_ID'));
                 break;
                 default:
                     throw new ProductMsgException('Could not find product by that type.');

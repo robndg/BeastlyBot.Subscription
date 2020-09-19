@@ -31,7 +31,7 @@ Route::post('/promotions-delete-coupon/{id}', 'PromotionController@deleteCoupon'
 // });
 
 Route::post('/validate-coupon', function (\Illuminate\Http\Request $request) {
-    \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+    \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
     try {
         $user = \App\DiscordOAuth::where('discord_id', $request['owner_id'])->first();
         $stripe_promotion = \Stripe\Coupon::retrieve($user->user_id . $request['code']);

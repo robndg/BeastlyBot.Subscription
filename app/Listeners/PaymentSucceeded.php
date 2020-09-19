@@ -77,7 +77,7 @@ class PaymentSucceeded implements ShouldQueue
                         // could not add role, cancel subscription and refund invoice
                         $discord_helper->sendMessage('Uh-oh! I couldn\'t add the role your account. I canceled the subscription and refunded your primary payment method.');
                     
-                        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+                        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
 
                         \Stripe\Refund::create([
                             'charge' => $webhookCall->payload['data']['object']['charge'],
@@ -104,7 +104,7 @@ class PaymentSucceeded implements ShouldQueue
                     } catch(\Exception $e) {
                         $discord_helper->sendMessage('Uh-oh! Your recurring subscription could not be renewed! I canceled the subscription and refunded your primary payment method.');
                     
-                        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+                        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
 
                         \Stripe\Refund::create([
                             'charge' => $webhookCall->payload['data']['object']['charge'],

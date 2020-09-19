@@ -21,7 +21,7 @@ abstract class Product
                 $this->stripe_product_obj = Cache::get('product_' . $this->getStripeID());
             }
         } else {
-            \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+            \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
             try {
                 $this->stripe_product_obj = \Stripe\Product::retrieve($this->getStripeID());
                 Cache::put('product_' . $this->getStripeID(), $this->stripe_product_obj, 60 * 10);

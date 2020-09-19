@@ -121,7 +121,7 @@ class ServerController extends Controller {
         $subscriptions = Subscription::where('store_id', $discord_store->id)->paginate(20);
 
         // get all the invoices for payments tab
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
         $invoices = [];
     
         foreach(\App\Subscription::where('store_id', $discord_store->id)->get() as $subscription) {
@@ -161,7 +161,7 @@ class ServerController extends Controller {
 
         $status_roles = array();
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
         try {
             foreach ($roles as $role) {
                 try {
@@ -192,7 +192,7 @@ class ServerController extends Controller {
 
     public static function getSlideRoleSettings($guild_id, $role_id) {
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
 
         try {
             $discord_product = new DiscordRoleProduct($guild_id, $role_id, null);
@@ -221,7 +221,7 @@ class ServerController extends Controller {
 
     public static function getSlideSpecialRoleSettings($guild_id, $role_id, $type, $discord_id) {
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
 
         try {
             $product = \Stripe\Product::retrieve($guild_id . '_' . $role_id);

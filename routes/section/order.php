@@ -16,7 +16,7 @@ Route::get('/slide-invoice', function() {
     if(Cache::has('invoice_' . $id)) {
         $invoice = Cache::get('invoice_' . $id);
     } else {
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
         try {
             $invoice = \Stripe\Invoice::retrieve($id);
             Cache::put('invoice_' . $id, $invoice, 60 * 10);

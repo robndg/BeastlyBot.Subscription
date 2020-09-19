@@ -23,7 +23,7 @@ class UserController extends Controller {
         if(Cache::has('user_invoices_' . auth()->user()->id)) {
             $invoices = Cache::get('user_invoices_' . auth()->user()->id);
         } else {
-            \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+            \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
 
             $invoices = \Stripe\Invoice::all([
                 'limit' => $num_of_invoices,
@@ -45,7 +45,7 @@ class UserController extends Controller {
 
     public function getPayoutSlide($stripe_account_id) {
 
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
 
         if (auth()->user()->StripeConnect->express_id != $stripe_account_id && !Auth::user()->admin) return response()->json(['success' => false, 'msg' => 'You do not own this Stripe account.']);
 
@@ -117,7 +117,7 @@ class UserController extends Controller {
         }
 
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
 
         try {
             // Get subscription from stripe and cancel it.

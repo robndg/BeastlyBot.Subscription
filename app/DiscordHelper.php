@@ -186,9 +186,9 @@ class DiscordHelper
 
     private function getDiscordProvider(): Discord {
         return new Discord([
-            'clientId' => SiteConfig::get('DISCORD_CLIENT_ID'),
-            'clientSecret' => SiteConfig::get('DISCORD_SECRET'),
-            'redirectUri' => SiteConfig::get('APP_URL') . SiteConfig::get('DISCORD_OAUTH_REDIRECT_URL'),
+            'clientId' => env('DISCORD_CLIENT_ID'),
+            'clientSecret' => env('DISCORD_CLIENT_SECRET'),
+            'redirectUri' => env('APP_URL') . '/discord_oauth',
         ]);
     }
 

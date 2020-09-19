@@ -26,7 +26,7 @@ class PromotionController extends Controller {
     // TODO: Cache this shit
     public function getPromotionsPage() {
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
 
         $coupons = array();
 
@@ -82,7 +82,7 @@ class PromotionController extends Controller {
             return response()->json(['success' => false, 'msg' => 'Invalid promotional value.']);
 
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
 
         try {
             $stripe_promotion = \Stripe\Coupon::retrieve($code);
@@ -134,7 +134,7 @@ class PromotionController extends Controller {
 
     public function deleteCoupon($id) {
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(SiteConfig::get('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
 
         $db_coupon = null;
         if(Coupon::where('id', $id)->exists()) {
