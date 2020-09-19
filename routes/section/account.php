@@ -1,7 +1,7 @@
 <?php
 
 use App\AlertHelper;
-use App\SiteConfig;
+
 use App\DiscordHelper;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Log;

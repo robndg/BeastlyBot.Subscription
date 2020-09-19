@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\SiteConfig;
+
 use App\AlertHelper;
 use App\DiscordStore;
 #use App\Shop;

@@ -37,7 +37,7 @@
                             </td>
                             <td class="cell-400 pl-15">
                                 <div class="content text-left">
-                                    <h4><span class="badge badge-{{ $shop->live ? 'success' : 'primary' }}">{{ $shop->live ? 'Live' : 'Test' }}</span>  <a href="{{ SiteConfig::get('APP_URL') }}{{ SiteConfig::get('SHOP_URL') }}/{{ $shop->url }}">{{ $shop->url }}</a></h4>
+                                    <h4><span class="badge badge-{{ $shop->live ? 'success' : 'primary' }}">{{ $shop->live ? 'Live' : 'Test' }}</span>  <a href="{{ env('APP_URL') }}/shop/{{ $shop->url }}">{{ $shop->url }}</a></h4>
                                     <p>{{ $shop->id }} / {{ $shop->refunds_enabled ? 'Yes' : 'No' }} @if( $shop->refunds_enabled) - {{ $shop->refunds_days }} days - @if($shop->refunds_terms == "1")NQA @endif @if($shop->refunds_terms == "2")ASD @endif @endif</p>
                                 </div>
                             </td>

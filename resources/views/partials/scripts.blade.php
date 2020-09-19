@@ -53,18 +53,8 @@
 
 @auth
     <script type="text/javascript">
-        let socket_id = '{{ uniqid() }}';
-        let socket;
-        let api_key = '{{ SiteConfig::get('STRIPE_KEY') }}';
+        let api_key = '{{ env('STRIPE_CLIENT_ID') }}';
         let stripe = Stripe(api_key);
-
-        $(document).ready(function () { 
-            @if(env('DEV_ENV'))
-                socket = io('{{ SiteConfig::get('BOT_CONNECTION_URL') }}', {secure: true});
-            @else
-                socket = io('{{ SiteConfig::get('BOT_CONNECTION_URL') }}', {secure: true});
-            @endif
-        });
 
         function timeDiff( tstart, tend ) {
             var diff = Math.floor((tend - tstart) / 1000), units = [

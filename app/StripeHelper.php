@@ -140,7 +140,7 @@ class StripeHelper
         $token_request_body = array(
             'client_secret' => env('STRIPE_CLIENT_SECRET'),
             'grant_type' => 'authorization_code',
-            'client_id' => SiteConfig::get('STRIPE_KEY'),
+            'client_id' => env('STRIPE_CLIENT_ID'),
             'code' => $code,
         );
         $req = curl_init('https://connect.stripe.com/oauth/token');

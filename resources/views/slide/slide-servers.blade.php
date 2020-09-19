@@ -11,7 +11,7 @@
         @if(auth()->user()->StripeConnect->express_id != null)
         <div class="page-header-actions add-pulse">
             <a class="btn btn-primary btn-round"
-               href="{{ 'https://discordapp.com/oauth2/authorize?client_id=' . SiteConfig::get('DISCORD_CLIENT_ID') . '&scope=bot&permissions=' . SiteConfig::get('DISCORD_BOT_PERMISSIONS') }}" target="_blank" id="Addbtn">
+               href="{{ 'https://discordapp.com/oauth2/authorize?client_id=' . env('DISCORD_CLIENT_ID') . '&scope=bot&permissions=' . env('DISCORD_BOT_PERMISSIONS') }}" target="_blank" id="Addbtn">
                 <i class="icon wb-plus" aria-hidden="true"></i>
                 Add Bot
             </a>
@@ -24,7 +24,7 @@
         @else
         <div class="page-header-actions add-pulse">
             <a class="btn btn-primary btn-round"
-               href="{{ 'https://connect.stripe.com/express/oauth/authorize?redirect_uri=' . SiteConfig::get('APP_URL') . '&client_id=' . SiteConfig::get('STRIPE_CLIENT_ID')  }}">
+               href="{{ 'https://connect.stripe.com/express/oauth/authorize?redirect_uri=' . env('APP_URL') . '&client_id=' . env('STRIPE_CLIENT_ID')  }}">
                 Connect Stripe
                 <i class="icon-stripe ml-2" aria-hidden="true"></i>
             </a>

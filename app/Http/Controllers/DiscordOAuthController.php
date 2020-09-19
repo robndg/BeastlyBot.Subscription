@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\SiteConfig;
 use App\DiscordOAuth;
 use App\StripeConnect;
 use App\User;
@@ -102,9 +101,9 @@ class DiscordOAuthController extends Controller {
      */
     public static function getProvider() {
         return new Discord([
-            'clientId' => SiteConfig::get('DISCORD_CLIENT_ID'),
-            'clientSecret' => SiteConfig::get('DISCORD_SECRET'),
-            'redirectUri' => SiteConfig::get('APP_URL') . SiteConfig::get('DISCORD_OAUTH_REDIRECT_URL'),
+            'clientId' => env('DISCORD_CLIENT_ID'),
+            'clientSecret' => env('DISCORD_CLIENT_SECRET'),
+            'redirectUri' => env('APP_URL') . '/discord_oauth',
         ]);
     }
 

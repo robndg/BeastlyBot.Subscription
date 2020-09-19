@@ -3,7 +3,7 @@
 namespace App\Products;
 
 use App\DiscordStore;
-use App\SiteConfig;
+
 use Illuminate\Http\Request;
 
 class DiscordRoleProduct extends Product

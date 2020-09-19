@@ -47,7 +47,7 @@
                             @auth
                                 <a href="/dashboard" class="btn-common radius-50 btn-pink mr-20">Dashboard</a>
                             @else
-                                <a href="{{ 'https://discordapp.com/api/oauth2/authorize?client_id=' . SiteConfig::get('DISCORD_CLIENT_ID') . '&redirect_uri=' . SiteConfig::get('DISCORD_OAUTH_REDIRECT_URL') . '&response_type=code&scope=' . SiteConfig::get('DISCORD_OAUTH_SCOPE') }}" class="btn-common radius-50 btn-pink mr-20">Create Shop</a>
+                                <a href="{{ 'https://discordapp.com/api/oauth2/authorize?client_id=' . env('DISCORD_CLIENT_ID') . '&redirect_uri=' . '/discord_oauth&response_type=code&scope=' . env('DISCORD_OAUTH_SCOPE') }}" class="btn-common radius-50 btn-pink mr-20">Create Shop</a>
                             @endauth
                         </div>
                     </div>
@@ -109,7 +109,7 @@
                                         <a href="/dashboard"
                                            class="btn-common mt-sm-25">Go to dashboard</a>
                                     @else
-                                        <a href="{{ ('https://discordapp.com/api/oauth2/authorize?client_id=' . SiteConfig::get('DISCORD_CLIENT_ID') . '&redirect_uri=' . SiteConfig::get('APP_URL') . SiteConfig::get('DISCORD_OAUTH_REDIRECT_URL') . '&response_type=code&scope=' . SiteConfig::get('DISCORD_OAUTH_SCOPE')) }}"
+                                        <a href="{{ ('https://discordapp.com/api/oauth2/authorize?client_id=' . env('DISCORD_CLIENT_ID') . '&redirect_uri=' . env('APP_URL') . '/discord_oauth&response_type=code&scope=' . env('DISCORD_OAUTH_SCOPE')) }}"
                                            class="btn-common mt-sm-25">Login with Discord</a>
                                     @endauth
                                 </div>
@@ -177,7 +177,7 @@
                                 @auth
                                 <a href="/dashboard" class="btn-common">Go to Dashboard</a>
                                 @else
-                                <a href="{{ 'https://discordapp.com/api/oauth2/authorize?client_id=' . SiteConfig::get('DISCORD_CLIENT_ID') . '&redirect_uri=' . SiteConfig::get('DISCORD_OAUTH_REDIRECT_URL') . '&response_type=code&scope=' . SiteConfig::get('DISCORD_OAUTH_SCOPE') }}" class="btn-common">Get Started</a>
+                                <a href="{{ 'https://discordapp.com/api/oauth2/authorize?client_id=' . env('DISCORD_CLIENT_ID') . '&redirect_uri=' . '/discord_oauth&response_type=code&scope=' . env('DISCORD_OAUTH_SCOPE') }}" class="btn-common">Get Started</a>
                                 @endauth
                             </div>
                         </div>

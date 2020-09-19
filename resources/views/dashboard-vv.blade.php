@@ -257,7 +257,7 @@
                       </div>
                     </div>
                 </a>
-                <a href="{{ 'https://connect.stripe.com/express/oauth/authorize?redirect_uri=' . SiteConfig::get('APP_URL') . '&client_id=' . SiteConfig::get('STRIPE_CLIENT_ID') }}" class="d-none card card-block card-bordered btn btn-primary ladda-button"
+                <a href="{{ 'https://connect.stripe.com/express/oauth/authorize?redirect_uri=' . env('APP_URL') . '&client_id=' . env('STRIPE_CLIENT_ID') }}" class="d-none card card-block card-bordered btn btn-primary ladda-button"
                     id="btn_connect-stripe-block" data-style="slide-up" data-plugin="ladda">
                     <i class="icon wb-info-circle l-up text-white" aria-hidden="true"
                       data-plugin="webuiPopover"
@@ -282,125 +282,6 @@
 
       </div><!-- end row -->
 
-
-<!--
-
-
-    <div class="row">
-      <div class="col-12">
-        <h4>Account</h4>
-      </div>
-      <div class="col-12 col-md-4 col-lg-6 col-xxl-8">
-          <a href="/account/subscriptions" class="card card-block card-bordered btn btn-primary" id="tour_subscriptions-block">
-              <div class="counter counter-lg counter-inverse blue-grey-600 vertical-align h-md-150 h-only-xs-100 h-only-sm-100">
-{{--                <div class="counter-icon p-30 green-600" style="position:absolute;top:0;right:0;">--}}
-{{--                  <span class="badge badge-success badge-lg">1</span>--}}
-{{--                </div>--}}
-                <div class="vertical-align-middle">
-                  <div class="counter-icon mb-5"><i class="icon wb-star text-white" aria-hidden="true"></i></div>
-                  <span class="counter-number text-white">Subscriptions</span>
-                </div>
-              </div>
-        </a>
-      </div>
-
-      <div class="col-6 col-md-4 col-lg-3 col-xxl-2">
-          <a href="/account/payments" class="card card-block card-bordered btn btn-primary">
-              <div class="counter counter-lg counter-inverse blue-grey-600 vertical-align h-md-150 h-only-xs-100 h-only-sm-100">
-                <div class="vertical-align-middle">
-                  <div class="counter-icon mb-5"><i class="icon wb-order text-white" aria-hidden="true"></i></div>
-                  <span class="counter-number text-white">Payments</span>
-                </div>
-              </div>
-          </a>
-      </div>
-
-      <div class="col-6 col-md-4 col-lg-3 col-xxl-2">
-          <a href="/account/settings" class="card card-block card-bordered btn btn-primary">
-              <div class="counter counter-lg counter-inverse blue-grey-600 vertical-align h-md-150 h-only-xs-100 h-only-sm-100">
-                <div class="vertical-align-middle">
-                  <div class="counter-icon mb-5"><i class="icon wb-user-circle text-white" aria-hidden="true"></i></div>
-                  <span class="counter-number text-white">Settings</span>
-                </div>
-              </div>
-          </a>
-      </div>
-    </div>
-
-    @if(auth()->user()->stripe_express_id != null)
-    <div class="row">
-      <div class="col-12">
-        <h4>Shop</h4>
-      </div>
-      <div class="col-12 col-lg-6 col-xxl-6">
-          <a href="/servers" class="card card-block card-bordered btn btn-primary" id="servers-block">
-              <div class="counter counter-lg counter-inverse blue-grey-600 vertical-align h-md-150 h-only-xs-100 h-only-sm-100">
-{{--                <div class="counter-icon p-30 green-600" style="position:absolute;top:0;right:0;">--}}
-{{--                  <span class="badge badge-primary badge-lg">1</span>--}}
-{{--                </div>--}}
-                <div class="vertical-align-middle">
-                  <div class="counter-icon mb-5"><i class="icon icon-shop text-white font-size-50 mb--10" aria-hidden="true"></i></div>
-                  <span class="counter-number text-white">Servers</span>
-                </div>
-              </div>
-          </a>
-      </div>
-
-      <div class="col-6 col-lg-3 col-xxl-4">
-          <a href="/promotions" class="card card-block card-bordered btn btn-primary">
-              <div class="counter counter-lg counter-inverse blue-grey-600 vertical-align h-md-150 h-only-xs-100 h-only-sm-100">
-                <div class="vertical-align-middle">
-                  <div class="counter-icon mb-5"><i class="icon icon-gift1 text-white font-size-50 mb--10" aria-hidden="true"></i></div>
-                  <span class="counter-number text-white">Promotions</span>
-                </div>
-              </div>
-          </a>
-      </div>
-
-      <div class="col-6 col-lg-3 col-xxl-2">
-          <a href="javascript:void(0);" class="card card-block card-bordered btn btn-primary" data-toggle="slidePanel" data-url="slide-payout">
-              <div class="counter counter-lg counter-inverse blue-grey-600 vertical-align h-md-150 h-only-xs-100 h-only-sm-100">
-                <div class="vertical-align-middle">
-                  <div class="counter-icon mb-5"><i class="icon icon-right-big text-white" aria-hidden="true"></i></div>
-                  <span class="counter-number text-white">Payout</span>
-                </div>
-              </div>
-          </a>
-      </div>
-
-    </div>
-    @else
-    <div class="row" data-plugin="animateList" data-animate="fade" data-child="div">
-    <div class="col-12">
-        <h4>Shop</h4>
-      </div>
-      <div class="col-12">
-          <a href="javascript:void(0);" class="card card-block card-bordered btn btn-primary"
-              id="btn_start-shop-block">
-              <div class="counter counter-lg counter-inverse blue-grey-600 vertical-align h-100">
-                <div class="vertical-align-middle">
-                  <div class="counter-icon mb-5"><i class="icon-shop text-white" aria-hidden="true"></i></div>
-                  <span class="counter-number text-white">Create Shop</span>
-                </div>
-              </div>
-          </a>
-          <a href="{{ SiteConfig::get('STRIPE_CONNECT_LINK') }}" class="d-none card card-block card-bordered btn btn-primary ladda-button"
-              id="btn_connect-stripe-block" data-style="slide-up" data-plugin="ladda">
-              <i class="icon wb-info-circle l-up text-white" aria-hidden="true"
-                data-plugin="webuiPopover"
-                data-content="&lt;p&gt;@lang('lang.connect_stripe')&lt;/p&gt;" data-trigger="hover"
-                data-animation="pop"></i>
-              <div class="counter counter-lg counter-inverse blue-grey-600 vertical-align h-100">
-                <div class="vertical-align-middle ladda-label">
-                  <div class="counter-icon mb-5"><i class="icon-stripe text-white" aria-hidden="true"></i></div>
-                  <span class="counter-number text-white">Connect Stripe</span>
-                </div>
-                <span class="ladda-spinner"></span>
-              </div>
-          </a>
-      </div>
-    </div>
-    @endif  -->
 
     <div class="row">
       <div class="col-12 mt-lg-30">

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\DiscordStore;
 use App\ProductRole;
 use Illuminate\Support\Facades\Cache;
-use App\SiteConfig;
+
 use App\Products\DiscordRoleProduct;
 use App\Products\Plans\DiscordPlan;
 use App\Products\ProductMsgException;

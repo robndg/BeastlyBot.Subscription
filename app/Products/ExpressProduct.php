@@ -3,7 +3,7 @@
 namespace App\Products;
 
 use App\AlertHelper;
-use App\SiteConfig;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -29,7 +29,7 @@ class ExpressProduct extends Product
     public function update(Request $request) {}
 
     public function getStripeID(): string {
-        return SiteConfig::get('EXPRESS_PROD_ID');
+        return env('LIVE_PRODUCT_ID');
     }
 
     public function checkoutValidate(): void

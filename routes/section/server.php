@@ -1,7 +1,7 @@
 <?php
 
 use App\DiscordStore;
-use App\SiteConfig;
+
 use App\Shop;
 use App\User;
 use Illuminate\Support\Facades\Route;

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\SiteConfig;
+
 use App\Coupon;
 use App\Http\PayPal\PayPalRecurring;
 use App\PricingTable;

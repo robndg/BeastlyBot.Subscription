@@ -2,7 +2,7 @@
 
 namespace App\Products;
 
-use App\SiteConfig;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
@@ -56,14 +56,14 @@ abstract class Product
         $data = $this->getCallbackParams();
         $data['success'] = true;
         $data['product_type'] = $this->product_type;
-        return SiteConfig::get('APP_URL') . '/checkout?' . http_build_query($data);
+        return env('APP_URL') . '/checkout?' . http_build_query($data);
     }
 
     public function getCallbackCancelURL(): string {
         $data = $this->getCallbackParams();
         $data['success'] = false;
         $data['product_type'] = $this->product_type;
-        return SiteConfig::get('APP_URL') . '/checkout?' . http_build_query($data);
+        return env('APP_URL') . '/checkout?' . http_build_query($data);
     }
 
     public function getStripeProduct() {

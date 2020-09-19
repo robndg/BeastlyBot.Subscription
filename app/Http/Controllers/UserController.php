@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\AlertHelper;
-use App\SiteConfig;
+
 use App\StripeHelper;
 use App\DiscordStore;
 use App\PaymentMethod;
