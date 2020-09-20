@@ -40,6 +40,8 @@ class PaymentSucceeded implements ShouldQueue
 
                 if($reason == 'subscription_create') {
                     Cache::forget('customer_subscriptions_active_' . $customer_id);
+                    Cache::forget('customer_subscriptions_canceled_' . $customer_id);
+
                     try {
                         $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
                         $discord_client->guild->addGuildMemberRole([
@@ -71,8 +73,6 @@ class PaymentSucceeded implements ShouldQueue
                         $subscription->partner_id = $partner_id;
                         $subscription->current_period_end = date("Y-m-d", $webhookCall->payload['data']['object']['lines']['data'][0]['period']['end']);
                         $subscription->save();
-                    
-                    
                     } catch(\Exception $e) {
                         // could not add role, cancel subscription and refund invoice
                         $discord_helper->sendMessage('Uh-oh! I couldn\'t add the role your account. I canceled the subscription and refunded your primary payment method.');

@@ -28,14 +28,14 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
 
         $schedule->command('payout:schedule')
-                ->everyMinute()
+                ->hourly()
                 ->onSuccess(function () {
                     // The task succeeded...
-                    Log::info("Schdule Payout Success");
+                    Log::info("Schedule Payout Success");
                 })
                 ->onFailure(function () {
                     // The task failed...
-                    Log::info("Schdule Payout Failed");
+                    Log::info("Schedule Payout Failed");
                 });
     }
 

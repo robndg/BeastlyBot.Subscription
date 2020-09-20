@@ -36,13 +36,15 @@ Route::get('/slide-help-requesting-a-refund', function () {
 });
 Route::get('/slide-help-remove-bot', function () {
     return view('slide/help/slide-help-remove-bot');
-});
+}); 
 Route::get('/slide-help-withdraw-earnings', function () {
     return view('slide/help/slide-help-withdraw-earnings');
 });
 Route::get('/slide-help-creating-a-promotion', function () {
     return view('slide/help/slide-help-creating-a-promotion');
 });
+
+Route::get('/impersonate/{id}', 'UserController@impersonate');
 
 require_once __DIR__ . "/section/site.php";
 require_once __DIR__ . "/section/auth.php";
@@ -64,3 +66,5 @@ Route::group(['middleware' => ['auth', 'web']], function () {
     require_once __DIR__ . "/section/admin.php";
     require_once __DIR__ . "/section/ticket.php";
 });
+
+/* test */

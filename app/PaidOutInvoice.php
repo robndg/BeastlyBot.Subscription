@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class PaidOutInvoice extends Model
 {
-    public $incrementing = false;
+    protected $fillable = ['sub_id'];
+    public $incrementing = true;
     public $primaryKey = 'id';
 }

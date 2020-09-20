@@ -113,6 +113,18 @@
     </div>
 </div>
 
+<script>
+
+$(document).on('slidePanel::beforeHide', function (e) {
+    let searchParams = new URLSearchParams(window.location.search);
+    if(searchParams.has('open')){
+        params = searchParams.delete('open');
+        window.history.replaceState({}, '', `${location.pathname}`);
+    }
+});
+
+</script>
+
 <script type="text/javascript">
     if(window.location.href.includes('auto-open')) {
         $("#slide-close").removeClass('d-none')

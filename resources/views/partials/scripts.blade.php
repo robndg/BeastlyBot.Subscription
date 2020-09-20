@@ -29,6 +29,8 @@
 <script src="{{ asset('global/vendor/jquery-labelauty/jquery-labelauty.js') }}"></script>
 <script src="{{ asset('global/vendor/webui-popover/jquery.webui-popover.min.js') }}"></script>
 <script src="{{ asset('global/vendor/slick-carousel/slick.js') }}"></script>
+<script src="{{ asset('global/vendor/chartist/chartist.min.js') }}"></script>
+<script src="{{ asset('global/vendor/chartist-plugin-tooltip/chartist-plugin-tooltip.min.js') }}"></script>
 <!-- Scripts -->
 <script src="{{ asset('global/js/Component.js') }}"></script>
 <script src="{{ asset('global/js/Plugin.js') }}"></script>
@@ -53,8 +55,7 @@
 
 @auth
     <script type="text/javascript">
-        let api_key = '{{ env('STRIPE_CLIENT_ID') }}';
-        let stripe = Stripe(api_key);
+        let stripe = Stripe('{{ env('STRIPE_CLIENT_PUBLIC') }}');
 
         function timeDiff( tstart, tend ) {
             var diff = Math.floor((tend - tstart) / 1000), units = [

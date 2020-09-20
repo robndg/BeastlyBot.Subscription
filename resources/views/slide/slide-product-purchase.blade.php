@@ -250,7 +250,7 @@
         Swal.showLoading();
 
         var process_url = '/process-checkout';
-
+     
         $.ajax({
             url: process_url,
             type: 'POST',
@@ -260,9 +260,9 @@
                 'product_type': 'discord',
                 'billing_cycle': getSelectedDuration(),
                 'coupon_code': $('#couponCode').val(),
-                'server_icon': $('#guild_icon').attr('src'),
-                'guild_name': '{{ $guild->name }}',
-                'role_name': '{{ $role->name }}',
+                //'server_icon': $('#guild_icon').attr('src'),
+                //'guild_name': '{{ $guild->name }}',
+                //'role_name': '{{ $role->name }}',
                 _token: '{{ csrf_token() }}'
             },
         }).done(function (msg) {
@@ -274,6 +274,7 @@
                     // If `redirectToCheckout` fails due to a browser or network
                     // error, display the localized error message to your customer
                     // using `result.error.message`.
+                    alert(result.error.message);
                 });
             } else {
                 Swal.fire({

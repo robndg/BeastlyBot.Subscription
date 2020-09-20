@@ -43,6 +43,25 @@
 
 <script>
 
+
+    let searchParams = new URLSearchParams(window.location.search);
+    if(searchParams.has('open')){
+        searchParams.delete('open');
+        window.history.replaceState({}, '', `${location.pathname}?${searchParams}`);
+    }
+
+    $(document).on('slidePanel::beforeHide', function (e) {
+    let searchParams = new URLSearchParams(window.location.search);
+        if(searchParams.has('messages')){
+            params = searchParams.delete('messages');
+            window.history.replaceState({}, '', `${location.pathname}`);
+        }
+    });
+
+</script>
+
+<script>
+
     if(window.location.href.includes('help')) {
         $("#slide-help").removeClass('d-none')
     };

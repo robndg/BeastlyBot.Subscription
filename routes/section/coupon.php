@@ -19,7 +19,7 @@ Route::post('/promotions-delete-coupon/{id}', 'PromotionController@deleteCoupon'
 // });
 
 // Route::get('/slide-promotions-edit-coupon/{id}', function ($id) {
-//     \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+//     \Stripe\Stripe::setApiKey(envCLIENT_SECRET'));
 
 //     try {
 //         $stripe_promotion = \Stripe\Coupon::retrieve($id);

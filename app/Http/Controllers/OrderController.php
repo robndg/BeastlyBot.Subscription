@@ -27,7 +27,6 @@ class OrderController extends Controller {
         if (! auth()->user()->hasStripeAccount()) 
             return response()->json(['success' => false, 'msg' => 'You do not have a linked stripe account.']);
 
-
         try {
             switch ($request['product_type']) {
                 case "discord":
@@ -76,10 +75,9 @@ class OrderController extends Controller {
             }
         }
 
-        $session = \Stripe\Checkout\Session::create($checkout_data);
-
-        // store the checkout ID in the customers CheckoutSession
-        Session::put('checkout_id', $session->id);
+        $stripe = new \Stripe\StripeClient(env('STRIPE_CLIENT_SECRET'));
+        $session = $stripe->checkout->sessions->create($checkout_data);
+        
         return response()->json(['success' => true, 'msg' => $session->id]);
     }
 
@@ -116,7 +114,6 @@ class OrderController extends Controller {
             AlertHelper::alertWarning($e->getError()->message);
         }
 
-        Session::remove('checkout_id');
         return $success ? $product->checkoutSuccess() : $product->checkoutCancel();
     }
 

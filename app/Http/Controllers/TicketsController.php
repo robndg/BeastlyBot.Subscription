@@ -7,6 +7,7 @@ use App\Ticket;
 use App\Comment;
 use App\User;
 use App\AlertHelper;
+use App\DiscordHelper;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Mailers\AppMailer;
@@ -139,7 +140,8 @@ class TicketsController extends Controller
             if(Auth::user()->admin == 1){
                 $ticket->read_support = 1;
                 $ticket->save();
-            }else {
+            }
+            if(Auth::user()->id == $ticket->user_id){
                 $ticket->read = 1;
                 $ticket->save();
             }
@@ -229,6 +231,7 @@ class TicketsController extends Controller
                 $ticket->read_support = 0;
                 $ticket->save();
             }
+           
             // send mail if the user commenting is not the ticket owner
             if($comment->ticket->user->id !== Auth::user()->id) {
                 $mailer->sendTicketComments($comment->ticket->user, Auth::user(), $comment->ticket, $comment);

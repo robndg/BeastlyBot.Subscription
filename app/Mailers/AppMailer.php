@@ -68,6 +68,7 @@ class AppMailer
             $this->fromAddress = $realtor->email;
             $this->fromName = $realtor->f_name . ' [Beastly Support]';
         }*/
+        $ticketUsername = $ticketOwner->getDiscordHelper()->getUsername();
 
         $this->to = $ticketOwner->getDiscordHelper()->getEmail();
  
@@ -75,7 +76,7 @@ class AppMailer
  
         $this->view = 'emails.ticket_comments';
  
-        $this->data = compact('ticketOwner', 'user', 'ticket', 'comment');
+        $this->data = compact('ticketOwner', 'user', 'ticket', 'comment', 'ticketUsername');
  
         return $this->deliver();
     }
@@ -88,7 +89,7 @@ class AppMailer
             $this->fromName = $ticketOwner->getDiscordHelper()->getUsername();
         }
 
-        $this->to = $category->email; // realtor(user)
+        $this->to = $category->email; 
  
         $this->subject = "RE: $ticket->title [ID: $ticket->ticket_id]";
  

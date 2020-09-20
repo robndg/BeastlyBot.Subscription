@@ -100,7 +100,7 @@ $('input#basic-url').on('keyup', function(){
 
         Toast.showLoading();
 
-        var base_url = "shop/";
+        var base_url = "{{ env('APP_URL') }}/shop/";
         var url = $("#basic-url").val(); 
 
         if($("#refunds-enabled").is(':checked')) {
@@ -131,8 +131,8 @@ $('input#basic-url').on('keyup', function(){
                     //target: document.getElementById('slider-div')
                 });
 
-                $('#btn-store1').attr('onclick', "window.open('https://" + (base_url + url) + "')");
-                $('#btn-store2').attr('onclick', "window.open('" + (base_url + url) + "')");
+                $('#btn-store1').attr('onclick', `window.open('${base_url}${url}')`);
+                $('#btn-store2').attr('onclick', `window.open('${base_url}${url}')`);
                 $('#btn-store1').attr('data-original-title', (base_url + url));
             } else {
                 Swal.fire({

@@ -65,7 +65,6 @@ abstract class Plan
                 'user_id' => auth()->user()->id
             ],
             "id" => $this->getStripeID(),
-            "nickname" => $request['nickname'],
         ]);
 
         Cache::put('plan_' . $this->getStripeID(), $plan, 60 * 10);

@@ -90,10 +90,10 @@
                             <div class="card-body">
                                 <div class="row no-space text-center">
                                     <div class="col-12">
-                                        {{--V1 @if(RoleDesc::where('guild_id', $guild_id)->where('role_id', $role_id)->exists())
+                                        {{--V1 @if(RoleDesc::where('guild_id', $guild_id)->where('role_id', {{ $role->id }})->exists())
                                             <textarea id='product-description' class="lit-group-item form-control" placeholder="These awesome perks..."
                                                     @if(!$enabled) disabled
-                                                    @endif>{{ RoleDesc::where('guild_id', $guild_id)->where('role_id', $role_id)->get()[0]->description }}</textarea>
+                                                    @endif>{{ RoleDesc::where('guild_id', $guild_id)->where('role_id', {{ $role->id }})->get()[0]->description }}</textarea>
                                         @else
                                             <textarea id='product-description' class="lit-group-item form-control" placeholder="These awesome perks.."
                                                     @if(!$enabled) disabled @endif></textarea>
@@ -128,99 +128,13 @@ $('textarea#product-description').on('keyup', function(){
 </script> 
 
 <script type="text/javascript">
-    var guild_id, role_id, guild_name, role_name;
-    //var elem = document.querySelector('.js-switch');
-    //var switchery = new Switchery(elem);
-    var clicked = false;
-
-    $(document).ready(function () {
-
-        socket.emit('get_role_data', [socket_id, '{{ $guild_id }}', '{{ $role_id }}']);
-
-        socket.on('res_role_data_' + socket_id, function (message) {
-            $('#role_name').text(message['name']);
-            guild_id = message['guild_id'];
-            role_id = message['id'];
-            guild_name = message['guild_name'];
-            role_name = message['name'];
-
-            $('#form_guild_name').val(guild_name);
-            $('#form_role_name').val(role_name);
-        });
-        /*
-        $('#toggle-switch').on('change', function (e) {
-            e.preventDefault();
-            if (!clicked) {
-                switchery.disable();
-                $.ajax({
-                    url: '/toggle-role',
-                    type: 'POST',
-                    data: {
-                        'guild_id': '{{ $guild_id }}',
-                        'role_id': '{{ $role_id }}',
-                        'guild_name': guild_name,
-                        'role_name': role_name,
-                        _token: '{{ csrf_token() }}'
-                    },
-                }).done(function (msg) {
-                    switchery.enable();
-                    console.log(msg);
-                    if (!msg['success']) {
-                        $('.js-switch').click();
-                        Swal.fire({
-                            title: 'Failure',
-                            text: msg['msg'],
-                            type: 'warning',
-                            showCancelButton: false,
-                            showConfirmButton: true,
-                            target: document.getElementById('slider-div')
-                        });
-                    } else {
-                        switchery.enable();
-                        if (msg['active']) {
-                            $('#' + guild_id + '_' + role_id).removeClass('hidden');
-                            $('#prices_btn').removeClass('disabled');
-                            $('#prices_btn').attr('disabled', false);
-                            $('#desc_btn').attr('disabled', false);
-                            $('#desc_btn').removeClass('disabled');
-                            $('.price-inputs').attr('disabled', false);
-                            $('.price-inputs').removeClass('disabled');
-                            $('#status_' + guild_id + '_' + role_id).find('i').removeClass('yellow-500');
-                            $('#status_' + guild_id + '_' + role_id).find('i').addClass('green-500');
-                            $('#status_' + guild_id + '_' + role_id).find('span').text('Active');
-                        } else {
-                            $('#' + guild_id + '_' + role_id).addClass('hidden');
-                            $('#prices_btn').addClass('disabled');
-                            $('#prices_btn').attr('disabled', true);
-                            $('#desc_btn').attr('disabled', true);
-                            $('#desc_btn').addClass('disabled');
-                            $('.price-inputs').attr('disabled', true);
-                            $('.price-inputs').addClass('disabled');
-                            $('#status_' + guild_id + '_' + role_id).find('i').removeClass('green-500');
-                            $('#status_' + guild_id + '_' + role_id).find('i').addClass('yellow-500');
-                            $('#status_' + guild_id + '_' + role_id).find('span').text('Inactive');
-                        }
-
-                        $('#prices_btn').attr('disabled', !msg['active']);
-                        $('#desc_btn').attr('disabled', !msg['active']);
-                        $('#product-description').attr('disabled', !msg['active']);
-                        $('.price-inputs').attr('disabled', !msg['active']);
-
-                    }
-                    clicked = false;
-                });
-            }
-            clicked = true;
-        }); */
-    });
-
     function updateProductDesc() {
         $.ajax({
             url: '/update_product_desc',
             type: 'POST',
             data: {
                 'guild_id': '{{ $guild_id }}',
-                'role_id': '{{ $role_id }}',
+                'role_id': '{{ $role->id }}',
                 'description': $('#product-description').val(),
                 _token: '{{ csrf_token() }}'
             },
@@ -237,6 +151,9 @@ $('textarea#product-description').on('keyup', function(){
         });
     }
 
+    var guild_id = '{{ $guild_id }}';
+    var role_id = '{{ $role->id }}';
+
     // TODO: For now we close the slide but we need to turn off the switcheries
     function updatePrices() {
         Toast.fire({
@@ -252,13 +169,14 @@ $('textarea#product-description').on('keyup', function(){
             url: '/plan',
             type: 'POST',
             data: {
+                'action': 'update',
                 'product_type': 'discord',
                 'interval': 'month',
                 'interval_cycle': 1,
                 'price': $('#price_1m').val(),
-                'role_id': role_id,
-                'role_name': roles[role_id]['name'],
-                'guild_id': guild_id,
+                'role_id': '{{ $role->id }}',
+                'role_name': '{{ $role->name }}',
+                'guild_id': '{{ $guild_id }}',
                 _token: '{{ csrf_token() }}'
             },
         }).done(function (msg, enabled) {
@@ -267,13 +185,14 @@ $('textarea#product-description').on('keyup', function(){
                 url: '/plan',
                 type: 'POST',
                 data: {
+                    'action': 'update',
                     'product_type': 'discord',
                     'interval': 'month',
                     'interval_cycle': 3,
                     'price': $('#price_3m').val(),
-                    'role_id': role_id,
-                    'role_name': roles[role_id]['name'],
-                    'guild_id': guild_id,
+                    'role_id': '{{ $role->id }}',
+                    'role_name': '{{ $role->name }}',
+                    'guild_id': '{{ $guild_id }}',
                     _token: '{{ csrf_token() }}'
                 },
             }).done(function (msg, enabled) {
@@ -281,13 +200,14 @@ $('textarea#product-description').on('keyup', function(){
                     url: '/plan',
                     type: 'POST',
                     data: {
+                        'action': 'update',
                         'product_type': 'discord',
                         'interval': 'month',
                         'interval_cycle': 6,
                         'price': $('#price_6m').val(),
-                        'role_id': role_id,
-                        'role_name': roles[role_id]['name'],
-                        'guild_id': guild_id,
+                        'role_id': '{{ $role->id }}',
+                        'role_name': '{{ $role->name }}',
+                        'guild_id': '{{ $guild_id }}',
                         _token: '{{ csrf_token() }}'
                     },
                 }).done(function (msg, enabled) {
@@ -295,13 +215,14 @@ $('textarea#product-description').on('keyup', function(){
                         url: '/plan',
                         type: 'POST',
                         data: {
+                            'action': 'update',
                             'product_type': 'discord',
                             'interval': 'month',
                             'interval_cycle': 12,
                             'price': $('#price_12m').val(),
-                            'role_id': role_id,
-                            'role_name': roles[role_id]['name'],
-                            'guild_id': guild_id,
+                            'role_id': '{{ $role->id }}',
+                            'role_name': '{{ $role->name }}',
+                            'guild_id': '{{ $guild_id }}',
                             _token: '{{ csrf_token() }}'
                         },
                     }).done(function (msg, enabled) {

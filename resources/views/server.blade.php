@@ -59,7 +59,7 @@
                         <h5>Subscribers</h5>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li class="nav-item" onclick="tabPayments()">
                     <a class="nav-link" data-toggle="tab" href="#tab-payments" role="tab">
                         <i class="icon wb-stats-bars" aria-hidden="true"></i>
                         <h5>Payments</h5>

@@ -61,7 +61,7 @@
 
      
                 <li class="nav-item">
-                   <a class="nav-link" href="#?messages" data-toggle="slidePanel" data-url="/slide-tickets-list" title="Messages">
+                   <a class="nav-link" href="#?messages" data-toggle="slidePanel" data-url="/slide-tickets-list" title="Messages" id="open-messages">
                     <i class="icon wb-chat" aria-hidden="true"></i>
                     <span class="badge badge-pill badge-default up">{{ App\Ticket::where('user_id', auth()->user()->id)->where('read', 0)->get()->count() }}</span>
                     </a>

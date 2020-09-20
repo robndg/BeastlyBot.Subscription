@@ -47,13 +47,10 @@ class PayoutSchedule extends Command
     public function handle()
     {
 
-        $subscriptions_eligable = Subscription::whereNull('latest_paid_out_invoice_id')->orWhere('latest_paid_out_invoice_id', '!=', 'latest_invoice_id')->where('disputed_invoice_id', NULL)->where('latest_invoice_amount', '>', 0)->where('latest_invoice_paid_at', '<=', Carbon::now()->subDays(15))->get();
-        
-        Log::info($subscriptions_eligable);
-        
-        foreach ($subscriptions_eligable as $sub_eligable) {
+        $subscriptions_eligable = Subscription::whereRaw('latest_invoice_id != latest_paid_out_invoice_id')->where('disputed_invoice_id', NULL)->where('latest_invoice_amount', '>', 0)->where('latest_invoice_paid_at', '<=', Carbon::now()->subDays(15))->orWhereNull('latest_paid_out_invoice_id')->where('disputed_invoice_id', NULL)->where('latest_invoice_amount', '>', 0)->where('latest_invoice_paid_at', '<=', Carbon::now()->subDays(15))->get();
 
-            Log::info($sub_eligable);
+
+        foreach ($subscriptions_eligable as $sub_eligable) {
 
             $stripe_connect = StripeConnect::find($sub_eligable->stripe_connect_id);
 
@@ -69,26 +66,45 @@ class PayoutSchedule extends Command
                     // We create the transfer for the payout amount
                     try {
                         
-                        // Update DB first
+                        $app_fee = 0.05;
+                        
+                        // Send payment
+                        try{
+
+                            try{
+                                \Stripe\Transfer::create([
+                                    'amount' => $sub_eligable->latest_invoice_amount * (1 - $app_fee),
+                                    'currency' => 'usd',
+                                    'destination' => $stripe_connect->express_id,
+                                    'transfer_group' => $sub_eligable->id,
+                                ]);
+                            }catch (ApiErrorException $e) {
+                                if (env('APP_DEBUG')) Log::error($e);
+                                // Failed to Transfer
+                            }
+                        // if pass continue
+
+                        // Update DB 
                         $sub_eligable->latest_paid_out_invoice_id = $sub_eligable->latest_invoice_id;
                         $sub_eligable->save();
 
-                        // Send payment
-                        \Stripe\Transfer::create([
-                            'amount' => $sub_eligable->latest_invoice_amount,
-                            'currency' => 'usd',
-                            'destination' => $stripe_connect->express_id,
-                            'transfer_group' => $sub_eligable->id,
-                        ]);
-
                         // Add payout entry
-                        PaidOutInvoice::create([
-                            'sub_id' => $sub_eligable->id,
-                            'amount' => $sub_eligable->latest_invoice_amount,
-                            'connection_type' => $sub_eligable->connection_type,
-                            'connection_id' => $sub_eligable->connection_id,
-                            'store_id' => $sub_eligable->store_id,
-                        ]);
+                        Log::info($sub_eligable->latest_invoice_id);
+                        $paidOutInvoice = new PaidOutInvoice();
+                        $paidOutInvoice->id = $sub_eligable->latest_invoice_id;
+                        $paidOutInvoice->sub_id = $sub_eligable->id;
+                        $paidOutInvoice->amount = $sub_eligable->latest_invoice_amount;
+                        $paidOutInvoice->connection_type = $sub_eligable->connection_type;
+                        $paidOutInvoice->connection_id = $sub_eligable->connection_id;
+                        $paidOutInvoice->store_id = $sub_eligable->store_id;
+                        $paidOutInvoice->save();
+
+                        }catch (ApiErrorException $e) {
+                            if (env('APP_DEBUG')) Log::error($e);
+                            // Failed to Transfer
+                        }
+                          
+                        
 
 
                     }catch (ApiErrorException $e) {

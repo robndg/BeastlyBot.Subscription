@@ -7,9 +7,13 @@ use App\AlertHelper;
 use App\StripeHelper;
 use App\DiscordStore;
 use App\PaymentMethod;
+use App\Refund;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Auth;
+use App\User;
+use App\Subscription;
 
 class UserController extends Controller {
 
@@ -112,12 +116,14 @@ class UserController extends Controller {
         $sub_id = $request['sub_id'];
         $end_now = $request['end_now'];
 
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
+
         if(!\Auth::user()->getStripeHelper()->isSubscribedToID($sub_id)) {
             return response()->json(['success' => false, 'msg' => 'This is not your subscription. Contact support']);
         }
 
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
+       
 
         try {
             // Get subscription from stripe and cancel it.
@@ -149,6 +155,7 @@ class UserController extends Controller {
     }
 
     public function undoCancelSubscription(Request $request) {
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
 
 
         $sub_id = $request['sub_id'];
@@ -159,7 +166,7 @@ class UserController extends Controller {
         }
 
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+
 
         // Get subscription from stripe and cancel it.
         $sub = \Stripe\Subscription::retrieve($sub_id);
@@ -198,7 +205,8 @@ class UserController extends Controller {
 
 
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
+
 
         try {
             // Get subscription from stripe and cancel it.
@@ -421,8 +429,7 @@ class UserController extends Controller {
         $decision = "1";
         $ban = $request['ban'];
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
 
         try {
             // Get subscription from stripe and cancel it.
@@ -562,6 +569,18 @@ class UserController extends Controller {
         }
 
         return response()->json(['success' => true]);
+    }
+
+    public function impersonate($id)
+    {       
+        if(Auth::user()->admin == 1){
+            Auth::logout(); // for end current session
+            Auth::loginUsingId($id);
+
+            return redirect()->to('/dashboard');
+        }else{
+            return redirect()->to('/');
+        }
     }
 
 }

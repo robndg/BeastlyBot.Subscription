@@ -513,5 +513,24 @@ $('#notifications_modal').on('hide.bs.modal', function() {
   },1800);
 </script>
 
+
+
+<script type="text/javascript">
+  setTimeout(function(){
+  if(window.location.href.includes('messages')) {
+    if(window.location.href.includes('open')) {
+      //$('#open-messages').click()
+      let searchParams = new URLSearchParams(window.location.search);
+      let param_id = searchParams.get('open')
+      var url = "slide-ticket-show/" + param_id;
+      $("<button>").attr("type", "hidden").attr("data-toggle", "slidePanel").attr("data-url", url).attr("id", "open-message-id_"+param_id).appendTo("body"); 
+      $('#open-message-id_'+param_id).click()
+
+      }
+    }
+  
+  },300);
+</script>
+
 @endsection
 

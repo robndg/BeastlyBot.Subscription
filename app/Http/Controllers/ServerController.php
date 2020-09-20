@@ -112,13 +112,12 @@ class ServerController extends Controller {
 
         // 1 got to make paid out table work
         $total_payout = PaidOutInvoice::where('store_id', $discord_store->id)->sum('amount');
-        // 2 works
-        $pending_payout = Subscription::where('store_id', $discord_store->id)->where('latest_paid_out_invoice_id', 'latest_invoice_id')->where('latest_invoice_paid_at', '>', Carbon::now()->subDays(15))->sum('latest_invoice_amount');
-        // 3 not sure if works, maybe cache
-        $pending_payment = Subscription::where('store_id', $discord_store->id)->whereNull('latest_paid_out_invoice_id')->orWhere('latest_paid_out_invoice_id', '!=', 'latest_invoice_id')->sum('latest_invoice_amount');
-
+        // 2
+        $average_weekly = PaidOutInvoice::where('store_id', $discord_store->id)->whereBetween('created_at', [Carbon::now()->subDays(8), Carbon::now()])->sum('amount');
+        // 3
+        $pending_payout = Subscription::where('store_id', $discord_store->id)->whereNull('latest_paid_out_invoice_id')->orWhereRaw('latest_paid_out_invoice_id != latest_invoice_id')->where('store_id', $discord_store->id)->sum('latest_invoice_amount');
         // $pending_total = Subscription::where('store_id', $discord_store->id)->where(Carbon::createFromFormat('Y-m-d', 'latest_invoice_paid_at') > Carbon::now()->subDays(15))->sum('reward');
-        $subscriptions = Subscription::where('store_id', $discord_store->id)->paginate(20);
+        $subscriptions = Subscription::where('store_id', $discord_store->id)->orderBy('latest_invoice_paid_at')->paginate(20);
 
         // get all the invoices for payments tab
         \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
@@ -139,7 +138,7 @@ class ServerController extends Controller {
         // });
 
         // TODO: Member count not working. Returns null in guild for some reason, so does members. Have to use old code to update member count
-        return view('server')->with('id', $id)->with('shop', $discord_store)->with('has_order', false)->with('roles', $roles)->with('active_roles', $active)->with('guild', $discord_helper->getGuild($id))->with('subscribers', $subscribers)->with('total_payout', $total_payout)->with('pending_payout', $pending_payout)->with('pending_payment', $pending_payment)->with('users_roles', $users_roles)->with('invoices', $invoices)->with('subscriptions', $subscriptions);
+        return view('server')->with('id', $id)->with('shop', $discord_store)->with('has_order', false)->with('roles', $roles)->with('active_roles', $active)->with('guild', $discord_helper->getGuild($id))->with('subscribers', $subscribers)->with('total_payout', $total_payout)->with('pending_payout', $pending_payout)->with('average_weekly', $average_weekly)->with('users_roles', $users_roles)->with('invoices', $invoices)->with('subscriptions', $subscriptions);
     }
 
 
@@ -198,7 +197,8 @@ class ServerController extends Controller {
             $discord_product = new DiscordRoleProduct($guild_id, $role_id, null);
             $product = $discord_product->getStripeProduct();
             $shop_url = DiscordStore::where('guild_id', $guild_id)->value('url');
-            return view('slide.slide-roles-settings')->with('shop_url', $shop_url)->with('enabled', $product->active)->with('guild_id', $guild_id)->with('role_id', $role_id)->with('prices', ProductController::getPricesForRole($guild_id, $role_id));
+            $discord_helper = new \App\DiscordHelper(auth()->user());
+            return view('slide.slide-roles-settings')->with('guild_id', $guild_id)->with('role', $discord_helper->getRole($guild_id, $role_id))->with('shop_url', $shop_url)->with('enabled', $product->active)->with('prices', ProductController::getPricesForRole($guild_id, $role_id));
         } catch (\Exception $e) {
             if (env('APP_DEBUG')) Log::error($e);
             return view('slide.slide-roles-settings')->with('enabled', false)->with('guild_id', $guild_id)->with('role_id', $role_id)->with('prices', ProductController::getPricesForRole($guild_id, $role_id));
@@ -273,7 +273,7 @@ class ServerController extends Controller {
 
     /* ServerController: getDisputes */
     public function getDisputes(Request $request) {
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
 
         $guild = $request['guild'];
 

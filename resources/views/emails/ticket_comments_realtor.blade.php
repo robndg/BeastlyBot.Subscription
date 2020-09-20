@@ -17,7 +17,7 @@
 <p>Status: {{ $ticket->status }}</p>
  
 <p>
-    You can view the ticket at any time at {{ url('tickets/'. $ticket->ticket_id) }}
+View and reply on the message dashboard <a href="{{ url('dashboard?messages&open=' . $ticket->ticket_id) }}" target="_blank">{{ url('dashboard?messages&open=' . $ticket->ticket_id) }}</a>
 </p>
  
 </body>

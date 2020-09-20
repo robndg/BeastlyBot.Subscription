@@ -35,7 +35,7 @@ class StripeConnectController extends Controller
             $user->StripeConnect->express_id = $stripe_account->id;
             $user->StripeConnect->save();
             AlertHelper::alertSuccess('Stripe account created! You can now accept payments.');
-            return redirect('/dashboard#open-servers=true');
+            return redirect('/dashboard?open-servers=true');
         } else {
             AlertHelper::alertError('This is not a US account or you have already connected an account.');
             return redirect('/dashboard');

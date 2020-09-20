@@ -100,19 +100,16 @@ class ProductController extends Controller {
     public static function getPricesForRole($guild_id, $role_id) {
         $prices = [];
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
-        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
         foreach ([1, 3, 6, 12] as $duration) {
-            $key = 'price_' . $guild_id . '_' . $role_id . '_' . $duration;
-            if(! Cache::has($key)) {
-                $discord_plan = new DiscordPlan(new DiscordRoleProduct($guild_id, $role_id, $duration), 'month', $duration);
-                if($discord_plan->getStripePlan() != null) {
-                    Cache::put($key, $discord_plan->getStripePlan()->amount / 100, 60 * 5);
-                } else {
-                    Cache::put($key, 0, 60 * 5);
-                }
+            $discord_plan = new DiscordPlan(new DiscordRoleProduct($guild_id, $role_id, $duration), 'month', $duration);
+            $key = 'plan_' . $discord_plan->getStripeID();
+            
+            if($discord_plan->getStripePlan() != null) {
+                $prices[$duration] = $discord_plan->getStripePlan()->amount / 100;
+            } else {
+                $prices[$duration] = 0;
             }
-
-            $prices[$duration] = Cache::get($key);
         }
         return $prices;
     }

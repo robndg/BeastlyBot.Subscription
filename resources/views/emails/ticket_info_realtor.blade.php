@@ -13,7 +13,7 @@ Heads up Beastly Team, {{ $department->name }}. A message has been opened. The d
 <p>Status: {{ $ticket->status }}</p>
  
 <p>
-You can view the message at any time at {{ url('tickets/'. $ticket->ticket_id) }}
+View and reply on ticket dashboard <a href="{{ url('dashboard?messages&open=' . $ticket->ticket_id) }}" target="_blank">{{ url('dashboard?messages&open=' . $ticket->ticket_id) }}</a>
 </p>
  
 </body>
