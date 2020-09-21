@@ -60,7 +60,7 @@
                                 $role = $discord_helper->getRole($data[1], $data[2]);
                             @endphp
 
-                            <tr id="subscription_{{ $subscription['id'] }}" data-url="/slide-account-subscription-settings?id={{ $subscription['id'] }}" data-toggle="slidePanel">
+                            <tr id="subscription_{{ $subscription['id'] }}" data-url="/slide-account-subscription-settings?id={{ $subscription['id'] }}&guild_name={{ $guild->name }}&role_name={{ $role->name }}&role_color={{ dechex($role->color) }}" data-toggle="slidePanel">
                                 <td class="cell-200 text-left">
                                     <h4>{{ $guild->name }}</h4>
                                 </td>
@@ -115,7 +115,7 @@
                                 $role = $discord_helper->getRole($data[1], $data[2]);
                             @endphp
 
-                            <tr id="subscription_{{ $subscription['id'] }}" data-url="/slide-account-subscription-settings?id={{ $subscription['id'] }}" data-toggle="slidePanel">
+                            <tr id="subscription_{{ $subscription['id'] }}" data-url="/slide-account-subscription-settings?id={{ $subscription['id'] }}&guild_name={{ $guild->name }}&role_name={{ $role->name }}&role_color={{ dechex($role->color) }}" data-toggle="slidePanel">
                                 <td class="cell-200 text-left">
                                     <h4>{{ $guild->name }}</h4>
                                 </td>

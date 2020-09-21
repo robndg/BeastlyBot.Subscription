@@ -16,8 +16,8 @@
             <h5>Subscription</h5>
             <div>
                  <div class="dropdown">
-                    @if($subscription->status == 'active')
-                        @if($subscription->cancel_at_period_end)
+                    @if($sub->status == 'active')
+                        @if($sub->cancel_at_period_end)
                         <button type="button" class="btn w-160 btn-info btn-sm active" id="moreDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Cancel Period End
                         </button>
@@ -29,12 +29,12 @@
                             <i class="icon wb-payment" aria-hidden="true"></i> Subscribed
                         </button>
                         <div class="dropdown-menu" aria-labelledby="moreDropdown" role="menu" x-placement="bottom-start">
-                            <a class="dropdown-item" href="javascript:void(0)" onclick="requestRefundSubscription();" role="menuitem">{{--v1 @if(Refund::where('sub_id', $subscription->id)->exists()) @if(Refund::where('sub_id', $subscription->id)->where('issued','=','1')->exists()) Refunded @elseif(Refund::where('sub_id', $subscription->id)->where('issued','=','0')->exists()) @if(Refund::where('sub_id', $subscription->id)->where('refund_terms','=','100')->exists()) Success @else Denied @endif @else Request Submitted @endif @else Request Refund @endif --}}</a>
-                            {{--v1 @if(Refund::where('sub_id', $subscription->id)->where('decision')->exists())
+                            <a class="dropdown-item" href="javascript:void(0)" onclick="requestRefundSubscription();" role="menuitem">{{--v1 @if(Refund::where('sub_id', $sub->id)->exists()) @if(Refund::where('sub_id', $sub->id)->where('issued','=','1')->exists()) Refunded @elseif(Refund::where('sub_id', $sub->id)->where('issued','=','0')->exists()) @if(Refund::where('sub_id', $sub->id)->where('refund_terms','=','100')->exists()) Success @else Denied @endif @else Request Submitted @endif @else Request Refund @endif --}}</a>
+                            {{--v1 @if(Refund::where('sub_id', $sub->id)->where('decision')->exists())
                             <div class="dropdown-divider"></div>
-                            <a class="dropdown-item disabled" href="javascript:void(0)" role="menuitem">{{ $subscription->metadata['refund_days'] }} days to request from {{ Carbon::createFromTimestamp($subscription->start_date)->toDateTimeString()  }}</a>
+                            <a class="dropdown-item disabled" href="javascript:void(0)" role="menuitem">{{ $sub->metadata['refund_days'] }} days to request from {{ Carbon::createFromTimestamp($sub->start_date)->toDateTimeString()  }}</a>
                             @endif --}}
-                        </div>{{-- Carbon::createFromTimestamp((Carbon::now()->toDateTimeString()) - (Carbon::create($subscription->start_date)->toDateTimeString()))->toDateTimeString() --}}
+                        </div>{{-- Carbon::createFromTimestamp((Carbon::now()->toDateTimeString()) - (Carbon::create($sub->start_date)->toDateTimeString()))->toDateTimeString() --}}
                         @endif
                     @else
                     <button type="button" class="btn w-160 btn-primary btn-sm active" aria-expanded="false">
@@ -55,7 +55,7 @@
                           <i class="icon wb-calendar" aria-hidden="true"></i>
                         </span>
                       </div>
-                      <input type="text" class="form-control w-120" data-plugin="datepicker" value="{{ gmdate('m-d-Y', $subscription->start_date)}}" disabled>
+                      <input type="text" class="form-control w-120" data-plugin="datepicker" value="{{ gmdate('m-d-Y', $sub->start_date)}}" disabled>
                     </div>
             </div>
 
@@ -71,7 +71,7 @@
                           <i class="icon wb-calendar" aria-hidden="true"></i>
                         </span>
                       </div>
-                      <input type="text" class="form-control w-120" data-plugin="datepicker" value="{{ gmdate('m-d-Y', $subscription->current_period_end)}}" disabled>
+                      <input type="text" class="form-control w-120" data-plugin="datepicker" value="{{ gmdate('m-d-Y', $sub->current_period_end)}}" disabled>
                     </div>
             </div>
 
@@ -95,14 +95,14 @@
       </div>
 
     </div>
-        @if($subscription->status == 'active')
+        @if($sub->status == 'active')
         <div class="put-bottom">
             <div class="row">
                 <div class="col-md-12">
-                    @if($days_passed <= $subscription->metadata['refund_days'] && ($subscription->metadata['refunds_enabled'] != "1"))
-                        <button class="btn btn-primary btn-block" onclick="cancelSubscription();">End Subscription</button>
+                    @if($days_passed <= $subscription->refund_days && ($subscription->refund_enabled != 1))
+                        <button class="btn btn-dark btn-block" onclick="cancelSubscription();">End Subscription</button>
                     @else
-                        <button class="btn btn-danger btn-block" onclick="requestRefundSubscription();">Cancel/Refund ({{ $subscription->metadata['refund_days'] - $days_passed }} days remaining)</button>
+                        <button class="btn btn-dark btn-block" onclick="requestRefundSubscription();">Cancel/Refund ({{ $subscription->refund_days - $days_passed }} days remaining)</button>
                     @endif
                 </div>
             </div>
@@ -137,7 +137,7 @@
                     url: '/cancel-subscription',
                     type: 'POST',
                     data: {
-                        sub_id: '{{ $subscription->id }}',
+                        sub_id: '{{ $sub->id }}',
                         end_now: endNow,
                         _token: '{{ csrf_token() }}'
                     },
@@ -172,7 +172,7 @@
 
 <script type="text/javascript">
     function requestRefundSubscription() {
-        var no_questions_asked = "{{ $subscription->metadata['refund_terms'] }}";
+        var no_questions_asked = "{{ $subscription->refund_terms }}";
 
         if(no_questions_asked == 1) {
             var swal_data = {
@@ -211,7 +211,7 @@
                     url: `/request-subscription-refund`,
                     type: 'POST',
                     data: {
-                        sub_id: '{{ $subscription->id }}',
+                        sub_id: '{{ $sub->id }}',
                         sub_guild_name: '{{ $guild_name }}',
                         sub_role_name: '{{ $role_name }}',
                         sub_user_id: '{{ auth()->user()->id }}',
@@ -270,7 +270,7 @@
                     url: '/undo-cancel-subscription',
                     type: 'POST',
                     data: {
-                        sub_id: '{{ $subscription->id }}',
+                        sub_id: '{{ $sub->id }}',
                         end_now: endNow,
                         _token: '{{ csrf_token() }}'
                     },

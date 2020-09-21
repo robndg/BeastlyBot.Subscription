@@ -163,3 +163,68 @@
           })
     });
 </script>
+
+<script>
+
+(function () {
+        var timeline_labels = [];
+        var timeline_data1 = [];
+        var timeline_data2 = [];
+        var totalPoints = 20;
+        var updateInterval = 1000;
+        var now = new Date().getTime();
+  
+        function GetData() {
+          timeline_labels.shift();
+          timeline_data1.shift();
+          timeline_data2.shift();
+  
+          while (timeline_data1.length < totalPoints) {
+            var x = Math.random() * 100 + 800;
+            var y = Math.random() * 100 + 400;
+            timeline_labels.push(now += updateInterval);
+            timeline_data1.push(x);
+            timeline_data2.push(y);
+          }
+        }
+  
+        var timlelineData = {
+          labels: timeline_labels,
+          series: [timeline_data1, timeline_data2]
+        };
+        var timelineOptions = {
+          low: 0,
+          showArea: true,
+          showPoint: false,
+          showLine: false,
+          fullWidth: true,
+          chartPadding: {
+            top: 0,
+            right: 0,
+            bottom: 0,
+            left: 0
+          },
+          axisX: {
+            showLabel: false,
+            showGrid: false,
+            offset: 0
+          },
+          axisY: {
+            showLabel: false,
+            showGrid: false,
+            offset: 0
+          },
+          plugins: [Chartist.plugins.tooltip()]
+        };
+        new Chartist.Line("#paymentsChart .ct-chart", timlelineData, timelineOptions);
+  
+      })();
+</script>
+
+<script>
+function tabPayments(){
+    setTimeout(function(){
+        $('#payments-loading_table').hide();
+    },2000)
+};
+</script>

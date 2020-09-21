@@ -29,6 +29,38 @@ class DiscordRoleProduct extends Product
         if(!$this->discord_store->live)
             throw new ProductMsgException('Sorry, purchases are disabled in testing mode.');
 
+        $discord_helper = new \App\DiscordHelper(auth()->user());
+
+        $bad_guild = false;
+        $bad_role = false;
+        /*
+        Make sure the guild exists. If not cancel and refund
+        */
+        try {
+            if($discord_helper->getGuild($this->guild_id) == null) {
+            }
+        } catch (\Exception $e) {
+            $bad_guild = true;
+        }
+
+            /*
+            Make sure the role exists. If not cancel and refund
+        */
+        try {
+            if($discord_helper->getRole($this->guild_id, $this->role_id) == null) {
+                $bad_role = true;
+            }
+        } catch (\Exception $e) {
+        }
+
+        if($bad_guild) {
+            throw new ProductMsgException('Server ID is not valid.');
+        }
+
+        if($bad_role) {
+            throw new ProductMsgException('Role ID is not valid.');
+        }
+
         if (auth()->user()->getStripeHelper()->isSubscribedToProduct($this->guild_id . '_' . $this->role_id)) 
             throw new ProductMsgException('You are already subscribed to that role. You can edit your subscription in the subscriptions page.');
         

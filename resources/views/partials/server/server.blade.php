@@ -13,7 +13,7 @@
                         <p>Enable roles for purchase on your shop</p>
                     </div>
                     <div class="panel-actions panel-actions-keep">
-                       <button type="button" class="btn btn-sm btn-dark btn-icon btn-round" id="btn_edit-roles"
+                       <button type="button" class="btn btn-sm btn-dark btn-icon btn-round" onclick="btnEditRoles()" id="btn_edit-roles"
                                 data-toggle="tooltip" data-original-title="Show All">
                             <i class="icon wb-plus" aria-hidden="true"></i>
                         </button>
@@ -30,7 +30,7 @@
                         <tbody id="roles_table">
                             @foreach($roles as $role) 
                            
-                            @if($role->name !== '@everyone')
+                            @if($role->name !== '@everyone' && !$role->managed)
                             @php
                             $active = in_array($role->id, $active_roles);
                             @endphp

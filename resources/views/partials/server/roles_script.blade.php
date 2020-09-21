@@ -1,3 +1,39 @@
+<script>
+
+function btnEditRoles() {
+    $('.role.inactive-role').removeClass('d-none');
+    $('.toggle-role').removeClass('d-none');
+    $('#btn_save-roles').removeClass('d-none');
+    $('#btn_save-products').removeClass('d-none');
+
+    $('#btn_edit-roles').addClass('d-none');
+    $('.settings-role').addClass('d-none');
+    $('.info-role').addClass('d-none');
+
+    if($('#icon_save-roles').hasClass('wb-check')){
+        $('#icon_save-roles').addClass('wb-minus').removeClass('wb-check');
+    }
+    if($('#btn_save-roles').hasClass('btn-primary')){
+        $('#btn_save-roles').addClass('btn-dark').removeClass('btn-primary');
+    }
+}
+
+$(document).on('click', '.btn_save-roles', function (e) {
+
+    e.preventDefault();
+
+    $('.role.inactive-role').addClass('d-none');
+    $('.toggle-role').addClass('d-none');
+    $('#btn_save-roles').addClass('d-none');
+    $('#btn_save-products').addClass('d-none');
+
+    $('#btn_edit-roles').removeClass('d-none');
+    $('.settings-role').removeClass('d-none');
+    $('.info-role').removeClass('d-none');
+
+});
+
+</script>
 <script type="text/javascript">
     var roles = {};
     var guild_id = '{{ $id }}';
@@ -6,7 +42,7 @@
     var enabled_get = false;
     var is_enabled = 'inactive-role';
 
-    $(document).ready(function () {
+
         $(document).on('click', '.toggle-btn-trigger', function (e) {
 
             e.preventDefault();
@@ -102,45 +138,5 @@
 
             // clicked = true;
             });
-    });
-</script>
-
-<script>
-
-$(document).on('click', '#btn_edit-roles', function (e) {
-
-    e.preventDefault();
-    $('.role.inactive-role').removeClass('d-none');
-    $('.toggle-role').removeClass('d-none');
-    $('#btn_save-roles').removeClass('d-none');
-    $('#btn_save-products').removeClass('d-none');
-
-    $('#btn_edit-roles').addClass('d-none');
-    $('.settings-role').addClass('d-none');
-    $('.info-role').addClass('d-none');
-
-    if($('#icon_save-roles').hasClass('wb-check')){
-        $('#icon_save-roles').addClass('wb-minus').removeClass('wb-check');
-    }
-    if($('#btn_save-roles').hasClass('btn-primary')){
-        $('#btn_save-roles').addClass('btn-dark').removeClass('btn-primary');
-    }
-
-})
-
-$(document).on('click', '.btn_save-roles', function (e) {
-
-    e.preventDefault();
-
-    $('.role.inactive-role').addClass('d-none');
-    $('.toggle-role').addClass('d-none');
-    $('#btn_save-roles').addClass('d-none');
-    $('#btn_save-products').addClass('d-none');
-
-    $('#btn_edit-roles').removeClass('d-none');
-    $('.settings-role').removeClass('d-none');
-    $('.info-role').removeClass('d-none');
-
-});
 
 </script>

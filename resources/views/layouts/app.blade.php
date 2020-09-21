@@ -49,6 +49,7 @@
 </script>
 
 
+<!---- SCRIPTS ----->
 @yield('scripts')
 </body>
 </html>

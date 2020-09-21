@@ -3,6 +3,7 @@
 use App\AlertHelper;
 
 use App\DiscordHelper;
+use App\Subscription;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Log;
 #use App\Notification;
@@ -65,14 +66,17 @@ Route::group(['middleware' => ['auth', 'web']], function () {
         $role_color = \request('role_color');
 
         try {
+
             $sub = \Stripe\Subscription::retrieve($id);
             $latest_invoice = \Stripe\Invoice::retrieve($sub->latest_invoice);
 
             $diff = time() - $sub->start_date;
             $days = round($diff / (60 * 60 * 24));
 
-            return view('/slide/slide-account-subscription-settings')->with('subscription', $sub)->with('latest_invoice', $latest_invoice)->with('role_name', $role_name)
-            ->with('guild_name', $guild_name)->with('role_color', $role_color)->with('days_passed', $days);
+            $subscription = Subscription::where('id', $id)->first();
+
+            return view('/slide/slide-account-subscription-settings')->with('sub', $sub)->with('latest_invoice', $latest_invoice)->with('role_name', $role_name)->with('subscription', $subscription)->
+            with('guild_name', $guild_name)->with('role_color', $role_color)->with('days_passed', $days);
         } catch(\Exception $e) {
             if (env('APP_DEBUG')) Log::error($e);
             AlertHelper::alertError('Error!');

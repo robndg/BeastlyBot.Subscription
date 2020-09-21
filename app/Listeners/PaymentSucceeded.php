@@ -38,86 +38,115 @@ class PaymentSucceeded implements ShouldQueue
                 $discord_store = DiscordStore::where("guild_id", $guild_id)->first();
                 $discord_helper = new \App\DiscordHelper(\App\User::where('id', $customer_id)->first());
 
-                if($reason == 'subscription_create') {
-                    Cache::forget('customer_subscriptions_active_' . $customer_id);
-                    Cache::forget('customer_subscriptions_canceled_' . $customer_id);
-
-                    try {
-                        $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
-                        $discord_client->guild->addGuildMemberRole([
-                            'guild.id' => intval($guild_id),
-                            'role.id' => intval($role_id),
-                            'user.id' => intval($customer_discord_id)
-                        ]);
-
-                        $guild = $discord_helper->getGuild($guild_id);
-                        $role = $discord_helper->getRole($guild_id, $role_id);
-                        $discord_helper->sendMessage('You have successfully subscribed to the ' . $role->name . ' role in the ' . $guild->name . ' server!');
-
-                        $subscription = new Subscription();
-                        $subscription->id = $subscription_id;
-                        $subscription->stripe_connect_id = StripeConnect::where('user_id', $partner_id)->first()->id;
-                        $subscription->latest_invoice_id = $webhookCall->payload['data']['object']['id'];
-                        $subscription->latest_invoice_paid_at = date('Y-m-d H:i:s');
-                        $subscription->latest_invoice_amount = $webhookCall->payload['data']['object']['amount_paid'];
-                        $subscription->connection_type = 1;
-                        $subscription->connection_id = DiscordOAuth::where('user_id', $partner_id)->first()->id;
-                        $subscription->store_id = $discord_store->id;
-                        $subscription->product_id = $webhookCall->payload['data']['object']['lines']['data'][0]['plan']['product'];
-                        $subscription->refund_enabled = $discord_store->refunds_enabled;
-                        $subscription->refund_days = $discord_store->refunds_days;
-                        $subscription->refund_terms = $discord_store->refunds_terms;
-                        $subscription->metadata = ['role_id' => $role_id];
-                        $subscription->active = 1;
-                        $subscription->user_id = $customer_id;
-                        $subscription->partner_id = $partner_id;
-                        $subscription->current_period_end = date("Y-m-d", $webhookCall->payload['data']['object']['lines']['data'][0]['period']['end']);
-                        $subscription->save();
-                    } catch(\Exception $e) {
-                        // could not add role, cancel subscription and refund invoice
-                        $discord_helper->sendMessage('Uh-oh! I couldn\'t add the role your account. I canceled the subscription and refunded your primary payment method.');
-                    
-                        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
-
-                        \Stripe\Refund::create([
-                            'charge' => $webhookCall->payload['data']['object']['charge'],
-                        ]);
-
-                        \Stripe\Subscription::cancel(
-                            $subscription_id,
-                            []
-                        );
+                $bad_guild = false;
+                $bad_role = false;
+                /*
+                Make sure the guild exists. If not cancel and refund
+                */
+                try {
+                    if($discord_helper->getGuild($guild_id) == null) {
                     }
-                   
-                } else if($reason == 'subscription_cycle') {
-                    try {
-                        $guild = $discord_helper->getGuild($guild_id);
-                        $role = $discord_helper->getRole($guild_id, $role_id);
-                        $discord_helper->sendMessage('You recurring subscription to the ' . $role->name . ' role in the ' . $guild->name . ' server has just been renewed!');
+                } catch (\Exception $e) {
+                    $bad_guild = true;
+                }
 
-                        $subscription = Subscription::where('id', $subscription_id)->first();
-                        $subscription->latest_invoice_id = $webhookCall->payload['data']['object']['id']; 
-                        $subscription->latest_invoice_paid_at = date('Y-m-d H:i:s');
-                        $subscription->latest_invoice_amount = $webhookCall->payload['data']['object']['amount_paid'];
-                        $subscription->current_period_end = date("Y-m-d", $webhookCall->payload['data']['object']['lines']['data'][0]['period']['end']);
-                        $subscription->save();
-                    } catch(\Exception $e) {
-                        $discord_helper->sendMessage('Uh-oh! Your recurring subscription could not be renewed! I canceled the subscription and refunded your primary payment method.');
-                    
-                        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
-
-                        \Stripe\Refund::create([
-                            'charge' => $webhookCall->payload['data']['object']['charge'],
-                        ]);
-                        
-                        \Stripe\Subscription::cancel(
-                            $subscription_id,
-                            []
-                        );
+                 /*
+                    Make sure the role exists. If not cancel and refund
+                */
+                try {
+                    if($discord_helper->getRole($guild_id, $role_id) == null) {
+                        $bad_role = true;
                     }
+                } catch (\Exception $e) {
+                }
+
+                if(!$bad_guild && !$bad_role) {
+                    if($reason == 'subscription_create') {
+                        Cache::forget('customer_subscriptions_active_' . $customer_id);
+                        Cache::forget('customer_subscriptions_canceled_' . $customer_id);
+
+                        try {
+                            $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
+                            $discord_client->guild->addGuildMemberRole([
+                                'guild.id' => intval($guild_id),
+                                'role.id' => intval($role_id),
+                                'user.id' => intval($customer_discord_id)
+                            ]);
+
+                            $guild = $discord_helper->getGuild($guild_id);
+                            $role = $discord_helper->getRole($guild_id, $role_id);
+                            $discord_helper->sendMessage('You have successfully subscribed to the ' . $role->name . ' role in the ' . $guild->name . ' server!');
+
+                            $subscription = new Subscription();
+                            $subscription->id = $subscription_id;
+                            $subscription->stripe_connect_id = StripeConnect::where('user_id', $partner_id)->first()->id;
+                            $subscription->latest_invoice_id = $webhookCall->payload['data']['object']['id'];
+                            $subscription->latest_invoice_paid_at = date('Y-m-d H:i:s');
+                            $subscription->latest_invoice_amount = $webhookCall->payload['data']['object']['amount_paid'];
+                            $subscription->connection_type = 1;
+                            $subscription->connection_id = DiscordOAuth::where('user_id', $partner_id)->first()->id;
+                            $subscription->store_id = $discord_store->id;
+                            $subscription->product_id = $webhookCall->payload['data']['object']['lines']['data'][0]['plan']['product'];
+                            $subscription->refund_enabled = $discord_store->refunds_enabled;
+                            $subscription->refund_days = $discord_store->refunds_days;
+                            $subscription->refund_terms = $discord_store->refunds_terms;
+                            $subscription->metadata = ['role_id' => $role_id];
+                            $subscription->active = 1;
+                            $subscription->user_id = $customer_id;
+                            $subscription->partner_id = $partner_id;
+                            $subscription->current_period_end = date("Y-m-d", $webhookCall->payload['data']['object']['lines']['data'][0]['period']['end']);
+                            $subscription->save();
+                        } catch(\Exception $e) {
+                            // could not add role, cancel subscription and refund invoice
+                            $discord_helper->sendMessage('Uh-oh! I couldn\'t add the role your account. I canceled the subscription and refunded your primary payment method.');
+                            $this->cancelRefund($webhookCall);
+                        }
+                    
+                    } else if($reason == 'subscription_cycle') {
+                        try {
+                            $guild = $discord_helper->getGuild($guild_id);
+                            $role = $discord_helper->getRole($guild_id, $role_id);
+                            $discord_helper->sendMessage('You recurring subscription to the ' . $role->name . ' role in the ' . $guild->name . ' server has just been renewed!');
+
+                            $subscription = Subscription::where('id', $subscription_id)->first();
+                            $subscription->latest_invoice_id = $webhookCall->payload['data']['object']['id']; 
+                            $subscription->latest_invoice_paid_at = date('Y-m-d H:i:s');
+                            $subscription->latest_invoice_amount = $webhookCall->payload['data']['object']['amount_paid'];
+                            $subscription->current_period_end = date("Y-m-d", $webhookCall->payload['data']['object']['lines']['data'][0]['period']['end']);
+                            $subscription->save();
+                        } catch(\Exception $e) {
+                            $discord_helper->sendMessage('Uh-oh! Your recurring subscription could not be renewed! I canceled the subscription and refunded your primary payment method.');
+                            $this->cancelRefund($webhookCall);
+                        }
+                    }
+                } else {
+                    $discord_helper->sendMessage('Uh-oh! I couldn\'t add the role your account. I canceled the subscription and refunded your primary payment method.');
+                    $this->cancelRefund($webhookCall);
                 }
             }
         }
+    }
+
+    private function cancelRefund($webhookCall) {
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
+
+        try {
+            \Stripe\Refund::create([
+                'charge' => $webhookCall->payload['data']['object']['charge'],
+            ]);
+        } catch(\Exception $e) {
+            // TODO: Need to store any errors with bad refunds or canceling subscriptions
+            if(strpos($e->getMessage(), 'has already been refunded') !== false) {
+                // has already been refunded
+            } else {
+                // a more serious error
+            }
+        }
+
+        $subscription_id = $webhookCall->payload['data']['object']['lines']['data'][0]['subscription'];
+
+        $stripe = new \Stripe\StripeClient(env('STRIPE_CLIENT_SECRET'));
+        $stripe->subscriptions->cancel($subscription_id, []);
     }
 
     // {

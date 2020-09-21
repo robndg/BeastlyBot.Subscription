@@ -19,7 +19,10 @@ class CreatePaidOutInvoicesTable extends Migration
 	        $table->double('amount');
 	        $table->integer('connection_type');
 	        $table->integer('connection_id');
-	        $table->string('store_id');
+            $table->string('store_id');
+            $table->string('transfer_id')->nullable();
+            $table->integer('refunded')->nullable();
+            $table->integer('reversed')->nullable();
             $table->timestamps();
         });
     }

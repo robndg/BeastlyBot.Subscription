@@ -71,7 +71,6 @@
 
                 @include('partials.server.server')
                 @include('partials.server.subscribers')
-                {{-- @include('partials.server.affiliates') --}}
                 @include('partials.server.payments')
 
             </div>
@@ -82,10 +81,11 @@
         </div>
     </div>
 
+
 @endsection
 
-@section('scripts')
 
+@section('scripts')
 <script type="text/javascript">
 
   $(document).ready(function() {
@@ -166,8 +166,8 @@
             }
         @endif
 
-    })
-})
+    });
+});
 
 
 $('#partnerPricingModal').on('hidden.bs.modal', function () {

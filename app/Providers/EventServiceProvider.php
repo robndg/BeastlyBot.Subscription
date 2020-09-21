@@ -33,6 +33,21 @@ class EventServiceProvider extends ServiceProvider
         'stripe-webhooks::subscription_schedule.expiring' => [ // TODO: Need to test if this works
             \App\Listeners\SubscriptionExpired::class,
         ],
+        'stripe-webhooks::charge.dispute.created' => [ 
+            \App\Listeners\DisputeCreated::class,
+        ],
+        'stripe-webhooks::charge.dispute.closed' => [
+            \App\Listeners\DisputeClosed::class,
+        ],
+        'stripe-webhooks::charge.dispute.updated' => [
+            \App\Listeners\DisputeUpdated::class,
+        ],
+        'stripe-webhooks::charge.dispute.funds_reinstated' => [
+            \App\Listeners\DisputeFundsReinstated::class,
+        ],
+        'stripe-webhooks::charge.dispute.funds_withdrawn' => [
+            \App\Listeners\DisputeFundsWithdrawn::class,
+        ],
     ];
 
     /**

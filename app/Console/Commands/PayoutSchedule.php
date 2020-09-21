@@ -47,7 +47,7 @@ class PayoutSchedule extends Command
     public function handle()
     {
 
-        $subscriptions_eligable = Subscription::whereRaw('latest_invoice_id != latest_paid_out_invoice_id')->where('disputed_invoice_id', NULL)->where('latest_invoice_amount', '>', 0)->where('latest_invoice_paid_at', '<=', Carbon::now()->subDays(15))->orWhereNull('latest_paid_out_invoice_id')->where('disputed_invoice_id', NULL)->where('latest_invoice_amount', '>', 0)->where('latest_invoice_paid_at', '<=', Carbon::now()->subDays(15))->get();
+        $subscriptions_eligable = Subscription::whereRaw('latest_invoice_id != latest_paid_out_invoice_id')->where('disputed_invoice_id', NULL)->where('latest_invoice_amount', '>', 0)->where('latest_invoice_paid_at', '<=', Carbon::now()->subDays(15))->orWhereNull('latest_paid_out_invoice_id')->where('disputed_invoice_id', NULL)->where('latest_invoice_amount', '>', 0)->where('latest_invoice_paid_at', '<=', Carbon::now()->subDays(15))->where('status', 1)->get();
 
 
         foreach ($subscriptions_eligable as $sub_eligable) {
@@ -72,7 +72,7 @@ class PayoutSchedule extends Command
                         try{
 
                             try{
-                                \Stripe\Transfer::create([
+                                $transfer = \Stripe\Transfer::create([
                                     'amount' => $sub_eligable->latest_invoice_amount * (1 - $app_fee),
                                     'currency' => 'usd',
                                     'destination' => $stripe_connect->express_id,
@@ -97,6 +97,7 @@ class PayoutSchedule extends Command
                         $paidOutInvoice->connection_type = $sub_eligable->connection_type;
                         $paidOutInvoice->connection_id = $sub_eligable->connection_id;
                         $paidOutInvoice->store_id = $sub_eligable->store_id;
+                        $paidOutInvoice->transfer_id = $transfer->id;
                         $paidOutInvoice->save();
 
                         }catch (ApiErrorException $e) {
