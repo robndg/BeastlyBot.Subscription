@@ -5,6 +5,7 @@ namespace App\Products;
 use App\DiscordStore;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class DiscordRoleProduct extends Product
 {
@@ -88,9 +89,22 @@ class DiscordRoleProduct extends Product
 
     public function update(Request $request) {
         try {
-            \Stripe\Product::update($this->getStripeID(), ['active' => $request['active']]);
+            if($this->getStripeProduct() !== null) {
+                if($this->getStripeProduct()['active']) {
+                    \Stripe\Product::update($this->getStripeID(), ['active' => false]);
+                    Cache::forget('product_' . $this->getStripeID());
+                    return response()->json(['success' => true, 'active' => false]);
+                } else {
+                    \Stripe\Product::update($this->getStripeID(), ['active' => true]);
+                    Cache::forget('product_' . $this->getStripeID());
+                    return response()->json(['success' => true, 'active' => true]);
+                }
+            }
         } catch(\Exception $e) {
+            \Log::error($e);
+            return response()->json(['success' => false, 'msg' => 'Something went wrong on Stripe\'s end. Try again later.']);
         }
+
     }
 
     public function getCallbackParams(): array

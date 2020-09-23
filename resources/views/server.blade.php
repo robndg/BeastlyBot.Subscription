@@ -48,19 +48,19 @@
             <!-- nav-tabs -->
             <ul class="site-sidebar-nav nav nav-tabs nav-tabs-line bg-grey-3" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active show" data-toggle="tab" href="#tab-server" role="tab">
+                    <a class="nav-link tab-shop active show" data-toggle="tab" href="#tab-server" role="tab">
                         <i class="icon icon-shop" aria-hidden="true"></i>
                         <h5>Your Shop</h5>
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" data-toggle="tab" href="#tab-subscribers" role="tab">
+                    <a class="nav-link tap-subscribers" data-toggle="tab" href="#tab-subscribers" role="tab">
                         <i class="icon wb-user" aria-hidden="true"></i>
                         <h5>Subscribers</h5>
                     </a>
                 </li>
-                <li class="nav-item" onclick="tabPayments()">
-                    <a class="nav-link" data-toggle="tab" href="#tab-payments" role="tab">
+                <li class="nav-item">
+                    <a class="nav-link tab-payments" data-toggle="tab" href="#tab-payments" role="tab">
                         <i class="icon wb-stats-bars" aria-hidden="true"></i>
                         <h5>Payments</h5>
                     </a>
@@ -214,5 +214,6 @@ $('#partnerPricingModal').on('hidden.bs.modal', function () {
              $("#live-btns").addClass("pulse");
             }}, 1000);
 </script>
+
 
 @endsection

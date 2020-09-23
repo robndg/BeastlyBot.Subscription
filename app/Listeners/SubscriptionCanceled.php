@@ -47,6 +47,11 @@ class SubscriptionCanceled implements ShouldQueue
                     $discord_helper->sendMessage('Your subscription to the ' . $role->name . ' role in the ' . $guild->name . ' server was canceled. I removed the role from your account.');
                 } catch(\Exception $e) {
                     $discord_helper->sendMessage('Uh-oh! Something went wrong in removing the role from your account. Don\'t worry, I still canceled the subscription for you.');
+                    $discord_error = new \App\DiscordError();
+                    $discord_error->guild_id = $guild_id;
+                    $discord_error->role_id = $role_id;
+                    $discord_error->user_id = $customer_id;
+                    $discord_error->message = $e->getMessage();
                 }
             }
         }

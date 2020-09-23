@@ -453,6 +453,7 @@
 @endsection
 
 
+
 @section('scripts')
 
 <script>
@@ -531,6 +532,101 @@ $('#notifications_modal').on('hide.bs.modal', function() {
   
   },300);
 </script>
+
+
+
+@foreach(App\Refund::where('owner_id', (Auth::User()->id))->get() as $refundrequest)
+@if(!$refundrequest->decision)
+<script type="text/javascript">
+  setTimeout(function(){
+        Swal.fire({
+            title: "New Refund Request",
+            html: "User: {{ $refundrequest->getUser()->getDiscordHelper()->getUsername() }}<br>Role: {{ $refundrequest->role_name }}<br>Purchase Date: {{ Carbon\Carbon::createFromTimestamp($refundrequest->start_date)->toDateTimeString() }}@if(($refundrequest->refunds_enabled) == '1')<br><br><b>Your Refund Policy: </b>{{ $refundrequest->refund_days }} days, @if(($refundrequest->refund_terms) == '1')No Questions Asked @endif @if(($refundrequest->refund_terms) == '2')by server owner discretion with reason. @endif @endif",
+            // html: "<b>Refund Policy:</b> 15 days by server owner discretion with reason.<br>Username: SnowFalls<br>Role: VIP Member<br>Purchase Date: 05/06/19<br>Reason: Here is the request reason the user entered",
+            footer: '<span class=\"text-white text-center\"><div class=\"checkbox-custom checkbox-default\"><input type=\"checkbox\" id=\"sub_ban\" name=\\"inputSub_ban\" autocomplete=\"off\"><label for=\"inputSub_ban\">Ban user from future purchases?</label></div></span>',
+            type: 'warning',
+            allowOutsideClick: false,
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, accept refund!',
+            cancelButtonText: 'No, deny request.',
+            target: document.getElementById('slider-div')
+        }).then(function(result){
+            if($("#sub_ban").is(':checked')) {
+                var subBan = "1";
+            }else{
+                var subBan = "0";
+            }
+            if (result.value) {
+                $.ajax({
+                    url: '/request-subscription-decision',
+                    type: 'POST',
+                    data: {
+                        sub_id: '{{ $refundrequest->sub_id }}',
+                        issued: '1',
+                        ban: subBan,
+                        _token: '{{ csrf_token() }}'
+                    },
+                }).done(function (msg) {
+                    if (msg['success']) {
+                        Swal.fire({
+                            title: 'Thank you.',
+                            text: 'User notified, subscription cancelled and role removed. Refund queued.',
+                            //input: 'checkbox',
+                            //inputPlaceholder: 'Ban user from future purchases?',
+                            type: 'success',
+                            showCancelButton: false,
+                        }).then(result => {
+                            $('#close-slide').click();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Oops!',
+                            text: msg['msg'],
+                            type: 'warning',
+                            showCancelButton: false,
+                        });
+                    }
+                })
+            }else if(result.dismiss == 'cancel'){
+
+              $.ajax({
+                    url: '/request-subscription-decision',
+                    type: 'POST',
+                    data: {
+                        sub_id: '{{ $refundrequest->sub_id }}',
+                        issued: '0',
+                        ban: subBan,
+                        _token: '{{ csrf_token() }}'
+                    },
+                  }).done(function (msg) {
+                    if (msg['success']) {
+                        Swal.fire({
+                            title: 'Success!',
+                            text: 'Refund denied. User notified, subscription was not cancelled. Thank you.',
+                            //input: 'checkbox',
+                            //inputPlaceholder: 'Ban user from future purchases?',
+                            type: 'success',
+                            showCancelButton: false,
+                        }).then(result => {
+                            $('#close-slide').click();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: 'Oops!',
+                            text: msg['msg'],
+                            type: 'warning',
+                            showCancelButton: false,
+                        });
+                    }
+                  })
+              }
+          })
+    },3000);
+</script>
+@endif
+@endforeach
 
 @endsection
 

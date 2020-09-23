@@ -31,6 +31,7 @@ class ProductController extends Controller {
                     throw new ProductMsgException('Could not find product by that type.');
                 break;
             }
+
             // TODO: Handle create and update as default case
             // find the action to execute
             \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
@@ -144,6 +145,12 @@ class ProductController extends Controller {
         $owner_array = \App\User::where('id', $discord_store->first()->user_id)->first();
         $discord_helper = new \App\DiscordHelper(auth()->user());
  
+        if(!$owner_array->getStripeHelper()->hasActiveExpressPlan()){
+            $discord_store->live = false;
+            $discord_store->save();
+        }
+        $discord_store = \App\DiscordStore::where('url', $url)->first();
+
         $roles = $discord_helper->getRoles($discord_store->guild_id);
  
         $active = array();

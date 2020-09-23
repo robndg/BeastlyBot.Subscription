@@ -39,7 +39,7 @@
                                 <td class="pl-15">
                                     <div class="content text-left">
                                         <span class="badge badge-primary badge-lg" style="background-color: #{{ dechex($role->color) }}"><i class="icon-discord mr-2" aria-hidden="true"></i>
-                                        <span>{{ $role->name }}</span></span>
+                                        <span id="rolename-{{ $role->id }}">{{ $role->name }}</span></span>
                                     </div>
                                 </td>
                                 <td class="info-role w-20 grey-4" style="display:none; visiblity:hidden">
@@ -59,7 +59,7 @@
                                     <button class="btn btn-block btn-primary btn-icon py-20" data-toggle="tooltip" data-original-title="Settings"><i class="icon wb-more-horizontal" aria-hidden="true"></i></button>
                                 </td>
                                 <td class="cell-100 cell-sm-100 toggle-role d-none text-right">
-                                    <button type="button" class="btn btn-primary btn-icon btn-round py-md-20 w-p80 animation-scale-up @if($active) active @endif toggle-btn-trigger" id="toggle-product_{{ $id }}_{{ $role->id }}" data-role_id="{{ $role->id }}"><i class="icon @if($active) wb-plus @else wb-check @endif text-white" aria-hidden="true" id="toggle-product-icon_{{ $id }}_{{ $role->id }}"></i></button>
+                                    <button type="button" class="btn btn-primary btn-icon btn-round py-md-20 w-p80 animation-scale-up @if($active) active @endif toggle-btn-trigger" id="toggle-product_{{ $id }}_{{ $role->id }}" data-role_id="{{ $role->id }}"><i class="icon @if($active) wb-minus @else wb-plus @endif text-white" aria-hidden="true" id="toggle-product-icon_{{ $id }}_{{ $role->id }}"></i></button>
                                 </td>
                             </tr>
                             @endif
@@ -95,7 +95,7 @@
                                     @include('partials/server/loaders/new-payments')                
                                 </tbody>
                                 <tbody id="recent-transactions-table">
-                                    @foreach(\App\Subscription::where('store_id', $shop->id)->whereDay('latest_invoice_paid_at', '=', date('d'))->whereMonth('latest_invoice_paid_at', '=', date('m'))->whereYear('latest_invoice_paid_at', '=', date('Y'))->get() as $sub) 
+                                    @foreach(\App\Subscription::where('store_id', $shop->id)->whereDay('latest_invoice_paid_at', '=', date('d'))->whereMonth('latest_invoice_paid_at', '=', date('m'))->whereYear('latest_invoice_paid_at', '=', date('Y'))->orderBy('latest_invoice_paid_at', 'DESC')->take(25)->get() as $sub) 
                                     @php
                                         $discord_id = \App\DiscordOAuth::where('user_id', $sub->user_id)->first()->discord_id;
                                         $discord_helper = new \App\DiscordHelper(\App\User::where('id', $sub->user_id)->first());
@@ -111,7 +111,7 @@
                                     <tr data-url="/slide-invoice?id={{ $sub->latest_invoice_id }}&user_id={{ $sub->user_id }}&role_id={{ $sub->metadata['role_id'] }}&guild_id={{ $id }}" data-toggle="slidePanel">
                                         <td class="w-120 font-size-12 pl-20">@if($hours < 1) {{ $minutes . ' minutes ago.' }} @else {{ $hours . ' hours ago.' }} @endif</td>
                                         <td class="content"><div>{{ $discord_helper->getUsername() }}</div></td>
-                                        <td class="green-600 w-80">+ ${{ number_format($sub->latest_invoice_amount / 100, 2, '.', ',') }}</td>
+                                        <td class="green-600 w-120 text-right pr-20">+ ${{ number_format($sub->latest_invoice_amount / 100, 2, '.', ',') }}</td>
                                     </tr>
                                     @endforeach  
                                 </tbody>

@@ -47,7 +47,7 @@ class PayoutSchedule extends Command
     public function handle()
     {
 
-        $subscriptions_eligable = Subscription::whereRaw('latest_invoice_id != latest_paid_out_invoice_id')->where('disputed_invoice_id', NULL)->where('latest_invoice_amount', '>', 0)->where('latest_invoice_paid_at', '<=', Carbon::now()->subDays(15))->orWhereNull('latest_paid_out_invoice_id')->where('disputed_invoice_id', NULL)->where('latest_invoice_amount', '>', 0)->where('latest_invoice_paid_at', '<=', Carbon::now()->subDays(15))->where('status', 1)->get();
+        $subscriptions_eligable = Subscription::whereRaw('latest_invoice_id != latest_paid_out_invoice_id')->where('disputed_invoice_id', NULL)->where('latest_invoice_amount', '>', 0)->where('latest_invoice_paid_at', '<=', Carbon::now()->subDays(1))->orWhereNull('latest_paid_out_invoice_id')->where('disputed_invoice_id', NULL)->where('latest_invoice_amount', '>', 0)->where('latest_invoice_paid_at', '<=', Carbon::now()->subDays(15))->where('status', '<=', 2)->get();
 
 
         foreach ($subscriptions_eligable as $sub_eligable) {

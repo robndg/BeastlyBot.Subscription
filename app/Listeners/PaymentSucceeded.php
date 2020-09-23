@@ -99,6 +99,11 @@ class PaymentSucceeded implements ShouldQueue
                         } catch(\Exception $e) {
                             // could not add role, cancel subscription and refund invoice
                             $discord_helper->sendMessage('Uh-oh! I couldn\'t add the role your account. I canceled the subscription and refunded your primary payment method.');
+                            $discord_error = new \App\DiscordError();
+                            $discord_error->guild_id = $guild_id;
+                            $discord_error->role_id = $role_id;
+                            $discord_error->user_id = $customer_id;
+                            $discord_error->message = $e->getMessage();
                             $this->cancelRefund($webhookCall);
                         }
                     
@@ -116,11 +121,21 @@ class PaymentSucceeded implements ShouldQueue
                             $subscription->save();
                         } catch(\Exception $e) {
                             $discord_helper->sendMessage('Uh-oh! Your recurring subscription could not be renewed! I canceled the subscription and refunded your primary payment method.');
+                            $discord_error = new \App\DiscordError();
+                            $discord_error->guild_id = $guild_id;
+                            $discord_error->role_id = $role_id;
+                            $discord_error->user_id = $customer_id;
+                            $discord_error->message = $e->getMessage();
                             $this->cancelRefund($webhookCall);
                         }
                     }
                 } else {
                     $discord_helper->sendMessage('Uh-oh! I couldn\'t add the role your account. I canceled the subscription and refunded your primary payment method.');
+                    $discord_error = new \App\DiscordError();
+                    $discord_error->guild_id = $guild_id;
+                    $discord_error->role_id = $role_id;
+                    $discord_error->user_id = $customer_id;
+                    $discord_error->message = $e->getMessage();
                     $this->cancelRefund($webhookCall);
                 }
             }
@@ -135,18 +150,27 @@ class PaymentSucceeded implements ShouldQueue
                 'charge' => $webhookCall->payload['data']['object']['charge'],
             ]);
         } catch(\Exception $e) {
-            // TODO: Need to store any errors with bad refunds or canceling subscriptions
-            if(strpos($e->getMessage(), 'has already been refunded') !== false) {
-                // has already been refunded
-            } else {
-                // a more serious error
-            }
+            $stripe_error = new \App\StripeError();
+            $stripe_error->invoice_id = $webhookCall->payload['data']['object']['id'];
+            $customer = $webhookCall->payload['data']['object']['customer'];
+            $stripe_error->user_id = StripeConnect::where('customer_id', $customer)->first()->user_id;
+            $stripe_error->message = $e->getMessage();
+            $stripe_error->save();
         }
 
         $subscription_id = $webhookCall->payload['data']['object']['lines']['data'][0]['subscription'];
-
         $stripe = new \Stripe\StripeClient(env('STRIPE_CLIENT_SECRET'));
-        $stripe->subscriptions->cancel($subscription_id, []);
+
+        try {
+            $stripe->subscriptions->cancel($subscription_id, []);
+        } catch(\Exception $e) {
+            $stripe_error = new \App\StripeError();
+            $stripe_error->invoice_id = $webhookCall->payload['data']['object']['id'];
+            $customer = $webhookCall->payload['data']['object']['customer'];
+            $stripe_error->user_id = StripeConnect::where('customer_id', $customer)->first()->user_id;
+            $stripe_error->message = $e->getMessage();
+            $stripe_error->save();
+        }
     }
 
     // {

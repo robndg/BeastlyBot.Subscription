@@ -61,8 +61,6 @@ $(document).on('click', '.btn_save-roles', function (e) {
                 // type: 'info',
             });
 
-            Swal.showLoading();
-
                 //switchery.disable();
                 $.ajax({
                     url: '/product',
@@ -73,7 +71,7 @@ $(document).on('click', '.btn_save-roles', function (e) {
                         'guild_id': guild_id,
                         'role_id': role_id,
                         'guild_name': Global.name,
-                        'name': roles[role_id]['name'],
+                        'name': $('#rolename-' + role_id).text(),
                         _token: '{{ csrf_token() }}'
                     },
                 }).done(function (msg) {
@@ -98,13 +96,12 @@ $(document).on('click', '.btn_save-roles', function (e) {
                                 target: document.getElementById('tab-content')
                             });
                             $('#' + guild_id + '_' + role_id).removeClass('inactive-role').addClass('active-role');
-                            $('#toggle-product-icon_' + guild_id + '_' + role_id).removeClass('wb-plus').addClass('wb-check');
+                            $('#toggle-product-icon_' + guild_id + '_' + role_id).removeClass('wb-plus').addClass('wb-minus');
                             $('#toggle-check_' + guild_id + '_' + role_id).addClass('green-600').removeClass('grey-2');
                             $('#product-settings_' + guild_id + '_' + role_id).removeClass('disabled btn-dark').addClass('btn-primary').attr("disabled", false).click();
                             $('#toggle-product_' + guild_id + '_' + role_id).addClass('active');
                             $('.text_save-roles').removeClass('d-none').text('Enabled');
                             $('#product-settings_' + guild_id + '_' + role_id).removeClass('disabled').attr("disabled", false);
-                            socket.emit('toggle_role_activity', [socket_id, guild_id, role_id, 'true']);
                         } else {
                             Toast.fire({
                                 title: 'Product Disabled',
@@ -112,12 +109,11 @@ $(document).on('click', '.btn_save-roles', function (e) {
                                 target: document.getElementById('tab-content')
                             });
                             $('#' + guild_id + '_' + role_id).addClass('inactive-role').removeClass('active-role');
-                            $('#toggle-product-icon_' + guild_id + '_' + role_id).addClass('wb-plus').removeClass('wb-check');
+                            $('#toggle-product-icon_' + guild_id + '_' + role_id).addClass('wb-plus').removeClass('wb-minus');
                             $('#toggle-check_' + guild_id + '_' + role_id).addClass('grey-2').removeClass('green-600');
                             $('#product-settings_' + guild_id + '_' + role_id).addClass('disabled btn-dark').removeClass('btn-primary').attr("disabled", true);
                             $('#toggle-product_' + guild_id + '_' + role_id).removeClass('active');
                             $('.text_save-roles').removeClass('d-none').text('Disabled');
-                            socket.emit('toggle_role_activity', [socket_id, guild_id, role_id, 'false']);
                         }
                         if($('#btn_save-roles').hasClass('btn-primary')){
                             $('#btn_save-roles').addClass('btn-dark').removeClass('btn-primary').attr("disabled", false);;
@@ -133,7 +129,7 @@ $(document).on('click', '.btn_save-roles', function (e) {
 
                     }
                     //clicked = false;
-                    $('#toggle-product_' + guild_id + '_' + role_id).removeClass('disabled').attr("disabled", false);
+                    // $('#toggle-product_' + guild_id + '_' + role_id).removeClass('disabled').attr("disabled", false);
                 });
 
             // clicked = true;

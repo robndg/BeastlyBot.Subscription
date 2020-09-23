@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateStripeErrorsTable extends Migration
+class CreateDiscordErrorsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,11 @@ class CreateStripeErrorsTable extends Migration
      */
     public function up()
     {
-        Schema::create('stripe_errors', function (Blueprint $table) {
+        Schema::create('discord_errors', function (Blueprint $table) {
             $table->id();
-            $table->string('invoice_id');
-            $table->string('user_id');
+            $table->string('guild_id');
+            $table->string('role_id');
+            $table->bigInteger('user_id');
             $table->string('message');
             $table->timestamps();
         });
@@ -29,6 +30,6 @@ class CreateStripeErrorsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('stripe_errors');
+        Schema::dropIfExists('discord_errors');
     }
 }

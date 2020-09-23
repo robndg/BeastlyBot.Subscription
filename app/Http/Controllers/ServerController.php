@@ -100,7 +100,7 @@ class ServerController extends Controller {
             $stripe_product = $discord_product->getStripeProduct();
             if($stripe_product != null && $stripe_product->active) {
                 array_push($active, $role->id);
-                $subscribers[$role->id] = Subscription::where('store_id', $discord_store->id)->where('active', 1)->where('metadata', 'LIKE', '%' . $role->id . '%')->count();
+                $subscribers[$role->id] = Subscription::where('store_id', $discord_store->id)->where('active', 1)->where('status', '<=', 2)->where('metadata', 'LIKE', '%' . $role->id . '%')->count();
             } else {
                 $subscribers[$role->id] = 0;
             }
@@ -111,13 +111,13 @@ class ServerController extends Controller {
         $users_roles = $this::getUsersRoles($discord_store->id);
 
         // 1 got to make paid out table work
-        $total_payout = PaidOutInvoice::where('store_id', $discord_store->id)->sum('amount');
+        $total_payout = PaidOutInvoice::where('store_id', $discord_store->id)->whereNull('refunded')->whereNull('reversed')->sum('amount') * 0.95;
         // 2
-        $average_weekly = PaidOutInvoice::where('store_id', $discord_store->id)->whereBetween('created_at', [Carbon::now()->subDays(8), Carbon::now()])->sum('amount');
+        $average_weekly = PaidOutInvoice::where('store_id', $discord_store->id)->whereNull('refunded')->whereNull('reversed')->whereBetween('created_at', [Carbon::now()->subDays(8), Carbon::now()])->sum('amount') * 0.95;
         // 3
-        $pending_payout = Subscription::where('store_id', $discord_store->id)->whereNull('latest_paid_out_invoice_id')->orWhereRaw('latest_paid_out_invoice_id != latest_invoice_id')->where('store_id', $discord_store->id)->sum('latest_invoice_amount');
+        $pending_payout = Subscription::where('store_id', $discord_store->id)->whereNull('latest_paid_out_invoice_id')->where('status', '<=', 3)->orWhereRaw('latest_paid_out_invoice_id != latest_invoice_id')->where('store_id', $discord_store->id)->where('status', '<=', 3)->sum('latest_invoice_amount') * 0.95;
         // $pending_total = Subscription::where('store_id', $discord_store->id)->where(Carbon::createFromFormat('Y-m-d', 'latest_invoice_paid_at') > Carbon::now()->subDays(15))->sum('reward');
-        $subscriptions = Subscription::where('store_id', $discord_store->id)->orderBy('latest_invoice_paid_at')->paginate(20);
+        $subscriptions = Subscription::where('store_id', $discord_store->id)->orderBy('latest_invoice_paid_at')->paginate(5);
 
         // get all the invoices for payments tab
         \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
@@ -140,7 +140,6 @@ class ServerController extends Controller {
         // TODO: Member count not working. Returns null in guild for some reason, so does members. Have to use old code to update member count
         return view('server')->with('id', $id)->with('shop', $discord_store)->with('has_order', false)->with('roles', $roles)->with('active_roles', $active)->with('guild', $discord_helper->getGuild($id))->with('subscribers', $subscribers)->with('total_payout', $total_payout)->with('pending_payout', $pending_payout)->with('average_weekly', $average_weekly)->with('users_roles', $users_roles)->with('invoices', $invoices)->with('subscriptions', $subscriptions);
     }
-
 
     /* --------------------------------------------------------------------
         ServerController: getStatusRoles
@@ -254,7 +253,7 @@ class ServerController extends Controller {
         $timeDiffs = [];
         $usernames = [];
         $discord_store = \App\DiscordStore::where('id', $request['store_id'])->first();
-        $subscriptions = \App\Subscription::where('store_id', $request['store_id'])->whereDay('latest_invoice_paid_at', '=', date('d'))->whereMonth('latest_invoice_paid_at', '=', date('m'))->whereYear('latest_invoice_paid_at', '=', date('Y'))->get();
+        $subscriptions = \App\Subscription::where('store_id', $request['store_id'])->whereDay('latest_invoice_paid_at', '=', date('d'))->whereMonth('latest_invoice_paid_at', '=', date('m'))->whereYear('latest_invoice_paid_at', '=', date('Y'))->orderBy('latest_invoice_paid_at', 'DESC')->take(25)->get();
         foreach($subscriptions as $sub) {
             $discord_helper = new \App\DiscordHelper(\App\User::where('id', $sub->user_id)->first());
 
@@ -275,7 +274,8 @@ class ServerController extends Controller {
     public function getDisputes(Request $request) {
         \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
 
-        $guild = $request['guild'];
+        $id = $request['guild'];
+        $guild = DiscordStore::where('guild_id', $id)->first();
 
         if(!\auth()->user()->getDiscordHelper()->ownsGuild($guild)) {
             return response()->json();

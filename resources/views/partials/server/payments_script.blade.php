@@ -1,4 +1,5 @@
 <script type="text/javascript">
+    
     var guild_id = '{{ $id }}';
     var loaded_payments = false;
     var loaded_disputes = false;
@@ -222,9 +223,18 @@
 </script>
 
 <script>
-function tabPayments(){
-    setTimeout(function(){
-        $('#payments-loading_table').hide();
-    },2000)
-};
+setTimeout(function(){
+    if(window.location.href.includes('page')) {
+      $('.tab-payments').click()
+
+        $(document).on('click', '.nav-link', function (e) {
+        e.preventDefault();
+        let searchParams = new URLSearchParams(window.location.search);
+        if(searchParams.has('page')){
+            params = searchParams.delete('page');
+            window.history.replaceState({}, '', `${location.pathname}`);
+        }
+      });
+    }
+  },10);
 </script>
