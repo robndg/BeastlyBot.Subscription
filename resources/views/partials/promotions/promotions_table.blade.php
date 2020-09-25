@@ -11,7 +11,7 @@
     <tbody>
     @foreach($coupons as $promotion)
         <tr id="promotion_{{ $promotion['id'] }}">
-            <td class="bg-indigo-600 text-white pl-10 pl-lg-20"> {{ str_replace(strval(auth()->user()->id), '', $promotion['id']) }}</td>
+            <td class="bg-indigo-600 text-white pl-10 pl-lg-20"> {{ substr_replace(strval($promotion['id']), '', 0, strlen(strval(auth()->user()->id))) }}</td>
             <td>
                 @if($promotion['percent_off'] > 0)
                     <div class="time pl-15">{{ $promotion['percent_off'] }}% off @if($promotion['duration'] === 'forever') forever @elseif($promotion['duration'] === 'once') once @else for the first {{ $promotion['duration_in_months'] }} months @endif</div>

@@ -40,10 +40,11 @@
     @endif
     <div class="card">
               <div class="card-header">
-              <span id="notification_count_1-pg">0</span> Other Guilds
+              Shop Guilds
               </div> 
               <div class="card-block p-0">
                 <ul class="list-group list-group-full list-group-dividered list-group-no-hover mb-0" id="guilds-dropdown">
+           
 
                   {{--<li class="list-group-item px-5">
                     <div class="d-flex align-items-start">
@@ -455,6 +456,63 @@
 
 
 @section('scripts')
+
+<script>
+$(window).on('load', function() {
+    $.ajax({
+        url: '/get-servers-and-stores',
+        type: 'GET',
+        data: {
+            _token: '{{ csrf_token() }}'
+        },
+    }).done(function (response) {
+        console.log(response);
+        
+        for (var i = 0; i < response.length; i++) {
+          var server = response[i];
+          console.log(server[2]);
+          if(server[3]){
+            var button_text = "Shop";
+            var button_link = "/shop/" + server[3];
+            var button_class = "btn-success btn-outline";
+            if(!server[6]) {
+              button_text = "Add Bot";
+              button_link = "{{ 'https://discordapp.com/oauth2/authorize?client_id=' . env('DISCORD_CLIENT_ID') . '&scope=bot&permissions=' . env('DISCORD_BOT_PERMISSIONS') }}";
+              button_class = "btn-primary btn-outline";
+            }
+          }else{
+            var button_text = "Invite";
+            var button_link = "#";
+            var button_class = "btn-primary btn-outline";
+          }
+          if(server[2]){
+            var image_url = "https://cdn.discordapp.com/icons/"+server[0]+"/"+server[2]+".png?size=256";
+          }else{
+            var image_url = "https://i.imgur.com/qbVxZbJ.png";
+          }
+          var html = `
+          <li class="list-group-item px-5">
+             <div class="d-flex align-items-start">
+               <div class="pl-2 pr-10">
+                 <a class="avatar avatar-lg" href="${button_link}">
+                   <img class="img-fluid" src="${image_url}" alt="${server[1]}">
+                 </a>
+               </div>
+               <div class="media-body">
+                 <h5 class="mt-5 mb-5">${server[1]}</h5>
+                 <small>${server[5]}</small>
+               </div>
+               <div class="pl-5">
+                 <a href="${button_link}" class="btn ${button_class} mt-5">${button_text}</a>
+               </div>
+             </div>
+           </li>`
+           $('#guilds-dropdown').append(html);
+        }
+
+    })
+});
+</script>
 
 <script>
 

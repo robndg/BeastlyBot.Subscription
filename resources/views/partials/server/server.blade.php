@@ -13,6 +13,10 @@
                         <p>Enable roles for purchase on your shop</p>
                     </div>
                     <div class="panel-actions panel-actions-keep">
+                    <button type="button" class="btn btn-sm btn-dark btn-icon btn-round" onclick="refreshRoles()" id="btn_refresh-roles"
+                                data-toggle="tooltip" data-original-title="Refresh Roles">
+                            <i class="icon wb-refresh" aria-hidden="true"></i>
+                        </button>
                        <button type="button" class="btn btn-sm btn-dark btn-icon btn-round" onclick="btnEditRoles()" id="btn_edit-roles"
                                 data-toggle="tooltip" data-original-title="Show All">
                             <i class="icon wb-plus" aria-hidden="true"></i>
@@ -149,4 +153,8 @@
 
     </div>
 </div><!-- end tab -->
+
+<form id="refresh-roles-form" action="/refresh-roles/{{ $id }}" method="POST" hidden>
+@csrf
+</form>
 

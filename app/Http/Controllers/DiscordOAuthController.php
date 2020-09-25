@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\DiscordOAuth;
 use App\StripeConnect;
 use App\User;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Log;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use Wohali\OAuth2\Client\Provider\Discord;
@@ -92,7 +94,58 @@ class DiscordOAuthController extends Controller {
             if($user != null) $user->delete();
         }
 
-        return redirect()->intended('/dashboard');
+
+        try {
+            if (request()->cookie('next_url') != NULL){
+                $user->url_next = request()->cookie('next_url');
+                $user->save();
+            }
+        }
+        catch (IdentityProviderException $e) {
+            if (env('APP_DEBUG')) Log::error($e);
+        }
+        /**
+         * if the CheckoutSession has a destination the user is manually going to go to it, otherwise they are just logging
+         * in and we will direct them to the dashboard
+         **/
+    
+        if($user->url_next){
+            $next_url = $user->url_next;
+            if(strpos($next_url, 'slide-') !== false){
+                if(strpos($next_url, 'account-') !== false){
+                    return redirect('account/settings');
+                }
+                else if(strpos($next_url, 'server-') !== false){
+                    return redirect('servers');
+                }
+                else if(strpos($next_url, 'roles-') !== false){
+                    return redirect('servers');
+                }
+                else if(strpos($next_url, 'promotions') !== false){
+                    return redirect('promotions');
+                }
+                else if(strpos($next_url, 'product-') !== false){
+                    return redirect('dashboard');
+                }
+                else{
+                    return redirect('dashboard');
+                }
+            }else if ((strpos($next_url, 'bknd00') !== false) || (strpos($next_url, 'connect_stripe') !== false)){
+                return redirect('dashboard');
+            }else{
+                return redirect($user->url_next);
+            }
+            $user->url_next = NULL;
+            $user->save();
+        }else{
+            if (Session::has('next_path')) {
+                return redirect(Session::get('next_path'));
+            } else {
+                return redirect('dashboard');
+            }
+        }
+
+        //return redirect()->intended('/dashboard');
     }
 
     /**

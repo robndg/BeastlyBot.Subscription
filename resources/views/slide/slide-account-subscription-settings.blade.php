@@ -83,7 +83,7 @@
          <h5>Latest Invoice</h5>
             <div class="list-group list-group-dividered">
                     <a class="list-group-item flex-column align-items-start border-0" href="javascript:void(0)"
-                    data-url="/slide-invoice/{{ $latest_invoice->id }}" data-toggle="slidePanel">
+                    data-url="/slide-invoice?id={{ $latest_invoice->id }}&user_id={{ auth()->user()->id }}&role_id={{ $subscription->metadata['role_id'] }}&guild_id={{ \App\DiscordStore::where('id', $subscription->store_id)->first()->guild_id }}" data-toggle="slidePanel">
                         <span class="badge badge-pill text-capitalize badge-primary">{{ $latest_invoice->status }}</span>
                         <span class="badge badge-pill badge-primary badge-outline mr-2 hidden-sm-down">{{ $latest_invoice->number }}</span>
                         <span class="badge badge-first badge-pill badge-success mr-15"><i class="wb wb-check"></i></span>

@@ -10,7 +10,11 @@
                 <div class="d-flex flex-row flex-wrap align-items-center col-xxl-7 col-xl-7 col-lg-6 col-md-12 col-sm-12">
                     <div class="white w-80 ml-lg-30">
                         <a class="avatar avatar-lg" href="javascript:void(0)">
-                            <img id="server_icon" src="https://cdn.discordapp.com/icons/{{ $id }}/{{ $guild->icon }}.png?size=256" alt="...">
+                            @if($guild->icon == NULL)
+                                <img id="server_icon" src="https://i.imgur.com/qbVxZbJ.png" alt="...">
+                            @else
+                                <img id="server_icon" src="https://cdn.discordapp.com/icons/{{ $id }}/{{ $guild->icon }}.png?size=256" alt="...">
+                            @endif
                         </a>
                     </div>
                     <div class="counter counter-md counter text-left">
@@ -33,7 +37,7 @@
                                 </button>
                             </div>
                             <button type="button" class="site-action-toggle btn btn-lg btn-dark btn-icon btn-inverse mr-15 ml-15" id="btn-store1"
-                                data-toggle="tooltip" data-original-title="{{ env('APP_URL') }}/shop/{{ $shop->url }}"
+                                data-toggle="tooltip" data-original-title="https://beastly.store/{{ $shop->url }}"
                                 onclick="window.open('{{ env('APP_URL') }}/shop/{{ $shop->url }}')"><i class="front-icon icon-shop @if($shop->live)green-600 @else blue-600 @endif animation-scale-up" id="icon-store1" aria-hidden="true"></i><span class="font-size-14 ml-2">Go to Store</span>
                             </button>
                     </div>
@@ -86,6 +90,7 @@
 
 
 @section('scripts')
+
 <script type="text/javascript">
 
   $(document).ready(function() {
@@ -199,15 +204,33 @@ $('#partnerPricingModal').on('hidden.bs.modal', function () {
              $(".slide-button-ultimate").click();
              location.hash = "auto-open";
         }}, 2000);
-</script><!--
+</script>
 <script type="text/javascript">
         setTimeout(function(){
             if(!(jQuery("#roles_table:contains('Active')").length)) {
                 $("#btn_edit-roles").click();
                 $("#btn_save-roles").addClass('btn-dark').removeClass('btn-primary');
+
+                setTimeout(function(){
+                    Swal.fire({
+                        title: 'Last Step!',
+                        text: "Move BeastlyBot to top of roles to begin",
+                        //type: 'info',
+                        imageUrl: 'https://beastlybot.com/site/assets/images/role-position-top.gif',
+                        imageWidth: 600,
+                        //imageHeight: 400,
+                        imageAlt: 'Move Top of Roles GIF',
+                        showCancelButton: false,
+                        confirmButtonText: "Done. Let's make cash.",
+                    }).then(result => {
+                        
+                    });
+                },1000);
+
             }
-        }, 1500);
-</script>-->
+        }, 200);
+        
+</script>
 <script type="text/javascript">
         setTimeout(function(){
             if(window.location.href.includes('ready')) {

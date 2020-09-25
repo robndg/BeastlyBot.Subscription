@@ -1,4 +1,10 @@
 <script type="text/javascript">
+
+    function refreshRoles() {
+        var form = $("#refresh-roles-form");
+        form.submit();
+    }
+
     function fillRecentPayments(store_id) {
         if((jQuery("#recent-transactions-table:contains('$')").length)) {
             $('#btn_recent-refresh').addClass('btn-primary').removeClass('btn-dark');

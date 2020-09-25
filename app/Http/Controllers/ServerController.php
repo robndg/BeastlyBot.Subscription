@@ -8,6 +8,7 @@ use App\DiscordStore;
 #use App\Shop;
 use App\User;
 use App\Product;
+use App\ProductRole;
 use App\Products\DiscordRoleProduct;
 use App\Refund;
 use DateTime;
@@ -44,7 +45,7 @@ class ServerController extends Controller {
 
         foreach($subscriptions as $subscription) {
             $roles1 = array();
-            foreach(Subscription::select('metadata')->where('store_id', $store_id)->where('user_id', $subscription->user_id)->where('active', 1)->get() as $metadata) {
+            foreach(Subscription::select('metadata')->where('store_id', $store_id)->where('user_id', $subscription->user_id)->where('status', '<=', 3)->get() as $metadata) {
                 if(!in_array($metadata->metadata['role_id'], $roles1)) {
                     array_push($roles1, $metadata->metadata['role_id']);
                 }
@@ -100,7 +101,7 @@ class ServerController extends Controller {
             $stripe_product = $discord_product->getStripeProduct();
             if($stripe_product != null && $stripe_product->active) {
                 array_push($active, $role->id);
-                $subscribers[$role->id] = Subscription::where('store_id', $discord_store->id)->where('active', 1)->where('status', '<=', 2)->where('metadata', 'LIKE', '%' . $role->id . '%')->count();
+                $subscribers[$role->id] = Subscription::where('store_id', $discord_store->id)->where('status', '<=', 3)->where('status', '<=', 2)->where('metadata', 'LIKE', '%' . $role->id . '%')->count();
             } else {
                 $subscribers[$role->id] = 0;
             }
@@ -111,13 +112,13 @@ class ServerController extends Controller {
         $users_roles = $this::getUsersRoles($discord_store->id);
 
         // 1 got to make paid out table work
-        $total_payout = PaidOutInvoice::where('store_id', $discord_store->id)->whereNull('refunded')->whereNull('reversed')->sum('amount') * 0.95;
+        $total_payout = PaidOutInvoice::where('store_id', $discord_store->id)->whereNull('refunded')->whereNull('reversed')->sum('amount');
         // 2
-        $average_weekly = PaidOutInvoice::where('store_id', $discord_store->id)->whereNull('refunded')->whereNull('reversed')->whereBetween('created_at', [Carbon::now()->subDays(8), Carbon::now()])->sum('amount') * 0.95;
+        $average_weekly = PaidOutInvoice::where('store_id', $discord_store->id)->whereNull('refunded')->whereNull('reversed')->whereBetween('created_at', [Carbon::now()->subDays(8), Carbon::now()])->sum('amount');
         // 3
-        $pending_payout = Subscription::where('store_id', $discord_store->id)->whereNull('latest_paid_out_invoice_id')->where('status', '<=', 3)->orWhereRaw('latest_paid_out_invoice_id != latest_invoice_id')->where('store_id', $discord_store->id)->where('status', '<=', 3)->sum('latest_invoice_amount') * 0.95;
+        $pending_payout = Subscription::where('store_id', $discord_store->id)->whereNull('latest_paid_out_invoice_id')->where('status', '<=', 3)->orWhereRaw('latest_paid_out_invoice_id != latest_invoice_id')->where('store_id', $discord_store->id)->where('status', '<=', 3)->sum('latest_invoice_amount');
         // $pending_total = Subscription::where('store_id', $discord_store->id)->where(Carbon::createFromFormat('Y-m-d', 'latest_invoice_paid_at') > Carbon::now()->subDays(15))->sum('reward');
-        $subscriptions = Subscription::where('store_id', $discord_store->id)->orderBy('latest_invoice_paid_at')->paginate(5);
+        $subscriptions = Subscription::where('store_id', $discord_store->id)->orderBy('latest_invoice_paid_at', 'DESC')->paginate(5);
 
         // get all the invoices for payments tab
         \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
@@ -195,9 +196,11 @@ class ServerController extends Controller {
         try {
             $discord_product = new DiscordRoleProduct($guild_id, $role_id, null);
             $product = $discord_product->getStripeProduct();
-            $shop_url = DiscordStore::where('guild_id', $guild_id)->value('url');
+            $store = DiscordStore::where('guild_id', $guild_id)->first();
+            $desc = ProductRole::where('discord_store_id', $store->id)->first();
+            $shop_url = $store->url;
             $discord_helper = new \App\DiscordHelper(auth()->user());
-            return view('slide.slide-roles-settings')->with('guild_id', $guild_id)->with('role', $discord_helper->getRole($guild_id, $role_id))->with('shop_url', $shop_url)->with('enabled', $product->active)->with('prices', ProductController::getPricesForRole($guild_id, $role_id));
+            return view('slide.slide-roles-settings')->with('guild_id', $guild_id)->with('role', $discord_helper->getRole($guild_id, $role_id))->with('shop_url', $shop_url)->with('enabled', $product->active)->with('prices', ProductController::getPricesForRole($guild_id, $role_id))->with('desc', $desc);
         } catch (\Exception $e) {
             if (env('APP_DEBUG')) Log::error($e);
             return view('slide.slide-roles-settings')->with('enabled', false)->with('guild_id', $guild_id)->with('role_id', $role_id)->with('prices', ProductController::getPricesForRole($guild_id, $role_id));
@@ -315,6 +318,9 @@ class ServerController extends Controller {
         $refunds_enabled = $request['refunds_enabled'];
         $refunds_days = $request['refunds_days'];
         $refunds_terms = $request['refunds_terms'];
+        if($refunds_days == NULL){
+            $refunds_days = 0;
+        }
 
         if(!\auth()->user()->getDiscordHelper()->ownsGuild($guild_id)) 
             return response()->json(['success' => false, 'msg' => 'You are not the owner of this server.']);
@@ -380,6 +386,18 @@ class ServerController extends Controller {
         }
     }
 
+    public function banUserFromStore(Request $request){
+        $user_id = $request['id'];
+        $discord_id = $request['discord_id'];
+        $type = 1;
+        $discord_store_id = $request['discord_store_id'];
+        $guild_id = $request['guild_id'];
+        $until = $request['until'];
+        $active = $request['active'];
+        $reason = $request['reason'];
+
+        return true;
+    }
 
 }
 

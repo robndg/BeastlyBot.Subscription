@@ -17,7 +17,7 @@
             <h5>Store Front URL</h5>
             <div class="input-group mb-3">
                 <div class="input-group-prepend">
-                    <span class="input-group-text w-xs-p100" id="basic-addon3">/shop/</span>
+                    <span class="input-group-text w-xs-p100" id="basic-addon3">beastly.store/</span>
                 </div>
                 <input type="text" class="form-control w-xs-p100" id="basic-url" aria-describedby="basic-addon3" value="{{ $shop->url }}">
             </div>
@@ -100,7 +100,7 @@ $('input#basic-url').on('keyup', function(){
 
         Toast.showLoading();
 
-        var base_url = "{{ env('APP_URL') }}/shop/";
+        var base_url = "https://beastly.store/";
         var url = $("#basic-url").val(); 
 
         if($("#refunds-enabled").is(':checked')) {

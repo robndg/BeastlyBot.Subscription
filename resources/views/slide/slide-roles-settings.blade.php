@@ -21,18 +21,6 @@
     <div class="tab-pane fade active show" id="sidebar-userlist">
         <div>
 
-           {{-- <div class="row">
-                <div class="col-12">
-                    <div class="py-20 d-flex flex-row flex-wrap align-items-center justify-content-between" 
-                    data-step="2" data-intro="Enable the role" data-position='bottom'>
-                        <h5>Enable Role on Shop</h5>
-                        <div id="toggle-switch">
-                            <input type="checkbox" class="js-switch" @if($enabled) checked @endif/>
-                            <!--<label><h5 class="pl-20">Enable Role on Shop</h5></label>-->
-                        </div>
-                    </div>
-                </div>
-            </div> --}}
 
 
            <div>
@@ -90,16 +78,16 @@
                             <div class="card-body">
                                 <div class="row no-space text-center">
                                     <div class="col-12">
-                                        {{--V1 @if(RoleDesc::where('guild_id', $guild_id)->where('role_id', {{ $role->id }})->exists())
+                                        @if(isset($desc))
                                             <textarea id='product-description' class="lit-group-item form-control" placeholder="These awesome perks..."
                                                     @if(!$enabled) disabled
-                                                    @endif>{{ RoleDesc::where('guild_id', $guild_id)->where('role_id', {{ $role->id }})->get()[0]->description }}</textarea>
+                                                    @endif>{{ $desc->description }}</textarea>
                                         @else
                                             <textarea id='product-description' class="lit-group-item form-control" placeholder="These awesome perks.."
                                                     @if(!$enabled) disabled @endif></textarea>
-                                        @endif --}}
+                                        @endif
                                         <button type="button" class="btn btn-block mt-10 btn-dark btn-lg @if(!$enabled) disabled @endif" id="desc-btn"
-                                            @if(!$enabled) disabled @else onClick="updateProductDesc();" @endif>Update Description
+                                            @if(!$enabled) disabled @else onclick="updateProductDesc()" @endif>Update Description
                                         </button>
                                     </div>
                                 </div>
@@ -111,7 +99,9 @@
            <div>
                 <div class="row pb-30">
                     <div class="col-12">
+                        @if(isset($shop_url))
                         <a href="/shop/{{ $shop_url }}" class="btn float-right btn-primary d-none" id="btn_visit-shop">Visit shop</a>
+                        @endif
                     </div>
                 </div>
             </div>

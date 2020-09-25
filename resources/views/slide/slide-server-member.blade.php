@@ -23,11 +23,16 @@
     <li class="nav-item">
         <a class="nav-link" data-toggle="tab" href="#sidebar-details" role="tab">
             <i class="icon wb-user-circle" aria-hidden="true"></i>
-            <h5>Info</h5>
+            <h5>Settings</h5>
         </a>
     </li>
 </ul>
 
+<style>
+#sidebar-user .table tr:hover{
+    background-color: rgba(255, 255, 255, 0);
+}
+</style>
 <div class="site-sidebar-tab-content put-short tab-content">
     <div class="tab-pane fade active show" id="sidebar-user">
         <div>
@@ -36,10 +41,11 @@
                     <thead>
                     <tr>
                         <th class="cell-400 text-left">Role</th>
-                        <th class="cell-200">Expires</th>
+                        <th class="cell-150 text-right">Expires</th>
+                        <th class="cell-200 text-right pr-20">Status</th>
                     </tr>
                     </thead>
-                    @foreach(\App\Subscription::where('user_id', $user_id)->where('store_id', $discord_store->id)->where('active', 1)->get() as $sub)
+                    @foreach(\App\Subscription::where('user_id', $user_id)->where('store_id', $discord_store->id)->get() as $sub)
                         @php
                         $role = $discord_helper->getRole($discord_store->guild_id, $sub->metadata['role_id']);
                         @endphp
@@ -48,9 +54,26 @@
                             <td >
                                 <h3><span class="badge m-5" style="color: white;background-color: #{{ dechex($role->color) }};">{{ $role->name }}</span></h3>
                             </td>
-                            <td class="text-center">
+                            <td class="text-right">
                                 <div class="time">{{ date_format($sub->current_period_end, "m-d-Y") }}</div>
                             </td>
+                            @if($sub->status <= 3)
+                                                @if($sub->latest_paid_out_invoice_id == $sub->latest_invoice_id) 
+                                                <td class="indigo-600 w-200 text-right pr-20">Active</td>
+                                                @else 
+                                                    @if($sub->latest_invoice_paid_at > Carbon\Carbon::now()->subDays(15)) 
+                                                    <td class="indigo-600 w-200 text-right pr-20">Active</td>
+                                                    @else 
+                                                    <td class="indigo-600 w-200 text-right pr-20">Active</td>
+                                                    @endif 
+                                                @endif
+                                            @else 
+                                                @if($sub->status == 4)
+                                                <td class="w-200 text-right pr-20">Canceled</td>
+                                                @elseif($sub->status == 5)
+                                                <td class="w-200 text-right pr-20">Canceled</td>
+                                                @endif
+                                            @endif
                         </tr>
                     @endforeach
                 </tbody>
@@ -91,18 +114,35 @@
             </div>
         </div>
     </div>
-    <div class="tab-pane fade" id="sidebar-details">
+   <div class="tab-pane fade" id="sidebar-details">
         <div>
             <div>
                 <div class="list-group-item d-flex flex-row flex-wrap align-items-center justify-content-between">
-                    <h5>Email</h5>
+                    <h5>Ban from Store</h5>
                     <div>
-                        <input type="text" class="form-control" value="{{ (new \App\StripeHelper(\App\User::where('id', $user_id)->first()))->getStripeEmail() }}" disabled>
+                        <button type="button" class="btn btn-dark btn-block ban-user-from-store">Ban User from Store</button>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+$(document).on("click", ".ban-user-from-store", function () {
+    $.ajax({
+        url: '/bknd-000/ban-user-from-store',
+        type: 'POST',
+        data: {
+            _token: '{{ csrf_token() }}'
+        },
+    }).done(function (response) {
+        console.log(response);
+        
+        
+    })
+
+});
+</script>
 
 @include('partials/clear_script')

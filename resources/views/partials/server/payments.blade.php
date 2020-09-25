@@ -85,9 +85,9 @@
                                                 @endif
                                             @else 
                                                 @if($subscription->status == 4)
-                                                <td class="w-200 text-right pr-20">Overdue</td>
+                                                <td class="w-200 text-right pr-20">Canceled</td> <!-- reversed & refunded too-->
                                                 @elseif($subscription->status == 5)
-                                                <td class="w-200 text-right pr-20">Canceled</td>
+                                                <td class="w-200 text-right pr-20">Canceled</td> <!-- paying out but canceled (owner refund) -->
                                                 @endif
                                             @endif
                                         </tr>

@@ -47,8 +47,8 @@
                 <p class="mb-0">We take great pride in excellent customer service.</p>
               </a>                
           @endfor
-          <button type="button" data-toggle="site-sidebar" data-url="/slide-ticket-create">Create</button>
-          <button type="button" data-toggle="site-sidebar" data-url="/slide-tickets-list">List</button>
+           
+          <button type="button" class="btn btn-block btn-dark btn-lg" data-toggle="slidePanel" data-url="/slide-ticket-create" id="c-support" style="display:none">Contact Support</button>
           </div>
       </div>
 
@@ -79,11 +79,22 @@ function helpSearch() {
     txtValue = a.textContent || a.innerText;
     if (txtValue.toUpperCase().indexOf(filter) > -1) {
       li[i].style.display = "";
+      document.getElementById("c-support").style.display = "none";
     } else {
       li[i].style.display = "none";
+      document.getElementById("c-support").style.display = "";
     }
   }
 }
 </script>
+<script>
+$(document).on('slidePanel::beforeHide', function (e) {
+    let searchParams = new URLSearchParams(window.location.search);
+    if(searchParams.has('help')){
+        params = searchParams.delete('help');
+        window.history.replaceState({}, '', `${location.pathname}`);
+    }
+});
 
+</script>
 @include('partials/clear_script')

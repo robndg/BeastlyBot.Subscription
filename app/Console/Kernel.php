@@ -31,7 +31,7 @@ class Kernel extends ConsoleKernel
                 ->everyMinute()
                 ->onSuccess(function () {
                     // The task succeeded...
-                    Log::info("Schedule Payout Success");
+                   // Log::info("Schedule Payout Success");
                 })
                 ->onFailure(function () {
                     // The task failed...

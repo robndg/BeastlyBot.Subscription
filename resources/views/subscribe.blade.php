@@ -4,7 +4,7 @@
 
 @section('metadata')
     <meta name="description"
-          content="Shop at our discord server. Purchase roles and be an exclusive member."> <!-- server description -->
+          content="Shop at our discord server. Purchase roles and be an exclusive member. {{ App\DiscordStore::where('guild_id', $guild_id)->first()->description) }}"> <!-- server description -->
     <meta name="keywords" content="{{ $guild_id }}"> <!-- server name -->
     <meta name="author" content="BeastlyBot">
 @endsection
@@ -76,8 +76,12 @@
                                         <div class="panel" id="role-{{ $role->id }}">
                                             <div class="panel-heading p-20 d-flex flex-row flex-wrap align-items-center justify-content-between" id="heading_{{ $guild_id }}" role="tab">
                                                 <div class="w-100 hidden-sm-down">
+                               
+                                                @if(count($descriptions) > 0 && $descriptions->where('role_id', $role->id)->first()->exists())
                                                     <a class="panel-title" data-toggle="collapse" href="#tab_{{ $role->id }}" data-parent="#accordian_main" aria-expanded="false" aria-controls="tab_{{ $role->id }}">
                                                     </a>
+                                                @endif
+                                       
                                                 </div>
                                                 <div class="text-center">
                                                     <a data-toggle="collapse" href="#tab_{{ $role->id }}" data-parent="#accordian_main" aria-expanded="true" aria-controls="tab_{{ $role->id }}">
@@ -95,11 +99,15 @@
                                                     </button>
                                                 </div>
                                             </div>
+                                            @if(count($descriptions) > 0 && $descriptions->where('role_id', $role->id)->first()->exists())
                                             <div class="panel-collapse collapse" id="tab_{{ $role->id }}" aria-labelledby="heading_{{ $guild_id }}" role="tabpanel">
                                                 <div class="panel-body">
-                                                    No Description Fillers
+                                                
+                                                   {{ $descriptions->where('role_id', $role->id)->first()->description }}
+                                               
                                                 </div>
                                             </div>
+                                            @endif
                                         </div>
                                         @endif
                                     @endif
@@ -119,7 +127,7 @@
     @endif
 @endif
 --}}
-<input readonly type="text" value="{{ env('APP_URL') }}/{{ App\DiscordStore::where('guild_id', $guild_id)->value('url') }}" id="input_copy-url" style="opacity:0">
+<input readonly type="text" value="https://beastly.store/{{ App\DiscordStore::where('guild_id', $guild_id)->value('url') }}" id="input_copy-url" style="opacity:0">
 
 @endsection
 

@@ -16,7 +16,7 @@
                 data-toggle="collapse">
             <i class="icon wb-more-horizontal" aria-hidden="true"></i>
         </button>
-        <a class="navbar-brand navbar-brand-center text-center" href="/{{ Request::is('dashboard') ? '' : 'dashboard' }}">
+        <a class="navbar-brand navbar-brand-center text-center" href="{{ Request::is('dashboard') ? 'https://beastlybot.com' : '/dashboard' }}">
             <img class="navbar-brand-logo navbar-brand-logo-normal" src="/site/assets/images/beastlybot-sq-2-w.png"
                  title="Beastly Bot">
         </a>

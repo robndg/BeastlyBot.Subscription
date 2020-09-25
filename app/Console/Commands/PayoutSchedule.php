@@ -47,7 +47,7 @@ class PayoutSchedule extends Command
     public function handle()
     {
 
-        $subscriptions_eligable = Subscription::whereRaw('latest_invoice_id != latest_paid_out_invoice_id')->where('disputed_invoice_id', NULL)->where('latest_invoice_amount', '>', 0)->where('latest_invoice_paid_at', '<=', Carbon::now()->subDays(1))->orWhereNull('latest_paid_out_invoice_id')->where('disputed_invoice_id', NULL)->where('latest_invoice_amount', '>', 0)->where('latest_invoice_paid_at', '<=', Carbon::now()->subDays(15))->where('status', '<=', 2)->get();
+        $subscriptions_eligable = Subscription::whereRaw('latest_invoice_id != latest_paid_out_invoice_id')->where('disputed_invoice_id', NULL)->where('latest_invoice_amount', '>', 0)->where('latest_invoice_paid_at', '<=', Carbon::now()->subDays(1))->orWhereNull('latest_paid_out_invoice_id')->where('disputed_invoice_id', NULL)->where('latest_invoice_amount', '>', 0)->where('latest_invoice_paid_at', '<=', Carbon::now()->subDays(1))->where('status', '<=', 2)->get();
 
 
         foreach ($subscriptions_eligable as $sub_eligable) {
@@ -66,7 +66,7 @@ class PayoutSchedule extends Command
                     // We create the transfer for the payout amount
                     try {
                         
-                        $app_fee = 0.05;
+                        $app_fee = 0.05 * $sub_eligable->level;
                         
                         // Send payment
                         try{
@@ -93,7 +93,7 @@ class PayoutSchedule extends Command
                         $paidOutInvoice = new PaidOutInvoice();
                         $paidOutInvoice->id = $sub_eligable->latest_invoice_id;
                         $paidOutInvoice->sub_id = $sub_eligable->id;
-                        $paidOutInvoice->amount = $sub_eligable->latest_invoice_amount;
+                        $paidOutInvoice->amount = $sub_eligable->latest_invoice_amount * (1 - $app_fee);
                         $paidOutInvoice->connection_type = $sub_eligable->connection_type;
                         $paidOutInvoice->connection_id = $sub_eligable->connection_id;
                         $paidOutInvoice->store_id = $sub_eligable->store_id;

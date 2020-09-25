@@ -5,11 +5,87 @@ namespace App\Listeners;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Spatie\WebhookClient\Models\WebhookCall;
 
+use App\User;
+use App\Subscription;
+use App\StripeConnect;
+use App\StripeHelper;
+use App\DiscordStore;
+use App\PaidOutInvoice;
+
 class SubscriptionExpired implements ShouldQueue
 {
     // TODO: TEST
     public function handle(WebhookCall $webhookCall)
     {
+        $sub_id = $webhookCall->payload['data']['object']['id'];
+        $plan_id = $webhookCall->payload['data']['object']['items']['data'][0]['plan']['id'];
+
+        if(strpos($plan_id, 'discord') !== false) {
+            try {
+                $subscription = Subscription::where($sub_id)->first();
+                if($subscription->status <= 3){
+                    $subscription->status = 5;
+                    $subscription->save();
+                }
+            }
+            catch (ApiErrorException $e) {
+                if (env('APP_DEBUG')) Log::error($e);
+                Log::info("Sub expired (5) did not save in DB: ", $sub_id);
+                // Failed to Transfer
+            }
+
+            $customer = $webhookCall->payload['data']['object']['customer'];
+            $customer_id = StripeConnect::where('customer_id', $customer)->first()->user_id;
+            $customer_discord_id = DiscordOAuth::where('user_id', $customer_id)->first()->discord_id;
+            $partner_id = $webhookCall->payload['data']['object']['items']['data'][0]['plan']['metadata']['user_id'];
+            $partner_discord_id = DiscordOAuth::where('user_id', $customer_id)->first()->discord_id;
+            $discord_helper = new \App\DiscordHelper(\App\User::where('id', $customer_id)->first());
+            $data = explode('_', $plan_id);
+        
+            if($data[0] == 'discord') {
+                Cache::forget('customer_subscriptions_active_' . $customer_id);
+                Cache::forget('customer_subscriptions_canceled_' . $customer_id);
+
+                $guild_id = $data[1];
+                $role_id = $data[2];
+
+                try {
+                    $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
+                    $discord_client->guild->removeGuildMemberRole([
+                        'guild.id' => intval($guild_id),
+                        'role.id' => intval($role_id),
+                        'user.id' => intval($customer_discord_id)
+                    ]);
+
+                    $guild = $discord_helper->getGuild($guild_id);
+                    $role = $discord_helper->getRole($guild_id, $role_id);
+
+                    $discord_helper->sendMessage('Your subscription to the ' . $role->name . ' role in the ' . $guild->name . ' server was canceled. I removed the role from your account.');
+
+                    try {
+                        $subscription = Subscription::where($subscription_id)->first();
+                        if($subscription->status <= 3){
+                            $subscription->status = 2;
+                            $subscription->save();
+                        }
+                    }
+                    catch (ApiErrorException $e) {
+                        if (env('APP_DEBUG')) Log::error($e);
+                        Log::info("Sub canceled (2) did not save in DB: ", $subscription_id);
+                        // Failed to Transfer
+                    }
+
+                } catch(\Exception $e) {
+                    $discord_helper->sendMessage('Uh-oh! Something went wrong in removing the role from your account. Don\'t worry, I still canceled the subscription for you.');
+                    $discord_error = new \App\DiscordError();
+                    $discord_error->guild_id = $guild_id;
+                    $discord_error->role_id = $role_id;
+                    $discord_error->user_id = $customer_id;
+                    $discord_error->message = $e->getMessage();
+                }
+            }
+        }
+
         
     }
 

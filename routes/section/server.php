@@ -8,6 +8,11 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 
+Route::post('/refresh-roles/{guild_id}', function($guild_id) {
+    Cache::forget('roles_' . $guild_id);
+    return redirect('/server/' . $guild_id);
+});
+
 Route::get('/servers', 'ServerController@getServers');
 
 Route::get('/server/{id}', 'ServerController@getServerPage');
@@ -62,3 +67,5 @@ Route::post('/server-member-role-add', 'ServerController@memberRoleAdd');
 Route::post('/save-server-settings', 'ServerController@updateShop');
 
 Route::post('/save-go-live', 'ServerController@updateStatus');
+
+Route::post('/bknd-000/ban-user-from-store', 'ServerController@banUserFromStore');

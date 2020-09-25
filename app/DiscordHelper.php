@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Session;
 use League\OAuth2\Client\Token\AccessToken;
 use Wohali\OAuth2\Client\Provider\Discord;
 use RestCord\DiscordClient;
+use Illuminate\Support\Facades\Log;
 
 class DiscordHelper
 {
@@ -67,13 +68,11 @@ class DiscordHelper
         $token = $this->getDiscordAccessToken();
         $guildsRequest = $provider->getAuthenticatedRequest('GET', $provider->getResourceOwnerDetailsUrl($token) . '/guilds', $token);
 
-        $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
         $guilds = $provider->getParsedResponse($guildsRequest);
         $guilds_array = array();
         
         foreach($guilds as $guild) {
             try {
-                $discord_client->guild->getGuildRoles(['guild.id' => intval($guild['id'])]);
                 array_push($guilds_array, $guild);
             } catch(\Exception $e) {
             }
@@ -82,15 +81,19 @@ class DiscordHelper
         Cache::put('guilds_' . $this->user->id, $guilds_array, 60 * 5);
         return Cache::get('guilds_' . $this->user->id);
     }
-
+    
     public function getOwnedGuilds() {
         $guilds = array();
         foreach($this->getGuilds() as $guild) {
-            if($guild['owner'] == 'true') {
+            if($guild['owner'] == 'true' && $this->guildHasBot($guild['id'])) {
                 array_push($guilds, $guild);
             }
         }
         return $guilds;
+    }
+
+    public function guildHasBot(int $guild_id) {
+        return $this->isMember($guild_id, 590725202489638913);
     }
 
     public function isUserBanned(int $guild_id, int $user_id) {
@@ -103,9 +106,20 @@ class DiscordHelper
 
     public function isMember(int $guild_id, int $user_id) {
         $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
-        foreach($discord_client->guild->listGuildMembers(['guild.id' => $guild_id]) as $member) {
-            if($member->user->id == $user_id) return true;
+
+        try {
+            $result = $discord_client->guild->getGuildMember(['guild.id' => $guild_id, 'user.id' => $user_id]);
+            if($result != NULL){
+                return true;
+            }
+        } catch(\Exception $e) {
+            return false;
         }
+        //Log::info(serialize($result));
+
+       /* foreach($discord_client->guild->listGuildMembers(['guild.id' => $guild_id]) as $member) {
+            if($member->user->id == $user_id) return true;
+        }*/
         return false;
     }
 
@@ -152,8 +166,19 @@ class DiscordHelper
     }
 
     public function ownsGuild(int $guild_id): bool {
-        $discord_o_auth = DiscordOAuth::where('user_id', $this->user->id)->first();
-        return $this->getGuild($guild_id)->owner_id == $discord_o_auth->discord_id;
+        if(Cache::has('guilds_' . $this->user->id)) {
+            $guilds = Cache::get('guilds_' . $this->user->id);
+        } else {
+            $guilds = $this->getGuilds();
+        }
+
+        foreach($guilds as $guild) {
+            if($guild['id'] == $guild_id) {
+                return $guild['owner'];
+            }
+        }
+
+        return false;
     }
 
     public function getUser(int $discord_id) {

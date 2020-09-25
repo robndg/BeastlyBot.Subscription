@@ -40,6 +40,7 @@ class DiscordPlan extends Plan
             Cache::put('plan_' . $this->getStripeID(), $plan, 60 * 10);
         }
         
+        return response()->json(['success' => true, 'msg' => 'Prices updated.']);
     }
 
     public function create(\Illuminate\Http\Request $request)
@@ -51,6 +52,8 @@ class DiscordPlan extends Plan
         } catch(\Exception $e) {
             \Log::info($e);
         }
+
+        return response()->json(['success' => true, 'msg' => 'Plan created.']);
     }
 
     public function getStripeID(): string

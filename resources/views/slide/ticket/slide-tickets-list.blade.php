@@ -44,16 +44,16 @@
 <script>
 
 
-    let searchParams = new URLSearchParams(window.location.search);
-    if(searchParams.has('open')){
-        searchParams.delete('open');
-        window.history.replaceState({}, '', `${location.pathname}?${searchParams}`);
+    var searchParamsFirst = new URLSearchParams(window.location.search);
+    if(searchParamsFirst.has('open')){
+        searchParamsFirst.delete('open');
+        window.history.replaceState({}, '', `${location.pathname}?${searchParamsFirst}`);
     }
 
     $(document).on('slidePanel::beforeHide', function (e) {
-    let searchParams = new URLSearchParams(window.location.search);
-        if(searchParams.has('messages')){
-            params = searchParams.delete('messages');
+    var searchParamsSecond = new URLSearchParams(window.location.search);
+        if(searchParamsSecond.has('messages')){
+            params = searchParamsSecond.delete('messages');
             window.history.replaceState({}, '', `${location.pathname}`);
         }
     });

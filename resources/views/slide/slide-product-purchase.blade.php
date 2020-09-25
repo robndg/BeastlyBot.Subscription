@@ -63,7 +63,7 @@
 
                                     </div>
                                     @if($first)
-                                    <input id="inputRadios{{ $plan->interval_cycle }}Months" name="inputRadios"  onclick="updatePrices('{{ $plan->interval_cycle }}', '{{ ($plan->getStripePlan()->amount / 100) }}')" type="radio" class="to-labelauty" data-plugin="labelauty" data-labelauty=" " checked />
+                                    <input id="inputRadios{{ $plan->interval_cycle }}Months" name="inputRadios"  onclick="updatePrices('{{ $plan->interval_cycle }}', '{{ ($plan->getStripePlan()->amount / 100) }}')" type="radio" class="to-labelauty" data-plugin="labelauty" data-labelauty=" " checked/>
                                     @php
                                     $first = false;
                                     @endphp
@@ -95,7 +95,7 @@
                            role="button">Pay</a>
                         @else
                         <a href="#" onclick="beginCheckout()" class="btn btn-success btn-lg btn-block" id="payButton"
-                           role="button" disabled>Pay</a>
+                           role="button" @if(count($plans) > 1) disabled @endif>Pay</a>
                         @endif
                     </div>
                 </div>
@@ -120,7 +120,13 @@
 <script type="text/javascript">
     var token = '{{ csrf_token() }}';
     var current_price, net_price;
-    var is_member = '{{ $discord_helper->isMember($guild->id, $discord_helper->getID()) }}';
+    var is_member = '{{ $discord_helper->isMember($guild->id, $discord_helper->getID()) ? "true" : "false" }}';
+
+    if(is_member == "true") {
+        is_member = true;
+    } else {
+        is_member = false;
+    }
 
     $(document).ready(function () {
 

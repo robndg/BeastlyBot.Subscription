@@ -9,6 +9,7 @@ use \App\StripeConnect;
 use \App\DiscordOAuth;
 use RestCord\DiscordClient;
 use Illuminate\Support\Facades\Cache;
+use \App\Subscription;
 
 class SubscriptionCanceled implements ShouldQueue
 {
@@ -16,6 +17,19 @@ class SubscriptionCanceled implements ShouldQueue
     {
         $subscription_id = $webhookCall->payload['data']['object']['items']['data'][0]['subscription'];
         $plan_id = $webhookCall->payload['data']['object']['items']['data'][0]['plan']['id'];
+
+      /*  try {
+            $subscription = Subscription::where($subscription_id)->first();
+            if($subscription->status <= 3){
+                $subscription->status = 2;
+                $subscription->save();
+            }
+        }
+        catch (ApiErrorException $e) {
+            if (env('APP_DEBUG')) Log::error($e);
+            Log::info("Sub canceled (2) did not save in DB: ", $subscription_id);
+            // Failed to Transfer
+        }*/
 
         if(strpos($plan_id, 'discord') !== false) {
             $customer = $webhookCall->payload['data']['object']['customer'];
@@ -45,6 +59,20 @@ class SubscriptionCanceled implements ShouldQueue
                     $role = $discord_helper->getRole($guild_id, $role_id);
 
                     $discord_helper->sendMessage('Your subscription to the ' . $role->name . ' role in the ' . $guild->name . ' server was canceled. I removed the role from your account.');
+
+                    try {
+                        $subscription = Subscription::where($subscription_id)->first();
+                        if($subscription->status <= 3){
+                            $subscription->status = 2;
+                            $subscription->save();
+                        }
+                    }
+                    catch (ApiErrorException $e) {
+                        if (env('APP_DEBUG')) Log::error($e);
+                        Log::info("Sub canceled (2) did not save in DB: ", $subscription_id);
+                        // Failed to Transfer
+                    }
+
                 } catch(\Exception $e) {
                     $discord_helper->sendMessage('Uh-oh! Something went wrong in removing the role from your account. Don\'t worry, I still canceled the subscription for you.');
                     $discord_error = new \App\DiscordError();

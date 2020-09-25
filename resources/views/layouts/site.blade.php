@@ -159,10 +159,10 @@
             <div class="row height-100 align-items-center">
                 <div class="col-lg-4 col-md-6 col-9">
                     <div class="logo style-2">
-                        <a href="/" class="logo-black logo-top"><img
+                        <a href="https://beastlybot.com" class="logo-black logo-top"><img
                                 src="{{asset('site/assets/images/beastlybot-logo4-w.png')}}" height="40" alt="logo"/>
                             <!--<h3 class="logo-top">Discord Beast</h3>--></a>
-                        <a href="/" class="logo-white logo-top"><img
+                        <a href="https://beastlybot.com" class="logo-white logo-top"><img
                                 src="{{asset('site/assets/images/beastlybot-logo4-w.png')}}" height="40" alt="logo"/>
                             <!--<h3 class="logo-top">Discord Beast</h3>--></a>
                     </div>
@@ -172,15 +172,15 @@
                         <div class="mainmenu style-2">
                             <nav>
                                 <ul class="list-none">
-                                    <li><a href="/">Home</a>
+                                    <li><a href="https://beastlybot.com/">Home</a>
                                     </li>
-                                    <li><a href="/faq">FAQs</a>
+                                    <li><a href="https://beastlybot.com/faq">FAQs</a>
                                     </li>
-                                    <li><a href="/about">About</a>
+                                    <li><a href="https://beastlybot.com/about">About</a>
                                     </li>
-                                    {{-- <li><a href="/blog">Blog</a>
+                                    {{-- <li><a href="https://beastlybot.com/blog">Blog</a>
                                     </li> --}}
-                                    <li><a href="/status">Status</a>
+                                    <li><a href="https://beastlybot.com/status">Status</a>
                                     </li>
                                     {{-- <li><a href="#" onclick="return false;">Help</a>
                                         <ul class="submenu">
@@ -271,8 +271,8 @@
                         <h4><span>About Us</span></h4>
                     </div>
                     <ul class="list-none">
-                        <li><a href="/about">About Us</a></li>
-                        <li><a href="/blog">Our Blog</a></li>
+                        <li><a href="https://beastlybot.com/about">About Us</a></li>
+                        <li><a href="https://beastlybot.com/status">Status</a></li>
                     </ul>
                 </div>
             </div>
@@ -282,8 +282,8 @@
                         <h4><span>Help</span></h4>
                     </div>
                     <ul class="list-none">
-                        <li><a href="/faq">Frequently Asked Questions</a></li>
-                        <li><a href="/dashboard">Help Tutorials</a></li>
+                        <li><a href="https://beastlybot.com/faq">Frequently Asked Questions</a></li>
+                        <li><a href="https://discord.beastlybot.com/dashboard">Help Tutorials</a></li>
                     </ul>
                 </div>
             </div>

@@ -29,6 +29,16 @@ class StripeHelper
         return Cache::get($cache_key, array());
     }
 
+    public function ownsSubscription($sub_id) {
+        \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
+        $stripe_sub = \Stripe\Subscription::retrieve(
+            $sub_id
+            []
+        );
+
+        return $stripe_sub->customer == $this->user->StripeConnect->customer_id;
+    }
+
     public function isSubscribedToProduct(string $id): bool {
         foreach ($this->getSubscriptions('active') as $subscription) {
             if ($subscription->items->data[0]->plan->product == $id) return true;

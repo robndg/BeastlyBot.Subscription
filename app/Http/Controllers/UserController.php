@@ -16,6 +16,9 @@ use App\User;
 use App\Subscription;
 use App\StripeConnect;
 use App\PaidOutInvoice;
+use App\Ban;
+use App\DiscordHelper;
+use App\DiscordOAuth;
 
 class UserController extends Controller {
 
@@ -210,10 +213,10 @@ class UserController extends Controller {
         $sub_id = $request['sub_id'];
         $reason = $request['reason'];
 
+        Log::info($sub_id);
 
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
         \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
-
 
         try {
             
@@ -222,6 +225,12 @@ class UserController extends Controller {
 
             $subscription = Subscription::where('id', $sub_id)->first();
 
+            if(auth()->user()->id != $subscription->user_id || auth()->user->admin != 1) {
+                return response()->json(['success' => false, 'msg' => 'This is not your subscription. Contact support']);
+            }else if($subscription->status > 3){
+                return response()->json(['success' => false, 'msg' => 'Subscription already refunded or canceled.']);
+            }
+    
             $latest_invoice = \Stripe\Invoice::retrieve($subscription->latest_invoice_id);
 
             $sub_refund_terms = $subscription->refund_terms;
@@ -235,8 +244,13 @@ class UserController extends Controller {
                         $product = \Stripe\Product::retrieve($sub->items->data[0]->plan->product);
                         if (!$product->active) throw new InvalidRequestException();
 
-                        if(Refund::where('sub_id', $sub_id)->exists()) return response()->json(['success' => false, 'msg' => 'You have already submitted a refund request.']);
-
+                        //if(Refund::where('sub_id', $sub_id)->exists()) return response()->json(['success' => false, 'msg' => 'You have already submitted a refund request.']);
+                        if(Refund::where('sub_id', $sub_id)->exists()){
+                            $refund = Refund::where('sub_id', $sub_id)->first();
+                            if($refund->issued == 0) return response()->json(['success' => false, 'msg' => 'Subscription set to cancel at end of term.']);
+                            if($refund->issued == NULL) return response()->json(['success' => false, 'msg' => 'You have already submitted a refund request.']);
+                            if($refund->issued == 1) return response()->json(['success' => false, 'msg' => 'You have been issued a refund.']);
+                        }
                             //$owner = User::where('id', $product->metadata['id'])->get()[0];
                             $store = DiscordStore::where('id', $subscription->store_id)->first();
                             $owner = User::where('id', $store->user_id)->first();
@@ -281,9 +295,10 @@ class UserController extends Controller {
                                                 if (!$product->active) throw new InvalidRequestException();
 
                                                 $refund = Refund::where('sub_id', $sub_id)->first();
-                                                if($refund->decision == $decision) return response()->json(['success' => false, 'msg' => 'You have already submitted a refund decision.']);
-                                                    $refund->ban = $ban;
-                                                    $refund->save();
+                                                if($refund->decision == $decision){
+                                                    if($refund->issued == 0) return response()->json(['success' => false, 'msg' => 'Subscription set to cancel at end of term.']);
+                                                    if($refund->issued == NULL) return response()->json(['success' => false, 'msg' => 'You have already submitted a refund response.']);
+                                                }
                                                 try{
                                                     $invoice = $latest_invoice;
                                                     $invoice_charge = $invoice->charge;
@@ -308,7 +323,7 @@ class UserController extends Controller {
                                                             $refund->decision = 1;
                                                             $refund->issued = $issued;
                                                             $refund->save();
-                                                            if($issued = 1){ // if can issue
+                                                            if($refund->issued = 1){ // if can issue
                                                                 
                                                                 
                                                                 $paid_out_invoice = PaidOutInvoice::where('id', $subscription->latest_invoice_id)->first();
@@ -365,7 +380,7 @@ class UserController extends Controller {
                                                                     //add Notification::create($owner->id, 'success', 'Refund successfully sent.');
                                                                     //add Notification::create($user_id, 'success', 'Refund success.');
                                                                 }
-                                                                $sub->delete();
+                                                           
                                                             }
                                                             //return response()->json(['success' => false, 'msg' => 'SUCCESS!']);
 
@@ -428,8 +443,9 @@ class UserController extends Controller {
         $ban = $request['ban'];
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
         \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
- 
+        Log::info("test00");
         try {
+            Log::info("test0");
             // Get subscription from stripe and cancel it.
             $sub = \Stripe\Subscription::retrieve($sub_id);
 
@@ -450,6 +466,11 @@ class UserController extends Controller {
             $user = User::where('id', $subscription->user_id)->first();
             $sub_stripe = StripeConnect::where('user_id', $subscription->user_id)->first();
 
+            $discord_helper = new DiscordHelper(auth()->user());
+            if(! $discord_helper->ownsGuild($store->guild_id)) {
+                return response()->json(['success' => false, 'msg' => 'You are not the owner of this guild. Contact Support']);
+            }
+
             \Stripe\Subscription::update(
                 $sub_id,
                 ['cancel_at_period_end' => true
@@ -459,6 +480,7 @@ class UserController extends Controller {
             $subscription->save();
                                          
             try {
+                Log::info("test2");
                 $product = \Stripe\Product::retrieve($sub->items->data[0]->plan->product);
                 if (!$product->active) throw new InvalidRequestException();
 
@@ -466,7 +488,27 @@ class UserController extends Controller {
                 if($refund->decision == $decision) return response()->json(['success' => false, 'msg' => 'You have already submitted a refund decision.']);
                     $refund->ban = $ban;
                     $refund->save();
+                    if($ban == 1){
+                        try{
+                            Log::info("test3");
+                            $discord_id = DiscordOAuth::where('user_id', $user->id)->first()->discord_id;
+                            $ban = Ban::create([
+                                'user_id' => $user->id, 
+                                'discord_id' => $discord_id, 
+                                'type' => 1, 
+                                'discord_store_id' => $store->id, 
+                                'guild_id' => $store->guild_id, 
+                                'until' => NULL, 
+                                'active' => 1, 
+                                'reason' => "Subscription Refund Ban", 
+                                'issued_by' => $owner->id,
+                            ]);
+                        }catch (\Exception $e) {
+                            if (env('APP_DEBUG')) Log::error($e);
+                        }
+                    }
                 try{
+                    Log::info("test4");
                     $invoice = $latest_invoice;
                     $invoice_charge = $invoice->charge;
                     $invoice_app_fee = $sub_application_fee;
@@ -474,6 +516,7 @@ class UserController extends Controller {
                     $user_id = $user->id;
 
                     if($owner_stripe->id == $sub_stripe->id){
+                        Log::info("test5");
                         $subscription->status = 5;
                         $subscription->save();
 
@@ -486,15 +529,13 @@ class UserController extends Controller {
                         //add Notification::create($user_id, 'success', 'Refund success.');
                     }else{
                         if ($refund->issued == NULL){ // check if no decision on issued
+                            Log::info("test6");
                             $refund->decision = 1;
                             $refund->issued = $issued;
                             $refund->save();
-                            if($issued = 1){ // if can issue
-                                
+                            if($issued == 1){ // if yes refund
                                 
                                 $paid_out_invoice = PaidOutInvoice::where('id', $subscription->latest_invoice_id)->first();
-
-                                Log::info($paid_out_invoice);
 
                                 $paid_out_bool = true;
                                 if($paid_out_invoice == NULL){
@@ -504,6 +545,7 @@ class UserController extends Controller {
                                 $subscription->save();
                                 
                                 if($paid_out_bool == true){
+                                    Log::info("test7");
                                    // if($paid_out_invoice->reversed != 1 && $paid_out_invoice->refunded != 1 && $paid_out_invoice->transfer_id != NULL && $subscription->status != 5){
                                     \Stripe\Transfer::createReversal($paid_out_invoice->transfer_id);
                                     $paid_out_invoice->reversed = 1;
@@ -530,7 +572,7 @@ class UserController extends Controller {
                                     //add Notification::create($owner->id, 'warning', 'Payout reversed and sent successfully.');
                                     //add Notification::create($user_id, 'success', 'Refund success.');
                                 }else if($subscription->status != 5) /*if ($paid_out_bool && $paid_out_invoice->refunded != 1)*/{
-                               
+                                    Log::info("test8");
                                     \Stripe\Refund::create([
                                     'charge' => $invoice_charge,
                                     'amount' => $invoice->amount_paid,
@@ -548,6 +590,10 @@ class UserController extends Controller {
                                     $sub->delete();
                                 }
                                    
+                            }else{
+                                Log::info("test9");
+                                $subscription->status = 2; // denied and canceled
+                                $subscription->save();
                             }
                             //return response()->json(['success' => false, 'msg' => 'SUCCESS!']);
 
@@ -555,32 +601,56 @@ class UserController extends Controller {
                             // remove the subscription
                            
                         }else if ($refund->issued == 1){ // check if issued already
-               
+                            Log::info("test10");
                             $refund->decision = 1;
                             $refund->save();
                             return response()->json(['success' => false, 'msg' => 'Refund already issued.']);
                         }else{ // check if 1 (decision made but denied)
                             return response()->json(['success' => false, 'msg' => 'Refund already denied.']);
-                 
+                            Log::info("test11");
                             $refund->decision = 1;
                             $refund->save();
                         }
                     }
                 }catch (\Exception $e){
+                    Log::info("test12");
                     if (env('APP_DEBUG')) Log::error($e);
                 }
             } catch (\Exception $e) {
+                Log::info("test13");
                 if (env('APP_DEBUG')) Log::error($e);
             }
 
             //$sub->cancel();
             // The subscription will be removed from the DB by the bot on expiration date.
         } catch (\Exception $e) {
+            Log::info("test14");
             if (env('APP_DEBUG')) Log::error($e);
             return response()->json(['success' => false]);
         }
 
         return response()->json(['success' => true]);
+    }
+
+    public function getServersAndStores(){
+        $discord_o_auth = DiscordOAuth::where('user_id', auth()->user()->id)->first();
+        $discord_helper = auth()->user()->getDiscordHelper();
+
+        if($discord_helper->getGuilds()) {
+            $serversstores = array(); 
+            foreach($discord_helper->getGuilds() as $server) {
+                $shop = DiscordStore::where('guild_id', $server['id'])->first();
+
+                if($shop) {
+                    $serverstore = ["" . $server['id'], $server['name'], $server['icon'], $shop->url, $shop->live, $server['owner'] ? "Owner" : "Member", $discord_helper->guildHasBot($server['id'])]; // server id, name, icon, shop, live, joined
+                } else { 
+                    $serverstore = ["" . $server['id'], $server['name'], $server['icon'], false, false, $server['owner'] ? "Owner" : "Member", $discord_helper->guildHasBot($server['id'])]; 
+                }
+                array_push($serversstores, $serverstore);
+            }
+            return $serversstores;
+            
+        }
     }
 
     public function impersonate($id)

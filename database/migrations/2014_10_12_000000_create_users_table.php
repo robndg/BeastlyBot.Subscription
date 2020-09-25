@@ -20,6 +20,7 @@ class CreateUsersTable extends Migration
             $table->integer('theme_color')->default(0);
             $table->string('permissions')->nullable();
             $table->string('error')->nullable();
+            $table->string('url_next')->nullable();
             // $table->rememberToken();
             $table->timestamps();
         });

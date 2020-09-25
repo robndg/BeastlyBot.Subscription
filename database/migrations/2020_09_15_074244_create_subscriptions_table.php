@@ -35,7 +35,7 @@ class CreateSubscriptionsTable extends Migration
             $table->integer('connection_id'); // links to ex) discord_o_auths ID
             $table->bigInteger('store_id'); // links to ex) discord_store ID
             $table->string('product_id'); // links to ex) product_roles ID
-            $table->integer('active')->default(0); // 0 role not yet enabled, 1 active, 2 no longer active ex) set by Discord JS
+            $table->integer('level')->default(1); // level of payout time of order
 
             // Store Policy at time Purchase
             $table->integer('refund_enabled')->default(1); // 0 no, 1 yes

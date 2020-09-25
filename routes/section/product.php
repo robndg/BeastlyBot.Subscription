@@ -7,6 +7,7 @@ use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use App\Products\DiscordRoleProduct;
 use App\Products\Plans\DiscordPlan;
+use Illuminate\Support\Facades\Cache;
 
 Route::get('/slide-product-purchase/{guild_id}/{role_id}', function($guild_id, $role_id) {
     if(\request('affiliate_id') !== null) {
@@ -59,3 +60,5 @@ Route::post('/check-prices', 'ProductController@checkProductPrices');
 Route::post('/product', 'ProductController@product');
 
 Route::post('/plan', 'ProductController@plan');
+
+Route::post('/update_product_desc', 'ProductController@setProductDescription');
