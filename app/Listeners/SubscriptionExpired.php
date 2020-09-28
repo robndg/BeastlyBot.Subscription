@@ -11,6 +11,7 @@ use App\StripeConnect;
 use App\StripeHelper;
 use App\DiscordStore;
 use App\PaidOutInvoice;
+use \App\Stat;
 
 class SubscriptionExpired implements ShouldQueue
 {
@@ -22,15 +23,15 @@ class SubscriptionExpired implements ShouldQueue
 
         if(strpos($plan_id, 'discord') !== false) {
             try {
-                $subscription = Subscription::where($sub_id)->first();
+                $subscription = Subscription::where('id', $sub_id)->first();
                 if($subscription->status <= 3){
-                    $subscription->status = 5;
+                    $subscription->status = 4;
                     $subscription->save();
                 }
             }
             catch (ApiErrorException $e) {
                 if (env('APP_DEBUG')) Log::error($e);
-                Log::info("Sub expired (5) did not save in DB: ", $sub_id);
+                Log::info("Sub expired (4) did not save in DB: ", $sub_id);
                 // Failed to Transfer
             }
 
@@ -60,18 +61,30 @@ class SubscriptionExpired implements ShouldQueue
                     $guild = $discord_helper->getGuild($guild_id);
                     $role = $discord_helper->getRole($guild_id, $role_id);
 
-                    $discord_helper->sendMessage('Your subscription to the ' . $role->name . ' role in the ' . $guild->name . ' server was canceled. I removed the role from your account.');
+                    $discord_helper->sendMessage('Your subscription to the ' . $role->name . ' role in the ' . $guild->name . ' server expired. I removed the role from your account.');
 
                     try {
-                        $subscription = Subscription::where($subscription_id)->first();
+                        $subscription = Subscription::where('id', $subscription_id)->first();
                         if($subscription->status <= 3){
-                            $subscription->status = 2;
+                            $subscription->status = 4;
                             $subscription->save();
+
+                            $discord_store = DiscordStore::where("guild_id", $guild_id)->first();
+                        
+                            $stats = Stat::where('type', 1)->where('type_id', $discord_store->id)->first();
+                            $subscribers_active = $stats->data['subscribers']['active'];
+                            $subscribers_total = $stats->data['subscribers']['total'];
+
+                            $stats_data = $stats->data;
+                            $stats_data['subscribers'] = ['active' => $subscribers_active - 1, 'total' => $subscribers_total];
+                            $stats->data = $stats_data;
+                            $stats->save();
+
                         }
                     }
                     catch (ApiErrorException $e) {
                         if (env('APP_DEBUG')) Log::error($e);
-                        Log::info("Sub canceled (2) did not save in DB: ", $subscription_id);
+                        Log::info("Sub canceled (4) did not save in DB: ", $subscription_id);
                         // Failed to Transfer
                     }
 

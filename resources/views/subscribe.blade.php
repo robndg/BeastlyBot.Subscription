@@ -1,12 +1,14 @@
 @extends('layouts.app-zero2')
 
-@section('title', 'Shop')
+
 
 @section('metadata')
+    <title>{{ $guild->name }} | Shop</title>
     <meta name="description"
-          content="Shop at our discord server. Purchase roles and be an exclusive member. {{ App\DiscordStore::where('guild_id', $guild_id)->first()->description) }}"> <!-- server description -->
-    <meta name="keywords" content="{{ $guild_id }}"> <!-- server name -->
+          content="{{ App\DiscordStore::where('guild_id', $guild_id)->first()->description }}"> <!-- server description -->
+    <meta name="keywords" content="{{ $guild->name }}, {{ $guild_id }}, Discord, Shop, Beastly, Bot"> <!-- server name -->
     <meta name="author" content="BeastlyBot">
+
 @endsection
 
 @section('content')
@@ -42,11 +44,14 @@
     <div class="h-250 draw-grad-up">
         <div class="text-center blue-grey-800 m-0 mt-50">
             <a class="avatar avatar-xxl" href="javascript:void(0)">
-                <img id="guild_icon"
-                     src="https://cdn.discordapp.com/icons/{{ $guild_id }}/{{ $guild->icon }}.png?size=256"
-                     alt="...">
+                @if($guild->icon == NULL)
+                    <img id="server_icon" src="https://i.imgur.com/qbVxZbJ.png" alt="...">
+                @else
+                    <img id="server_icon" src="https://cdn.discordapp.com/icons/{{ $guild_id }}/{{ $guild->icon }}.png?size=256" alt="...">
+                @endif
             </a>
-            <div class="font-size-50 mb-5 blue-grey-100" id="guild_name">{{ $guild->name }}</div>
+            <div class="font-size-50 blue-grey-100 mb--5" id="guild_name">{{ $guild->name }}</div>
+            <div class="font-size-16 blue-grey-100 w-400 mx-auto">{{ Str::limit(App\DiscordStore::where('guild_id', $guild_id)->first()->description, 100) }}</div>
             <span><button type="button" class="btn btn-sm btn-round btn-dark btn-icon mb-10" id="btn_copy-url" data-toggle="tooltip" data-original-title="Copy Link" data-placement="right"><i class="wb-link"></i></button></span>
         </div>
     </div>

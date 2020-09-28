@@ -58,7 +58,7 @@
 
 <script>
 
-    if((!window.location.href.includes('guide-opened')) && window.location.href.includes('server')) {
+    if((!window.location.href.includes('guide-opened')) && window.location.href.includes('/server')) {
         setTimeout(function(){
             $("#help-guide-ultimate").click();
         },100)

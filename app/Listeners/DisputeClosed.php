@@ -4,11 +4,128 @@ namespace App\Listeners;
 
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Spatie\WebhookClient\Models\WebhookCall;
+use \App\StripeConnect;
+use \App\DiscordOAuth;
+use \App\NewSubscription;
+
+use \App\ScheduledInvoicePayout;
+use \App\DiscordStore;
+use \App\Subscription;
+use \App\Stat;
+use \App\Dispute;
+use \App\PaidOutInvoice;
+use RestCord\DiscordClient;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class DisputeClosed implements ShouldQueue
 {
     public function handle(WebhookCall $webhookCall)
     {
+
+       // \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
+       $stripe = new \Stripe\StripeClient(env('STRIPE_CLIENT_SECRET'));
+
+        $object = $webhookCall->payload['data']['object'];
+
+        $dispute_status = $webhookCall->payload['data']['object']['status'];
+
+        $charge_id = $webhookCall->payload['data']['object']['charge'];
+
+        $charge = $stripe->charges->retrieve(
+            $charge_id,
+            []
+        );
+
+        $invoice_id = $charge['invoice'];
+
+        $invoice = $stripe->invoices->retrieve(
+            $invoice_id,
+            []
+        );
+
+        $invoice_id = $invoice['id']; // "in_
+        $invoice_total = $invoice['amount']; // 2500
+        $invoice_customer = $invoice['customer']; // "cus_
+        $invoice_customer_email = $invoice['customer_email']; // ""
+
+        $invoice_product_description = $invoice['lines']['data'][0]['description']; // "1 X Live 
+        $invoice_product_subscription = $invoice['lines']['data'][0]['subscription']; // "sub_
+
+        // Check and reverse paid out
+        $paid_out_invoice = PaidOutInvoice::where('id', $invoice_id)->first();
+
+        $paid_out_bool = true;
+        if($paid_out_invoice == NULL){
+            $paid_out_bool = false;
+        }
+
+        $subscription = Subscription::where('id', $invoice_product_subscription)->first();
+        $shop = DiscordStore::where('id', $subscription->store_id)->first();
+
+        $stats = Stat::where('type', 1)->where('type_id', $shop->id)->first();
+        $disputes_active = $stats->data['disputes']['active'];
+        $disputes_total = $stats->data['disputes']['total'];
+
+        $dispute = Dispute::where('id', $invoice_id)->first();
+
+        if($dispute_status == "won" && $subscription->status != 5){
+
+            /*if($paid_out_bool == true){
+                if($paid_out_invoice->refunded != 1){
+                    // Was paid out before then reversed and not refunded, so we can send again
+  
+
+                }
+            }*/
+
+            // Update Subscription Status
+            $subscription->status = 7;
+            $subscription->save();
+
+            // Update Dispute Status
+            $dispute->status = 7;
+            $dispute->save();
+
+            // Update Stats
+
+            $stats_data = $stats->data;
+            $stats_data['disputes'] = ['active' => $disputes_active - 1, 'total' => $disputes_total];
+            $stats->data = $stats_data;
+            $stats->save();
+
+            try{
+                if($shop->level > 3){
+                    $shop->level = $shop->level - 1;
+                    $shop->save();
+                }
+            }catch (ApiErrorException $e) {
+                if (env('APP_DEBUG')) Log::error($e);
+                // Failed to Transfer
+            }
+            
+
+        }else{
+           
+
+            // Update Subscription Status
+            $subscription->status = 8;
+            $subscription->save();
+
+            // Update Dispute Status
+            $dispute->status = 8;
+            $dispute->save();
+
+
+        }
+
+        $sub = $stripe->subscriptions->retrieve(
+            $invoice_product_subscription,
+            [],
+        );
+        $sub->cancel();
+
+
         
     }
 

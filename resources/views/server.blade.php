@@ -211,25 +211,11 @@ $('#partnerPricingModal').on('hidden.bs.modal', function () {
                 $("#btn_edit-roles").click();
                 $("#btn_save-roles").addClass('btn-dark').removeClass('btn-primary');
 
-                setTimeout(function(){
-                    Swal.fire({
-                        title: 'Last Step!',
-                        text: "Move BeastlyBot to top of roles to begin",
-                        //type: 'info',
-                        imageUrl: 'https://beastlybot.com/site/assets/images/role-position-top.gif',
-                        imageWidth: 600,
-                        //imageHeight: 400,
-                        imageAlt: 'Move Top of Roles GIF',
-                        showCancelButton: false,
-                        confirmButtonText: "Done. Let's make cash.",
-                    }).then(result => {
-                        
-                    });
-                },1000);
+           //     checkPositionPopup();
 
             }
         }, 200);
-        
+
 </script>
 <script type="text/javascript">
         setTimeout(function(){
@@ -238,5 +224,25 @@ $('#partnerPricingModal').on('hidden.bs.modal', function () {
             }}, 1000);
 </script>
 
+@if(!$bot_positioned)
+<script>
+setTimeout(function(){
+        Swal.fire({
+            title: 'Oops!',
+            text: "Move BeastlyBot to top of roles to begin",
+            //type: 'info',
+            imageUrl: 'https://beastlybot.com/site/assets/images/role-position-top.gif',
+            imageWidth: 600,
+            //imageHeight: 400,
+            imageAlt: 'Move Top of Roles GIF',
+            showCancelButton: false,
+            confirmButtonText: "Done. Let's make cash.",
+        }).then(result => {
+            
+        });
+    },1000);
+</script>
+@endif
+</script>
 
 @endsection

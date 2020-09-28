@@ -144,10 +144,19 @@ class UserController extends Controller {
             if($end_now == "1") {
                 // Must figure out how to task handler remove role now or else it will just wait till expiration date
                 $sub->cancel();
+
+                $subscription = Subscription::where('id', $sub_id)->first();
+                $subscription->status = 4; 
+                $subscription->save();
+
+
             } else {
                 \Stripe\Subscription::update(
                     $sub_id, ['cancel_at_period_end' => true]
                 );
+                $subscription = Subscription::where('id', $sub_id)->first();
+                $subscription->status = 2;  // cancel end period
+                $subscription->save();
               
             }
 
@@ -166,7 +175,7 @@ class UserController extends Controller {
         $sub_id = $request['sub_id'];
         $end_now = $request['end_now'];
 
-        if(!\Auth::user()->ownsSubscription($sub_id)) {
+        if(!\Auth::user()->getStripeHelper()->isSubscribedToID($sub_id)) {
             return response()->json(['success' => false, 'msg' => 'This is not your subscription. Contact support']);
         }
 
@@ -182,13 +191,13 @@ class UserController extends Controller {
         } catch (\Exception $e) {
             if (env('APP_DEBUG')) Log::error($e);
         }
-        $subscription = Subscription::where('sub_id', $sub_id);
+        $subscription = Subscription::where('id', $sub_id)->first();
 
         if($end_now == "1" && $sub->items->data[0]->plan->active){
-            $owner = User::where('id', $product->metadata['id'])->get()[0];
-            Notification::create($owner->id, 'warning', 'Subscription now cancelled.');
+            $owner = User::where('id', $subscription->user_id)->first();
+         
             $sub->cancel();
-            $subscription->status = 2;
+            $subscription->status = 4;
             $subscription->save();
             // figure out how to task handler remove role now
             return response()->json(['success' => true, 'msg' => 'Subscription cancelled immediately.']);
@@ -227,6 +236,8 @@ class UserController extends Controller {
 
             if(auth()->user()->id != $subscription->user_id || auth()->user->admin != 1) {
                 return response()->json(['success' => false, 'msg' => 'This is not your subscription. Contact support']);
+            }else if($subscription->status == 3){
+                return response()->json(['success' => false, 'msg' => 'Refund has already been requested.']);
             }else if($subscription->status > 3){
                 return response()->json(['success' => false, 'msg' => 'Subscription already refunded or canceled.']);
             }
@@ -307,7 +318,7 @@ class UserController extends Controller {
                                                     $user_id = $user->id;
 
                                                     if($owner_stripe->id == $sub_stripe->id){
-                                                        $subscription->status = 5;
+                                                        $subscription->status = 4;
                                                         $subscription->save();
 
                                                         $refund->decision = 1;
@@ -363,7 +374,7 @@ class UserController extends Controller {
                                                                     
                                                                     //add Notification::create($owner->id, 'warning', 'Payout reversed and sent successfully.');
                                                                     //add Notification::create($user_id, 'success', 'Refund success.');
-                                                                }else if($subscription->status != 5) /*if ($paid_out_bool && $paid_out_invoice->refunded != 1)*/{
+                                                                }else if($subscription->status <= 3) /*if ($paid_out_bool && $paid_out_invoice->refunded != 1)*/{
                                                                
                                                                     \Stripe\Refund::create([
                                                                     'charge' => $invoice_charge,
@@ -377,6 +388,9 @@ class UserController extends Controller {
                                                                         $subscription->latest_invoice_id,
                                                                         ['metadata' => ['reversed' => false, 'refunded' => true]]
                                                                     );
+
+                                                                    $subscription->status = 5; // refunded&do not payout
+                                                                    $subscription->save();
                                                                     //add Notification::create($owner->id, 'success', 'Refund successfully sent.');
                                                                     //add Notification::create($user_id, 'success', 'Refund success.');
                                                                 }
@@ -416,6 +430,10 @@ class UserController extends Controller {
                                     // End refund
 
                                         //$refund->save();
+                                    }else{
+                          
+                                        $subscription->status = 2; // denied and canceled
+                                        $subscription->save();
                                     }
                         } catch (\Exception $e) {
                             if (env('APP_DEBUG')) Log::error($e);
@@ -476,9 +494,9 @@ class UserController extends Controller {
                 ['cancel_at_period_end' => true
                 ]
             );
-            $subscription->status = 3;
+            $subscription->status = 2;
             $subscription->save();
-                                         
+
             try {
                 Log::info("test2");
                 $product = \Stripe\Product::retrieve($sub->items->data[0]->plan->product);
@@ -517,7 +535,7 @@ class UserController extends Controller {
 
                     if($owner_stripe->id == $sub_stripe->id){
                         Log::info("test5");
-                        $subscription->status = 5;
+                        $subscription->status = 4; // just show canceled
                         $subscription->save();
 
                         $refund->decision = 1;
@@ -541,7 +559,7 @@ class UserController extends Controller {
                                 if($paid_out_invoice == NULL){
                                     $paid_out_bool = false;
                                 }
-                                $subscription->status = 4; // refunded&do not payout
+                                $subscription->status = 5; // refunded&do not payout
                                 $subscription->save();
                                 
                                 if($paid_out_bool == true){
@@ -592,7 +610,7 @@ class UserController extends Controller {
                                    
                             }else{
                                 Log::info("test9");
-                                $subscription->status = 2; // denied and canceled
+                                $subscription->status = 4; // denied and canceled
                                 $subscription->save();
                             }
                             //return response()->json(['success' => false, 'msg' => 'SUCCESS!']);

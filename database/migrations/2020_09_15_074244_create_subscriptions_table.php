@@ -46,6 +46,8 @@ class CreateSubscriptionsTable extends Migration
 
             $table->integer('visible')->default(1); // can use to hide on site
             $table->string('current_period_end'); // + 15 days and CRON goes
+
+            $table->timestamps();
         });
     }
 

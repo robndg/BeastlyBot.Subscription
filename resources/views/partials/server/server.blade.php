@@ -10,10 +10,10 @@
                         <div class="ribbon ribbon-primary">
                             <span class="ribbon-inner">Products</span>
                         </div>
-                        <p>Enable roles for purchase on your shop</p>
+                        <p>Enable roles<span class="hidden-md-down"> for purchase on your shop</span></p>
                     </div>
                     <div class="panel-actions panel-actions-keep">
-                    <button type="button" class="btn btn-sm btn-dark btn-icon btn-round" onclick="refreshRoles()" id="btn_refresh-roles"
+                    <button type="button" class="btn btn-sm btn-dark btn-icon btn-round mr-5" onclick="refreshRoles()" id="btn_refresh-roles"
                                 data-toggle="tooltip" data-original-title="Refresh Roles">
                             <i class="icon wb-refresh" aria-hidden="true"></i>
                         </button>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DiscordStore;
 use App\ProductRole;
+use App\Ban;
 use Illuminate\Support\Facades\Cache;
 
 use App\Products\DiscordRoleProduct;
@@ -146,12 +147,20 @@ class ProductController extends Controller {
         $discord_store = \App\DiscordStore::where('url', $url)->first();
         $owner_array = \App\User::where('id', $discord_store->first()->user_id)->first();
         $discord_helper = new \App\DiscordHelper(auth()->user());
+
+       /* if(Ban::where('user_id', auth()->user()->id)->where('active', 1)->where('type', 1)->where('discord_store_id', $discord_store->id)->exists() && auth()->user()->id != $discord_store->user_id){
+            return abort(404);
+        }*/
  
         if(!$owner_array->getStripeHelper()->hasActiveExpressPlan()){
             $discord_store->live = false;
             $discord_store->save();
         }
         $discord_store = \App\DiscordStore::where('url', $url)->first();
+
+        if(!$discord_store->live && auth()->user()->id != $discord_store->user_id){
+            return view('offline');
+        }
 
         $roles = $discord_helper->getRoles($discord_store->guild_id);
  

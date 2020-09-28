@@ -11,8 +11,10 @@ use \App\NewSubscription;
 use \App\ScheduledInvoicePayout;
 use \App\DiscordStore;
 use \App\Subscription;
+use \App\Stat;
 use RestCord\DiscordClient;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class PaymentSucceeded implements ShouldQueue
 {
@@ -61,6 +63,18 @@ class PaymentSucceeded implements ShouldQueue
                 }
 
                 if(!$bad_guild && !$bad_role) {
+                    $stats = Stat::where('type', 1)->where('type_id', $discord_store->id)->first();
+                    $subscribers_active = $stats->data['subscribers']['active'];
+                    $subscribers_total = $stats->data['subscribers']['total'];
+
+                    if($subscribers_active >= 1000){
+                        $level = 1;
+                    }elseif($subscribers_active >= 100){
+                        $level = 2;
+                    }else{
+                        $level = 3;
+                    }
+
                     if($reason == 'subscription_create') {
                         Cache::forget('customer_subscriptions_active_' . $customer_id);
                         Cache::forget('customer_subscriptions_canceled_' . $customer_id);
@@ -92,11 +106,23 @@ class PaymentSucceeded implements ShouldQueue
                             $subscription->refund_terms = $discord_store->refunds_terms;
                             $subscription->metadata = ['role_id' => $role_id];
                             $subscription->status = 1;
-                            $subscription->level = $discord_store->level;
+                            $subscription->level = $level;
                             $subscription->user_id = $customer_id;
                             $subscription->partner_id = $partner_id;
                             $subscription->current_period_end = date("Y-m-d", $webhookCall->payload['data']['object']['lines']['data'][0]['period']['end']);
                             $subscription->save();
+
+                            $stats = Stat::where('type', 1)->where('type_id', $discord_store->id)->first();                            
+                            //$stats->update(['data->subscribers' => ['active' => $subscribers_active + 1, 'total' => $subscribers_total + 1]]);
+                            //$stats->data['subscribers'] = ['active' => $subscribers_active + 1, 'total' => $subscribers_total + 1];
+                            $stats_data = $stats->data;
+                            $stats_data['subscribers'] = ['active' => $subscribers_active + 1, 'total' => $subscribers_total + 1];
+                            $stats->data = $stats_data;
+                            $stats->save();
+
+                            Log::info($stats);
+                          
+
                         } catch(\Exception $e) {
                             // could not add role, cancel subscription and refund invoice
                             $discord_helper->sendMessage('Uh-oh! I couldn\'t add the role your account. I canceled the subscription and refunded your primary payment method.');
@@ -106,6 +132,8 @@ class PaymentSucceeded implements ShouldQueue
                             $discord_error->user_id = $customer_id;
                             $discord_error->message = $e->getMessage();
                             $this->cancelRefund($webhookCall);
+
+                            if (env('APP_DEBUG')) Log::error($e);
                         }
                     
                     } else if($reason == 'subscription_cycle') {
@@ -118,7 +146,7 @@ class PaymentSucceeded implements ShouldQueue
                             $subscription->latest_invoice_id = $webhookCall->payload['data']['object']['id']; 
                             $subscription->latest_invoice_paid_at = date('Y-m-d H:i:s');
                             $subscription->latest_invoice_amount = $webhookCall->payload['data']['object']['amount_paid'];
-                            $subscription->status = 1;
+                            $subscription->status = $status;
                             $subscription->level = $discord_store->level;
                             $subscription->current_period_end = date("Y-m-d", $webhookCall->payload['data']['object']['lines']['data'][0]['period']['end']);
                             $subscription->save();

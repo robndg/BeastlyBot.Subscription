@@ -32,7 +32,7 @@
         <!-- Navbar Collapse -->
         <div class="collapse navbar-collapse navbar-collapse-toolbar" id="site-navbar-collapse">
             <!-- Navbar Toolbar -->
-            <ul class="nav navbar-toolbar">
+            <!--<ul class="nav navbar-toolbar">
 
                 <li class="nav-item hidden-float">
                     <a class="nav-link icon wb-search" data-toggle="collapse" href="#" data-target="#site-navbar-search"
@@ -41,7 +41,7 @@
                     </a>
                 </li>
 
-            </ul>
+            </ul>-->
             <!-- End Navbar Toolbar -->
 
             <!-- Navbar Toolbar Right -->
@@ -81,7 +81,7 @@
         <!-- End Navbar Collapse -->
 
         <!-- Site Navbar Seach -->
-        <div class="collapse navbar-search-overlap" id="site-navbar-search">
+        <!--<div class="collapse navbar-search-overlap" id="site-navbar-search">
             <form role="search" class="mb-0">
                 <div class="form-group">
                     <div class="input-search">
@@ -92,7 +92,7 @@
                     </div>
                 </div>
             </form>
-        </div>
+        </div>-->
         <!-- End Site Navbar Seach -->
     </div>
 </nav>
@@ -201,7 +201,7 @@
                     </li>-->
                     <li class="site-menu-category">Beastly</li>
                        <li class="site-menu-item">
-                            <a href="/about">
+                            <a href="https://beastlybot.com/about">
                                 <i class="site-menu-icon icon-discord" aria-hidden="true"></i>
                                 <span class="site-menu-title">About</span>
                             </a>
@@ -213,13 +213,13 @@
                             </a>
                         </li> --}}
                 </ul>
-                <div class="site-menubar-section mt-20">
+               <!-- <div class="site-menubar-section mt-20">
                     <div class="d-flex flex-row flex-wrap align-items-center justify-content-around">
                     <a href="#" class="btn btn-dark btn-outline btn-icon"><i class="icon-twitter"></i></a>
                     <a href="#" class="btn btn-dark btn-outline btn-icon"><i class="icon-facebook"></i></a>
                     <a href="#" class="btn btn-dark btn-outline btn-icon"><i class="icon-discord"></i></a>
                     </div>
-                </div>
+                </div>-->
                 <!--<div class="site-menubar-footer">
                     <a href="#" class="fold-show" id="dark-day">
                         <span class="icon wb-eye" aria-hidden="true"></span>

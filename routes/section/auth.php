@@ -12,12 +12,20 @@ Route::get('/discord_oauth', 'DiscordOAuthController@connect');
 Route::get('/logout', function () {
     // Illuminate\Support\Facades\Session::flush();
     auth()->logout();
-    return redirect('/');
+    return redirect()->to('https://beastlybot.com');
 })->name('logout');
 
 Route::get('/dashboard', function() {
-    $stripe_helper = auth()->user()->getStripeHelper();
-    $discord_helper = new \App\DiscordHelper(auth()->user());
+    if(Auth::check()){
+        $stripe_helper = auth()->user()->getStripeHelper();
+        $discord_helper = new \App\DiscordHelper(auth()->user());
 
-    return view('dashboard')->with('stripe_helper', $stripe_helper)->with('discord_helper', $discord_helper);
+        return view('dashboard')->with('stripe_helper', $stripe_helper)->with('discord_helper', $discord_helper);
+    }else{
+        return view('discord_login');
+    }
+});
+
+Route::get('/', function() {
+    return redirect()->to('https://beastlybot.com');
 });

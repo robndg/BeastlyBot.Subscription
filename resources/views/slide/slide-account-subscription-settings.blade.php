@@ -17,7 +17,7 @@
             <div>
                  <div class="dropdown">
                     @if($sub->status == 'active')
-                        @if($sub->cancel_at_period_end)
+                        @if($sub->cancel_at_period_end && $sub->status <= 3)
                         <button type="button" class="btn w-160 btn-info btn-sm active" id="moreDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Cancel Period End
                         </button>
@@ -29,12 +29,12 @@
                             <i class="icon wb-payment" aria-hidden="true"></i> Subscribed
                         </button>
                         <div class="dropdown-menu" aria-labelledby="moreDropdown" role="menu" x-placement="bottom-start">
-                            <a class="dropdown-item" href="javascript:void(0)" onclick="requestRefundSubscription();" role="menuitem">{{--v1 @if(Refund::where('sub_id', $sub->id)->exists()) @if(Refund::where('sub_id', $sub->id)->where('issued','=','1')->exists()) Refunded @elseif(Refund::where('sub_id', $sub->id)->where('issued','=','0')->exists()) @if(Refund::where('sub_id', $sub->id)->where('refund_terms','=','100')->exists()) Success @else Denied @endif @else Request Submitted @endif @else Request Refund @endif --}}</a>
-                            {{--v1 @if(Refund::where('sub_id', $sub->id)->where('decision')->exists())
-                            <div class="dropdown-divider"></div>
-                            <a class="dropdown-item disabled" href="javascript:void(0)" role="menuitem">{{ $sub->metadata['refund_days'] }} days to request from {{ Carbon::createFromTimestamp($sub->start_date)->toDateTimeString()  }}</a>
-                            @endif --}}
-                        </div>{{-- Carbon::createFromTimestamp((Carbon::now()->toDateTimeString()) - (Carbon::create($sub->start_date)->toDateTimeString()))->toDateTimeString() --}}
+                            @if($days_passed <= $subscription->refund_days && ($subscription->refund_enabled != 1))
+                                <a class="dropdown-item disabled" href="javascript:void(0)" onclick="cancelSubscription();">End Subscription</a>
+                            @else
+                                <a class="dropdown-item disabled" href="javascript:void(0)" onclick="requestRefundSubscription();">Refund ({{ $subscription->refund_days - $days_passed }} days remaining)</a>
+                            @endif
+                        </div>
                         @endif
                     @else
                     <button type="button" class="btn w-160 btn-primary btn-sm active" aria-expanded="false">
@@ -95,7 +95,7 @@
       </div>
 
     </div>
-        @if($sub->status == 'active')
+       {{-- @if($sub->status == 'active')
         <div class="put-bottom">
             <div class="row">
                 <div class="col-md-12">
@@ -107,7 +107,7 @@
                 </div>
             </div>
         </div>
-        @endif
+        @endif --}}
 
 </div>
 

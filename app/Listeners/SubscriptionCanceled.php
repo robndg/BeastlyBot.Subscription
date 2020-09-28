@@ -7,9 +7,12 @@ use Spatie\WebhookClient\Models\WebhookCall;
 use \App\EndedSubscription;
 use \App\StripeConnect;
 use \App\DiscordOAuth;
+use \App\DiscordStore;
+use \App\Stat;
 use RestCord\DiscordClient;
 use Illuminate\Support\Facades\Cache;
 use \App\Subscription;
+use Illuminate\Support\Facades\Log;
 
 class SubscriptionCanceled implements ShouldQueue
 {
@@ -61,15 +64,28 @@ class SubscriptionCanceled implements ShouldQueue
                     $discord_helper->sendMessage('Your subscription to the ' . $role->name . ' role in the ' . $guild->name . ' server was canceled. I removed the role from your account.');
 
                     try {
-                        $subscription = Subscription::where($subscription_id)->first();
+                        $subscription = Subscription::where('id', $subscription_id)->first();
                         if($subscription->status <= 3){
-                            $subscription->status = 2;
+                            $subscription->status = 4;
                             $subscription->save();
+
+                            $discord_store = DiscordStore::where("guild_id", $guild_id)->first();
+                        
+                            $stats = Stat::where('type', 1)->where('type_id', $discord_store->id)->first();
+                            $subscribers_active = $stats->data['subscribers']['active'];
+                            $subscribers_total = $stats->data['subscribers']['total'];
+
+                            $stats_data = $stats->data;
+                            $stats_data['subscribers'] = ['active' => $subscribers_active - 1, 'total' => $subscribers_total];
+                            $stats->data = $stats_data;
+                            $stats->save();
+
+
                         }
                     }
                     catch (ApiErrorException $e) {
                         if (env('APP_DEBUG')) Log::error($e);
-                        Log::info("Sub canceled (2) did not save in DB: ", $subscription_id);
+                        Log::info("Sub canceled (5) did not save in DB: ", $subscription_id);
                         // Failed to Transfer
                     }
 
@@ -80,6 +96,8 @@ class SubscriptionCanceled implements ShouldQueue
                     $discord_error->role_id = $role_id;
                     $discord_error->user_id = $customer_id;
                     $discord_error->message = $e->getMessage();
+
+                    if (env('APP_DEBUG')) Log::error($e);
                 }
             }
         }

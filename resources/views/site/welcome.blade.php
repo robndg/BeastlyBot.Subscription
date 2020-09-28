@@ -45,9 +45,9 @@
                         </div>
                         <div class="banner-action wow fadeInUp" data-wow-delay=".3s" style="visibility:hidden">
                             @auth
-                                <a href="/dashboard" class="btn-common radius-50 btn-pink mr-20">Dashboard</a>
+                                <a href="https://discord.beastlybot.com/dashboard" class="btn-common radius-50 btn-pink mr-20">Dashboard</a>
                             @else
-                                <a href="{{ env('DISCORD_OAUTH_URL') }}" class="btn-common radius-50 btn-pink mr-20">Create Shop</a>
+                                <a href="https://discord.beastlybot.com/dashboard" class="btn-common radius-50 btn-pink mr-20">Create Shop</a>
                             @endauth
                         </div>
                     </div>
@@ -109,7 +109,7 @@
                                         <a href="/dashboard"
                                            class="btn-common mt-sm-25">Go to dashboard</a>
                                     @else
-                                        <a href="{{ env('DISCORD_OAUTH_URL') }}"
+                                        <a href="https://discord.beastlybot.com/dashboard"
                                            class="btn-common mt-sm-25">Login with Discord</a>
                                     @endauth
                                 </div>
@@ -177,7 +177,7 @@
                                 @auth
                                 <a href="/dashboard" class="btn-common">Go to Dashboard</a>
                                 @else
-                                <a href="{{ env('DISCORD_OAUTH_URL') }}" class="btn-common">Get Started</a>
+                                <a href="https://discord.beastlybot.com/dashboard" class="btn-common">Get Started</a>
                                 @endauth
                             </div>
                         </div>

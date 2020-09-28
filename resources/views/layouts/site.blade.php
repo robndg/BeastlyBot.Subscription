@@ -194,16 +194,16 @@
                                 </ul>
                             </nav>
                         </div>
-                        <button class="btn radius-50 help-line style-2">
-                            @auth
-                            <a href="/dashboard">
+                        <button type="button" class="btn radius-50 help-line style-2" onclick="window.location.href = 'https\:\/\/discord.beastlybot.com\/dashboard' ">
+                            {{--@auth--}}
+                            <a href="https://discord.beastlybot.com/dashboard">
                                 <i class="icon-discord"></i>
                                 Dash<span class="ds-sm-none">board</span></a>
-                            @else
+                            {{--@else
                                 <a href="{{ env('DISCORD_OAUTH_URL') }}">
                                 <i class="icon-discord"></i> Login<span
                                         class="ds-sm-none"> with Discord</span></a>
-                            @endauth
+                            @endauth--}}
                         </button>
                         <!--<div class="site-lang in-right">
                             <ul>

@@ -85,20 +85,6 @@ class DiscordRoleProduct extends Product
             $store->live = false;
             $store->save();
         }
-        
-        /*$discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
-        $discord_helper = new DiscordHelper(auth()->user());
-
-        foreach($discord_client->guild->getGuildMember(['guild.id' => intval($this->guild_id), 'user.id' => 590725202489638913])->roles as $role_id) {
-            foreach($discord_helper->getRoles($this->guild_id) as $role) {
-                if($role->managed && $role->id == $role_id) {
-                  
-                    $result = $discord_client->guild->modifyGuildRolePositions(
-                    [['guild.id' => intval($this->guild_id)], 'id' => intval($role_id), 'position' => 1]);
-                    \Log::info($result);
-                }
-            }
-        }*/
 
         return response()->json(['success' => true, 'msg' => 'Product created!', 'active' => true]);
     }

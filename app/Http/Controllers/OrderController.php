@@ -16,6 +16,7 @@ use Stripe\Exception\InvalidRequestException;
 use App\User;
 use App\DiscordStore;
 use App\StripeConnect;
+use App\Ban;
 
 class OrderController extends Controller {
 
@@ -42,6 +43,11 @@ class OrderController extends Controller {
 
             if(auth()->user()->getStripeHelper()->isSubscribedToProduct($product->getStripeProduct()->id)) {
                 throw new ProductMsgException('You are already subscribed to that product.');
+            }
+
+            $discord_store = DiscordStore::where('guild_id', $request['guild_id'])->first();
+            if(Ban::where('user_id', auth()->user()->id)->where('active', 1)->where('type', 1)->where('discord_store_id', $discord_store->id)->exists() && auth()->user()->id != $discord_store->user_id){
+                throw new ProductMsgException('You are banned from purchasing products from this store.');
             }
 
             $product->checkoutValidate();

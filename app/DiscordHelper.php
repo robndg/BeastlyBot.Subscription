@@ -196,6 +196,28 @@ class DiscordHelper
         $discord_client->channel->createMessage(['channel.id' => $channel->id, 'content' => $message]);
     }
 
+    public function isBotPositioned(int $guild_id) {
+        $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
+
+        foreach($discord_client->guild->getGuildMember(['guild.id' => intval($guild_id), 'user.id' => 590725202489638913])->roles as $role_id) {
+            foreach($this->getRoles($guild_id) as $role) {
+                if($role->managed && $role->id == $role_id) {
+                    $result = $discord_client->guild->modifyGuildRolePositions(
+                    [['guild.id' => $guild_id], 'id' => intval($role_id)]);
+                    foreach($result as $role_data) {
+                        if($role_data->id == $role->id) {
+                            if($role_data->position !== sizeof($result) - 1) {
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
     private function getDiscordData() {
         $provider = $this->getDiscordProvider();
         $authToken = $this->getDiscordAccessToken();
