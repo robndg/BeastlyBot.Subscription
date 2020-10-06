@@ -51,7 +51,7 @@
                 @endif
             </a>
             <div class="font-size-50 blue-grey-100 mb--5" id="guild_name">{{ $guild->name }}</div>
-            <div class="font-size-16 blue-grey-100 w-400 mx-auto">{{ Str::limit(App\DiscordStore::where('guild_id', $guild_id)->first()->description, 100) }}</div>
+            <div class="font-size-16 blue-grey-100 w-400 mx-auto hidden-sm-down">{{ Str::limit(App\DiscordStore::where('guild_id', $guild_id)->first()->description, 100) }}</div>
             <span><button type="button" class="btn btn-sm btn-round btn-dark btn-icon mb-10" id="btn_copy-url" data-toggle="tooltip" data-original-title="Copy Link" data-placement="right"><i class="wb-link"></i></button></span>
         </div>
     </div>

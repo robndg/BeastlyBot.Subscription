@@ -33,22 +33,15 @@ class ProductController extends Controller {
                 break;
             }
 
-            // TODO: Handle create and update as default case
-            // find the action to execute
             \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
-            switch($request['action']) {
-                case "create":
+            if($request['action'] == 'delete') {
+                return $product->delete($request);
+            } else {
+                if($product->getStripeProduct() == null) {
                     return $product->create($request);
-                case "delete":
-                    return $product->delete($request);
-                case "update":
+                } else {
                     return $product->update($request);
-                default:
-                    if($product->getStripeProduct() == null) {
-                        return $product->create($request);
-                    } else {
-                        return $product->update($request);
-                    }
+                }
             }
         } catch(\Exception $e) {
             \Log::info($e);
@@ -74,22 +67,18 @@ class ProductController extends Controller {
                     throw new ProductMsgException('Could not find product by that type.');
                 break;
             }
-            // find the action to execute
+
             \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
-            switch($request['action']) {
-                case "create":
+            if($request['action'] == 'delete') {
+                return $plan->delete($request);
+            } else {
+                if($plan->getProduct()->getStripeProduct() == null) {
+                    $plan->getProduct()->create($request);
+                }
+                if($plan->getStripePlan() == null) {
                     return $plan->create($request);
-                case "delete":
-                    return $plan->delete($request);
-                case "update":
+                } else {
                     return $plan->update($request);
-                default:
-                {
-                    if($plan->getStripePlan() == null) {
-                        return $plan->create($request);
-                    } else {
-                        return $plan->update($request);
-                    }
                 }
             }
         } catch(ProductMsgException $e) {
@@ -128,10 +117,10 @@ class ProductController extends Controller {
         
         $store = DiscordStore::where('guild_id', $guild_id)->first();
 
-        if(! ProductRole::where('discord_store_id', $store->id)->exists()) {
+        if(! ProductRole::where('discord_store_id', $store->id)->where('role_id', $role_id)->exists()) {
             $product_role = new ProductRole(['discord_store_id' => $store->id, 'role_id' => $role_id]);
         } else {
-            $product_role = ProductRole::where('discord_store_id', $store->id)->first();
+            $product_role = ProductRole::where('discord_store_id', $store->id)->where('role_id', $role_id)->first();
         }
 
         $product_role->description = $description;
@@ -183,7 +172,7 @@ class ProductController extends Controller {
 
         $banned = $discord_helper->isUserBanned($discord_store->guild_id, \App\DiscordOAuth::where('user_id', auth()->user()->id)->first()->discord_id);
 
-        return view('subscribe')->with('guild_id', $discord_store->guild_id)->with('descriptions', 'asd')->with('owner_array', $owner_array)->with('shop_url', $discord_store->url)->with('roles', $roles)->with('active', $active)->with('guild', $discord_helper->getGuild($discord_store->guild_id))->with('banned', $banned)->with('descriptions', $descriptions);
+        return view('subscribe')->with('guild_id', $discord_store->guild_id)->with('owner_array', $owner_array)->with('shop_url', $discord_store->url)->with('roles', $roles)->with('active', $active)->with('guild', $discord_helper->getGuild($discord_store->guild_id))->with('banned', $banned)->with('descriptions', $descriptions);
     }
 
 }

@@ -112,6 +112,6 @@ Route::group(['middleware' => ['auth', 'web']], function () {
         return response()->json(['success' => true]);
     });
 
-    Route::get('/get-servers-and-stores', 'UserController@getServersandStores');
+    Route::get('/bknd00/get-servers-and-stores', 'UserController@getServersandStores');
 
 });

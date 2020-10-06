@@ -8,7 +8,7 @@
 								<h3>Start your Discord Shop</h3>
 							</div>
 							<div class="wow fadeInUp" data-wow-delay=".4s" style="visibility:hidden">
-								<p class="mt-25">More Traffic, More Exposure, More Members, with Beastly Bot</p>
+								<p class="mt-25">Auto Role | Subscriptions | Dashboard</p>
 							</div>
 						</div>
                         @auth

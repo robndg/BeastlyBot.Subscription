@@ -5,7 +5,7 @@
                         <div class="card border-0 vertical-align">
                           <div class="vertical-align-middle font-size-16">
                             <div class="mb-10 d-none">STEP 1</div>
-                            <i class="wb-check font-size-24 mb-10 @if(auth()->user()->stripe_express_id != null) green-600 @endif"></i>
+                            <i class="wb-check font-size-24 mb-10 green-600"></i>
                             <div>
                               <span class="font-size-12">Stripe</span>
                             </div>

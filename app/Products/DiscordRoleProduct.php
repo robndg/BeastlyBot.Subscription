@@ -12,8 +12,8 @@ use App\DiscordHelper;
 class DiscordRoleProduct extends Product
 {
 
-    private $guild_id, $role_id, $billing_cycle;
-    private $discord_store;
+    public $guild_id, $role_id, $billing_cycle;
+    public $discord_store;
 
     public function __construct($guild_id, $role_id, $billing_cycle)
     {
@@ -70,27 +70,30 @@ class DiscordRoleProduct extends Product
     }
 
     public function create(Request $request) {
-        \Stripe\Product::create([
-            'name' => $request['name'],
-            'id' => $this->getStripeID(),
-            'type' => 'service',
-            'metadata' => ['user_id' => auth()->user()->id],
-        ]);
+        $this->createProduct();
 
-        if(! DiscordStore::where('guild_id', $this->guild_id)->exists()) {
-            $store = new DiscordStore();
-            $store->guild_id = $this->guild_id;
-            $store->user_id = auth()->user()->id;
-            $store->url = explode('_', $this->getStripeID())[1];
-            $store->live = false;
-            $store->save();
+        if(! \App\DiscordStore::where('guild_id', $this->guild_id)->exists()) {
+            $this->product->discord_store = DiscordStore::create([
+                'guild_id' => $this->guild_id,
+                'url' => $this->guild_id,
+                'user_id' => auth()->user()->id
+            ]);
         }
-
         return response()->json(['success' => true, 'msg' => 'Product created!', 'active' => true]);
     }
 
     public function update(Request $request) {
+        $this->createProduct();
+
         try {
+            if(! \App\DiscordStore::where('guild_id', $this->guild_id)->exists()) {
+                $this->product->discord_store = DiscordStore::create([
+                    'guild_id' => $this->guild_id,
+                    'url' => $this->guild_id,
+                    'user_id' => auth()->user()->id
+                ]);
+            }
+
             if($this->getStripeProduct() !== null) {
                 if($this->getStripeProduct()['active']) {
                     \Stripe\Product::update($this->getStripeID(), ['active' => false]);
@@ -126,12 +129,34 @@ class DiscordRoleProduct extends Product
 
     public function checkoutCancel()
     {
-        return redirect('/shop/' . $this->guild_id);
+        $discord_store = DiscordStore::where('guild_id', $this->guild_id)->first();
+        return redirect('/shop/' . $discord_store->url);
     }
 
     public function getStripePlan() {
         \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
         return \Stripe\Plan::retrieve($this->getStripeID() . '_' . $this->billing_cycle . '_r');
+    }
+
+    public function createProduct() {
+        if($this->getStripeProduct() == null) {
+            \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
+            try {
+                $this->stripe_product_obj = \Stripe\Product::retrieve($this->getStripeID());
+                Cache::put('product_' . $this->getStripeID(), $this->stripe_product_obj, 60 * 10);
+            } catch (\Exception $e) {
+            }
+
+            if($this->stripe_product_obj == null) {
+                $this->stripe_product_obj = \Stripe\Product::create([
+                    'name' => $request['name'],
+                    'id' => $this->getStripeID(),
+                    'type' => 'service',
+                    'metadata' => ['user_id' => auth()->user()->id],
+                ]);
+                Cache::put('product_' . $this->getStripeID(), $this->stripe_product_obj, 60 * 10);
+            }
+        }
     }
 
 }

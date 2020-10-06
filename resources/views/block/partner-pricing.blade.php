@@ -38,7 +38,7 @@
                             <div class="mt-20 mt-md-20 mt-lg-40">
                                 <div class="row">
                                     <div class="col-12 col-md-4 col-lg-4 order-2 order-md-1">
-                                        <ul class="text-center mt-20 mt-md-0 text-md-right list-group font-weight-100 mt-lg-25 mb-0">
+                                        <ul class="text-center mt-20 mt-md-0 text-md-right list-group font-weight-100 mt-lg-5 mb-0">
                                             <li class="list-group-item py-0 font-size-12 text-uppercase font-weight-400 visible-sm-down hidden-md-up text-md-right pt-sm-20">Features</li>
                                             <li class="list-group-item py-1 text-md-right">Public Stores</li>
                                             <li class="list-group-item py-1 text-md-right">Accept Payments</li>
@@ -51,14 +51,15 @@
                                             </a>-->
                                             <!--<div class="font-size-16 font-weight-200 mt-1 mr-20"><span class="font-weight-400"><sup><del>$25/mo</del></sup></span> <span class="font-size-18 grey-100 font-weight-600 animation-fade animation-delay-400">$0 <span class="font-weight-200">try for free!</span></span></div>
                                             <hr class="mb-10 mt-1">-->
-                                            <a href="javascript:buyPlan(true);"><button onclick="buyPlan(true);" type="button" class="btn btn-block btn-success font-size-12"><h2 class="my-1">Live</h2>(first month free, then $25/m)</button></a>
-                                            <p class="my-2">or</p>
-                                            <a href="javascript:buyPlan(false);"><button onclick="buyPlan(false);" type="button" class="btn btn-block btn-success btn-outline font-size-12"><h2 class="my-1">Live Yearly</h2>(5 months free, 40% off)</button></a>
+                                            <a href="javascript:buyPlan(true);"><button onclick="buyPlan(true);" type="button" class="btn btn-block btn-success font-size-14"><h2 class="my-1 text-white">Live</h2>Special Free 30-day Trial<!--<br><small class="text-white">$0 today</small>--><!--(first month free, then $25/m) Live Special Free Promo--></button></a>
+                                            {{--<p class="my-2">or</p>--}}
+                                            {{--<small><a href="#" onclick="buyPlan(false);">Live Yearly (5 months free)</a></small>--}}
+                                            <a href="javascript:buyPlan(false);"><button onclick="buyPlan(false);" type="button" class="btn btn-block {{--btn-success btn-outline--}} btn-link font-size-14 green-300 mt-2">or {{--<h2 class="my-1">Live Yearly</h2>--}}Live Yearly (5 months free)</button></a>
                                         </div>
 
                                     </div>
                                     <div class="col-12 col-md-4 col-lg-4 order-3 order-md-3">
-                                        <ul class="text-center mt-md-20 mt-md-0 text-md-left list-group font-weight-100 mt-lg-25">
+                                        <ul class="text-center mt-md-20 mt-md-0 text-md-left list-group font-weight-100 mt-lg-5">
                                             <li class="list-group-item py-1 text-md-left">Daily Payout</li>
                                             <li class="list-group-item py-1 text-md-left">24x7 Support Chat</li>
                                         </ul>
@@ -159,6 +160,8 @@
             data: {
                 'product_type': 'express',
                 'billing_cycle': monthly ? 1 : 12,
+               
+             {{--   'coupon_code': monthly ? 'promo_1HZ3vJHTMWe6sDFbuyfevPls' : '', --}}
                 _token: '{{ csrf_token() }}'
             },
         }).done(function (msg) {

@@ -36,6 +36,10 @@
                         <!--<div class="wow fadeInUp" data-wow-delay=".3s">
                             <h1><span>Discord</span></h1>
                         </div>-->
+
+                       <!-- <div class="alert dark alert-primary" role="alert">
+                                <b>You've got a special offer:</b> Free 30-day trial automatically applied when your store goes live, start earning today!
+                            </div>-->
                         <div class="wow fadeInUp" data-wow-delay=".1s" style="visibility:hidden">
                             <h1 class="mb-10"><span class="text-white">Beastly Bot</span></h1>
                         </div>
@@ -47,7 +51,7 @@
                             @auth
                                 <a href="https://discord.beastlybot.com/dashboard" class="btn-common radius-50 btn-pink mr-20">Dashboard</a>
                             @else
-                                <a href="https://discord.beastlybot.com/dashboard" class="btn-common radius-50 btn-pink mr-20">Create Shop</a>
+                                <a href="https://discord.beastlybot.com/dashboard?start" class="btn-common radius-50 btn-pink mr-20">Create Shop</a>
                             @endauth
                         </div>
                     </div>
@@ -99,8 +103,8 @@
                         <div class="row height-180 align-items-center">
                             <div class="col-lg-9">
                                 <div class="cta-text">
-                                    <h3>Start your Discord Shop!</h3>
-                                    <p>More Traffic, More Exposure, More Members, with Beastly Bot</p>
+                                    <h3>Earn from your server!</h3>
+                                    <p>Create your discord shop and monetize roles as monthly subscriptions.</p>
                                 </div>
                             </div>
                             <div class="col-lg-3">
@@ -109,8 +113,8 @@
                                         <a href="/dashboard"
                                            class="btn-common mt-sm-25">Go to dashboard</a>
                                     @else
-                                        <a href="https://discord.beastlybot.com/dashboard"
-                                           class="btn-common mt-sm-25">Login with Discord</a>
+                                        <a href="https://discord.beastlybot.com/dashboard?start"
+                                           class="btn-common mt-sm-25">Invite Me Now</a>
                                     @endauth
                                 </div>
                             </div>
@@ -137,8 +141,8 @@
                             <div class="service-single style-2 wow fadeInUp" data-wow-delay=".3s">
                                 <i class="icon-discord"></i>
                                 <div class="service-single-brief">
-                                    <h4><span>Mr. Beastly</span></h4>
-                                    <p>The Beastly Bot is smart. It does it all. Running on your own custom shop URL beastly.store!</p>
+                                    <h4><span>Best Dashboard</span></h4>
+                                    <p>Super clean and easy store dashboard. With your own custom shop URL beastly.store!</p>
                                 </div>
                             </div>
                         </div>
@@ -147,7 +151,7 @@
                                 <i class="icon-gift"></i>
                                 <div class="service-single-brief">
                                     <h4><span>Daily Payout</span></h4>
-                                    <p>You can track earnings live, with payments sent to your Stripe continuously throughout the day.</p>
+                                    <p>You can track earnings live, with payments continuously throughout the day.</p>
                                 </div>
                             </div>
                         </div>
@@ -162,22 +166,22 @@
                         <div class="pricing-table-single wow fadeIn" data-wow-delay=".3s">
                             <div class="pricing-table-head">
                                 <!--<h3>Your Store is</h3>-->
-                                <p>5% Transaction Fee</p>
+                                <p>Start selling!</p>
                                 <h4><sup>$</sup>0<span> / first month</span></h4>
                                 <!--<h4 class="pt-20">FREE</h4>-->
                             </div>
                             <div class="pricing-table-body">
                                 <ul class="list-sign">
                                     <li>Personalized Store Front</li>
-                                    <li>Unlimited Subscriptions</li>
+                                    <li>Best Web Dashboard</li>
                                     <li>Daily Reports & Payout</li>
-                                    <li>Automatic User Management</li>
+                                    <li>Auto Role Management</li>
                                     <li>Help & Support</li>
                                 </ul>
                                 @auth
-                                <a href="/dashboard" class="btn-common">Go to Dashboard</a>
+                                <a href="/dashboard?start" class="btn-common">Go to Dashboard</a>
                                 @else
-                                <a href="https://discord.beastlybot.com/dashboard" class="btn-common">Get Started</a>
+                                <a href="https://discord.beastlybot.com/dashboard?start" class="btn-common">Get Started</a>
                                 @endauth
                             </div>
                         </div>
@@ -205,7 +209,7 @@
                     <div class="service-single style-3 style-5 mt-85 mt-sm-45 wow zoomIn" data-wow-delay=".3s">
                         <i class="icon-discord"></i>
                         <div class="service-single-brief">
-                            <h4><span>Beastly Bot</span></h4>
+                            <h4><span>Auto Role</span></h4>
                             <p>The Beastly Bot is smart. Managing your servers subscribers, adding a role and
                             removing when the subscription is over.</p>
                         </div>

@@ -3,14 +3,25 @@
 namespace App\Products\Plans;
 
 use Illuminate\Support\Facades\Cache;
+//use App\Products\ProductMsgException;
 
 class DiscordPlan extends Plan
 {
 
     public function update(\Illuminate\Http\Request $request)
     {
+        $this->product->createProduct();
+
         $stripe = new \Stripe\StripeClient(env('STRIPE_CLIENT_SECRET'));
         
+        if(! \App\DiscordStore::where('guild_id', $this->product->guild_id)->exists()) {
+            $this->product->discord_store = DiscordStore::create([
+                'guild_id' => $this->product->guild_id,
+                'url' => $this->product->guild_id,
+                'user_id' => auth()->user()->id
+            ]);
+        }
+
         $same_price = false;
 
         if($this->getStripePlan() !== null) {
@@ -21,6 +32,11 @@ class DiscordPlan extends Plan
             } else {
                 $same_price = true;
             }
+        }
+
+        if($request['price'] < 1){
+            return response()->json(['success' => false, 'msg' => 'Price too low.']);
+            //throw new ProductMsgException('Price too low. Must be at least $1.00 USD');
         }
 
         if($request['price'] > 0 && !$same_price) {
@@ -45,8 +61,18 @@ class DiscordPlan extends Plan
 
     public function create(\Illuminate\Http\Request $request)
     {
+        $this->product->createProduct();
+
         try {
             parent::create($request);
+            if(! \App\DiscordStore::where('guild_id', $this->product->guild_id)->exists()) {
+                $this->product->discord_store = DiscordStore::create([
+                    'guild_id' => $this->product->guild_id,
+                    'url' => $this->product->guild_id,
+                    'user_id' => auth()->user()->id
+                ]);
+            }
+
             $key = 'price_' . $this->product->getStripeID() . '_' . $this->interval_cycle;
             Cache::put($key, $request['price'], 60 * 5);
         } catch(\Exception $e) {

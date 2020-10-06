@@ -3,7 +3,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0">
 
 @if (Request::path() != '/subscribe')
-<meta name="description" content="The beastly subscription bot for communities.">
+<!--<meta name="description" content="The beastly subscription bot for communities.">-->
 <meta name="author" content="beastlybot.com">
 @endif
 <!-- Stylesheets -->

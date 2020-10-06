@@ -61,6 +61,24 @@
 							</div>
 							<!--faq-single-->
 							<div class="card single-faq">
+								<div class="card-header faq-heading" id="headingOneTwo">
+									<h5 class="mb-0">
+										<a href="#collapseOneTwo" class="btn btn-link" data-toggle="collapse" data-target="#collapseOneTwo" aria-expanded="false" aria-controls="collapseOneTwo">
+										What are the fees to be a shop owner?
+											<i class="fa fa-plus pull-right" aria-hidden="true"></i>
+											<i class="fa fa-minus pull-right" aria-hidden="true"></i>
+										</a>
+									</h5>
+								</div>
+								<div id="collapseOneTwo" class="collapse" aria-labelledby="headingOneTwo" data-parent="#accordion">
+									<div class="card-body">
+								
+										<p>After your 30-day free trial keeping a store Live is $25/month which you should easily make from us. Fees are as low as 5% per transaction, starting at 15% until 10 active subscribers. We reward your efforts in being a fantastic business owner!</p>
+									</div>
+								</div>
+							</div>
+							<!--faq-single-->
+							<div class="card single-faq">
 								<div class="card-header faq-heading" id="headingTwo">
 									<h5 class="mb-0">
 										<a href="#collapseTwo" class="btn btn-link" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
@@ -81,7 +99,7 @@
 								<div class="card-header faq-heading" id="headingThree">
 									<h5 class="mb-0">
 										<a href="#collapseThree" class="btn btn-link" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-										Can I request a refund if anything goes wrong?
+										Can Subscibers request a refund if anything goes wrong?
 											<i class="fa fa-plus pull-right" aria-hidden="true"></i>
 											<i class="fa fa-minus pull-right" aria-hidden="true"></i>
 										</a>
@@ -89,7 +107,7 @@
 								</div>
 								<div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
 									<div class="card-body">
-										<p>We allow all users to create a refund request at anytime! Your server owner will be notified to continue.</p>
+										<p>We allow server store owners to setup refund policies and subscribers can easily request or cancel their subscription. Reach out to us with any questions.</p>
 									</div>
 								</div>
 							</div>

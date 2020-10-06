@@ -234,7 +234,7 @@ class UserController extends Controller {
 
             $subscription = Subscription::where('id', $sub_id)->first();
 
-            if(auth()->user()->id != $subscription->user_id || auth()->user->admin != 1) {
+            if(auth()->user()->id != $subscription->user_id || auth()->user()->admin != 1) {
                 return response()->json(['success' => false, 'msg' => 'This is not your subscription. Contact support']);
             }else if($subscription->status == 3){
                 return response()->json(['success' => false, 'msg' => 'Refund has already been requested.']);
@@ -250,11 +250,11 @@ class UserController extends Controller {
 
             $subscription->status = 3;
             $subscription->save();
-
+            Log::info("here0");
             try {
                         $product = \Stripe\Product::retrieve($sub->items->data[0]->plan->product);
                         if (!$product->active) throw new InvalidRequestException();
-
+                        Log::info("here1");
                         //if(Refund::where('sub_id', $sub_id)->exists()) return response()->json(['success' => false, 'msg' => 'You have already submitted a refund request.']);
                         if(Refund::where('sub_id', $sub_id)->exists()){
                             $refund = Refund::where('sub_id', $sub_id)->first();
@@ -447,6 +447,7 @@ class UserController extends Controller {
 
         } catch (\Exception $e) {
             if (env('APP_DEBUG')) Log::error($e);
+            Log::error($e);
             return response()->json(['success' => false]);
         }
 

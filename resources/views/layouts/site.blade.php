@@ -230,8 +230,8 @@
                                     </li>
                                     <li><a href="/about">About</a>
                                     </li>
-                                    <li><a href="/blog">Blog</a>
-                                    </li>
+                                    {{--<li><a href="/blog">Blog</a>
+                                    </li>--}}
                                     <li><a href="#">Help</a>
                                         <ul>
                                             <li><a href="/faq">FAQs</a></li>
@@ -240,14 +240,14 @@
                                     </li>
                                 </ul>
                             </div>
-                            <div id="panel-lang">
+                            <!--<div id="panel-lang">
                                 <ul>
                                     <li><a href="#">French</a></li>
                                     <li><a href="#">English</a></li>
                                     <li><a href="#">German</a></li>
                                     <li><a href="#">Vietnam</a></li>
                                 </ul>
-                            </div>
+                            </div>-->
                         </nav>
                     </div>
                 </div>

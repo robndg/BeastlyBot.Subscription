@@ -27,7 +27,7 @@ class OrderController extends Controller {
     public function setup(Request $request) {
         if (! auth()->user()->hasStripeAccount()) 
             return response()->json(['success' => false, 'msg' => 'You do not have a linked stripe account.']);
-
+        $express_promo = NULL;
         try {
             switch ($request['product_type']) {
                 case "discord":
@@ -35,19 +35,22 @@ class OrderController extends Controller {
                 break;
                 case "express":
                     $product = new ExpressProduct($request['billing_cycle'] == '1' ? env('LIVE_MONTHLY_PLAN_ID') : env('LIVE_YEARLY_PLAN_ID'));
+                    $express_promo = ($request['billing_cycle'] == '1' ? 'wRSDRBPq' : 'ategNaIz');
                 break;
                 default:
                     throw new ProductMsgException('Could not find product by that type.');
                 break;
             }
-
+         
             if(auth()->user()->getStripeHelper()->isSubscribedToProduct($product->getStripeProduct()->id)) {
                 throw new ProductMsgException('You are already subscribed to that product.');
             }
-
-            $discord_store = DiscordStore::where('guild_id', $request['guild_id'])->first();
-            if(Ban::where('user_id', auth()->user()->id)->where('active', 1)->where('type', 1)->where('discord_store_id', $discord_store->id)->exists() && auth()->user()->id != $discord_store->user_id){
-                throw new ProductMsgException('You are banned from purchasing products from this store.');
+            if($request['guild_id'] != NULL){
+                $discord_store = DiscordStore::where('guild_id', $request['guild_id'])->first();
+                
+                if(Ban::where('user_id', auth()->user()->id)->where('active', 1)->where('type', 1)->where('discord_store_id', $discord_store->id)->exists() && auth()->user()->id != $discord_store->user_id){
+                    throw new ProductMsgException('You are banned from purchasing products from this store.');
+                }
             }
 
             $product->checkoutValidate();
@@ -80,7 +83,10 @@ class OrderController extends Controller {
                 $checkout_data['subscription_data']['coupon'] = $store->user_id . $request['coupon_code'];
             }
         }
-
+        if($express_promo != NULL){
+            $checkout_data['subscription_data']['coupon'] = $express_promo;
+        }
+        
         $stripe = new \Stripe\StripeClient(env('STRIPE_CLIENT_SECRET'));
         $session = $stripe->checkout->sessions->create($checkout_data);
         

@@ -43,8 +43,8 @@
 					</div>
 					<div class="col-lg-6">
 						<ul class="list-none list-sign wow fadeIn" data-wow-delay=".4s">
-							<li>Endorsed by </li>
-							<li>Used by trading, gaming and blank groups</li>
+							<!--<li>Endorsed by </li>-->
+							<li>Used by trading, gaming and private groups</li>
 							<li>Much More than an Bot</li>
 							<li>Service Minded - Results Driven</li>
 							<li>A Responsible, Happy Company</li>
@@ -89,7 +89,7 @@
 
 		@include('site/blocks/steps')
 
-		<!--testimonial start-->
+		{{--<!--testimonial start-->
 		<div class="testimonial-area pt-95 pt-sm-77">
 			<div class="container">
 				<div class="row">
@@ -155,7 +155,7 @@
 				</div>
 			</div>
 		</div>
-		<!--testimonial ends-->
+		<!--testimonial ends-->--}}
 
 				
 		<!--call-to-action start-->
@@ -176,7 +176,7 @@
 								<p class="mt-20">We are always looking to hire the right talent to <br/> help us grow</p>
 							</div>
 							<div class="wow fadeInUp" data-wow-delay=".5s">
-								<a href="/help/contact" class="btn-common btn-pink radius-50 mt-35">Apply Now</a>
+								<a href="https://discord.beastlybot.com/dashboard" class="btn-common btn-pink radius-50 mt-35">Apply Now</a>
 							</div>
 						</div>
 					</div>

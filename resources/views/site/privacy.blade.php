@@ -72,7 +72,7 @@
         </ul>
         <h4 id="_informationwecollectfromothersources_"><em>Information We Collect from Other Sources</em></h4>
         <ul>
-        <li><strong>Discord Profile:</strong> When you open <a href="https://discord.com/BeastlyBot">@BeastlyBot</a> (or one of our user`s membership bots for the first time) or log in using Discord Login Widget on our website, we collect information about your Discord profile that we receive from Discord. This includes your Discord user ID and may include your first and last name, username and language code. </li>
+        <li><strong>Discord Profile:</strong> When you open <a href="https://discord.beastlybot.com">discord.BeastlyBot.com</a> (or one of our user`s membership bot shops for the first time) or log in using Discord Login Widget on our website, we collect information about your Discord profile that we receive from Discord. This includes your Discord user ID and may include your first and last name, username and language code. </li>
         <li><strong>Payment providers:</strong> We may also get information from payment providers that you integrate with BeastlyBot in order to accept payments from your users with your membership bot. For example, if you connect your payment provider account (like Stripe via Stripe Connect), we will receive information from that service (such as API keys, account ID) via the authorization procedures used by that service. The information we receive depends on which services you authorize and any options that are available.</li>
         </ul>
         <h3 id="informationwedonotcollect">Information We Do Not Collect</h3>
@@ -132,7 +132,7 @@
         <h3 id="controllerandresponsiblecompany">Controller and Responsible Company</h3>
         <p><strong>BeastlyBot LLC</strong> </p>
         <h3 id="howtoreachus">How to Reach Us</h3>
-        <p>If you have a question about this Privacy Policy, or you would like to contact us about any of the rights mentioned in the Your Rights section above, please <a href="mailto:info@BeastlyBot.com">contact us</a>.</p>
+        <p>If you have a question about this Privacy Policy, or you would like to contact us about any of the rights mentioned in the Your Rights section above, please <a href="mailto:team@BeastlyBot.com">contact us</a>.</p>
         <h3 id="otherthingsyoushouldknowkeepreading">Other Things You Should Know (Keep Reading!)</h3>
         <h4 id="_transferringinformation_"><em>Transferring Information</em></h4>
         <p>Because BeastlyBot’s Services are offered worldwide, the information about you that we process when you use the Services in the EU may be used, stored, and/or accessed by individuals operating outside the European Economic Area (EEA) who work for us, other members of our group of companies, or third party data processors. This is required for the purposes listed in the How and Why We Use Information section above. When providing information about you to entities outside the EEA, we will take appropriate measures to ensure that the recipient protects your personal information adequately in accordance with this Privacy Policy as required by applicable law. These measures include:</p>
@@ -148,7 +148,7 @@
         <ul>
         <li><strong>BeastlyBot uses Discord:</strong> Please refer to <a href="https://Discord.com/privacy">Discord Privacy Policy</a>. </li>
         <li><strong>BeastlyBot uses Google Analytics and G Suite:</strong> Please refer to <a href="https://policies.google.com/privacy?hl=en&amp;gl=ZZ">Google Privacy Policy</a>. </li>
-        <li><strong>BeastlyBot uses Amazon Web Services:</strong> Please refer to <a href="https://www.digitalocean.com/legal/privacy-policy/">DigitalOcean Privacy Policy</a>. </li>
+        <li><strong>BeastlyBot uses Google Cloud Service:</strong> Please refer to <a href="https://policies.google.com/privacy?hl=en&amp;gl=ZZ">Google Privacy Policy</a>. </li>
         <li><strong>BeastlyBot uses Stripe:</strong> Please refer to <a href="https://stripe.com/us/privacy">Stripe Privacy Policy</a>. </li>
         <li><strong>Other 3rd-parties:</strong> If you’d like to use other third party plugins, extensions that enable services provided by third parties, or other third party software, please keep in mind that when you interact with them you may provide information about yourself (or your site visitors) to those third parties. </li>
         </ul>

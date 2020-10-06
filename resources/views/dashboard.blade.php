@@ -20,9 +20,9 @@
       <div class="card-block p-20">
         <div class="counter counter-lg counter-inverse text-left">
           <div class="counter-label mb-20">
-            <div>BALANCE <i class="icon wb-info-circle ml-1 text-white" aria-hidden="true"
+            <div>LATEST PAYOUT <i class="icon wb-info-circle ml-1 text-white" aria-hidden="true"
               data-plugin="webuiPopover"
-              data-content="&lt;p&gt;Your shops recent orders balance. Pending for payout. You’ll receive payouts daily.&lt;/p&gt;" data-trigger="hover"
+              data-content="&lt;p&gt;Your shops recent payed out balance, on the way to your bank. You’ll receive payouts daily.&lt;/p&gt;" data-trigger="hover"
               data-animation="pop"></i></div>
           </div>
           <div class="counter-number-group mb-5">
@@ -330,7 +330,7 @@
           @else
 
             <div class="col-12 col-sm-6">
-                <a href="javascript:void(0);" class="card card-block card-hover"
+                <a href="javascript:void(0);" class="card card-block card-hover pulse"
                     id="btn_start-shop-block">
                     <div class="counter counter-lg counter-inverse blue-grey-100 vertical-align h-100">
                       <div class="vertical-align-middle">
@@ -460,7 +460,7 @@
 <script>
 $(window).on('load', function() {
     $.ajax({
-        url: '/get-servers-and-stores',
+        url: '/bknd00/get-servers-and-stores',
         type: 'GET',
         data: {
             _token: '{{ csrf_token() }}'
@@ -512,6 +512,13 @@ $(window).on('load', function() {
 
     })
 });
+</script>
+
+<script type="text/javascript">
+        setTimeout(function(){
+            if(window.location.href.includes('start')) {
+             $("#btn_start-shop-block").addClass("pulse");
+            }}, 1000);
 </script>
 
 <script>

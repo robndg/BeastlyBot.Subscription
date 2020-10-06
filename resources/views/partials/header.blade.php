@@ -213,13 +213,13 @@
                             </a>
                         </li> --}}
                 </ul>
-               <!-- <div class="site-menubar-section mt-20">
+                <div class="site-menubar-section mt-20">
                     <div class="d-flex flex-row flex-wrap align-items-center justify-content-around">
-                    <a href="#" class="btn btn-dark btn-outline btn-icon"><i class="icon-twitter"></i></a>
-                    <a href="#" class="btn btn-dark btn-outline btn-icon"><i class="icon-facebook"></i></a>
-                    <a href="#" class="btn btn-dark btn-outline btn-icon"><i class="icon-discord"></i></a>
+                    <!--<a href="#" class="btn btn-dark btn-outline btn-icon"><i class="icon-twitter"></i></a>
+                    <a href="#" class="btn btn-dark btn-outline btn-icon"><i class="icon-facebook"></i></a>-->
+                    <a href="https://discord.gg/4Gs2N35" target="_blank" class="btn btn-dark btn-outline btn-icon"><i class="icon-discord"></i></a>
                     </div>
-                </div>-->
+                </div>
                 <!--<div class="site-menubar-footer">
                     <a href="#" class="fold-show" id="dark-day">
                         <span class="icon wb-eye" aria-hidden="true"></span>

@@ -201,17 +201,19 @@ class ServerController extends Controller {
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
         \Stripe\Stripe::setApiKey(env('STRIPE_CLIENT_SECRET'));
 
+        \Log::info($role_id);
+
         try {
             $discord_product = new DiscordRoleProduct($guild_id, $role_id, null);
             $product = $discord_product->getStripeProduct();
             $store = DiscordStore::where('guild_id', $guild_id)->first();
-            $desc = ProductRole::where('discord_store_id', $store->id)->first();
+            $desc = ProductRole::where('discord_store_id', $store->id)->where('role_id', $role_id)->first();
             $shop_url = $store->url;
             $discord_helper = new \App\DiscordHelper(auth()->user());
             return view('slide.slide-roles-settings')->with('guild_id', $guild_id)->with('role', $discord_helper->getRole($guild_id, $role_id))->with('shop_url', $shop_url)->with('enabled', $product->active)->with('prices', ProductController::getPricesForRole($guild_id, $role_id))->with('desc', $desc);
         } catch (\Exception $e) {
             if (env('APP_DEBUG')) Log::error($e);
-            return view('slide.slide-roles-settings')->with('enabled', false)->with('guild_id', $guild_id)->with('role_id', $role_id)->with('prices', ProductController::getPricesForRole($guild_id, $role_id));
+            return view('slide.slide-roles-settings')->with('enabled', false)->with('role', $discord_helper->getRole($guild_id, $role_id))->with('guild_id', $guild_id)->with('role_id', $role_id)->with('prices', ProductController::getPricesForRole($guild_id, $role_id));
         }
     }
 
