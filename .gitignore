@@ -2,6 +2,7 @@
 /node_discord_bot/node_modules
 /public/hot
 /public/storage
+/public/vendor
 /storage/*.key
 /vendor
 .env
