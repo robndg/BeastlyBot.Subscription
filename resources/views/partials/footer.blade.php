@@ -1,6 +1,6 @@
     <!-- Footer -->
     <footer class="site-footer">
-      <div class="site-footer-legal">© {{ date('Y') }} <a href="https://beastlybot.com">BeastlyBot</a></div>
+      <div class="site-footer-legal">© {{ date('Y') }} <a href="https://beastly.app">BeastlyBot</a></div>
      <!-- <div class="site-footer-right">
         Crafted with <i class="red-600 wb wb-heart"></i> by <a href="https://robs.studio" target="_blank">Robs Studio</a>
       </div>-->

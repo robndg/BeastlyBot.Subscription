@@ -49,9 +49,9 @@
                         </div>
                         <div class="banner-action wow fadeInUp" data-wow-delay=".3s" style="visibility:hidden">
                             <!-- @auth
-                                <a href="https://discord.beastlybot.com/dashboard" class="btn-common radius-50 btn-pink mr-20">Dashboard</a>
+                                <a href="https://discord.beastly.app/dashboard" class="btn-common radius-50 btn-pink mr-20">Dashboard</a>
                             @else
-                                <a href="https://discord.beastlybot.com/dashboard?start" class="btn-common radius-50 btn-pink mr-20">Create Shop</a>
+                                <a href="https://discord.beastly.app/dashboard?start" class="btn-common radius-50 btn-pink mr-20">Create Shop</a>
                             @endauth -->
                         </div>
                     </div>
@@ -113,7 +113,7 @@
                                         <a href="/dashboard"
                                            class="btn-common mt-sm-25">Go to dashboard</a>
                                     @else
-                                        <a href="https://discord.beastlybot.com/dashboard?start"
+                                        <a href="https://discord.beastly.app/dashboard?start"
                                            class="btn-common mt-sm-25">Invite Me Now</a>
                                     @endauth
                                 </div>
@@ -181,7 +181,7 @@
                                 @auth
                                 <a href="/dashboard?start" class="btn-common">Go to Dashboard</a>
                                 @else
-                                <a href="https://discord.beastlybot.com/dashboard?start" class="btn-common">Get Started</a>
+                                <a href="https://discord.beastly.app/dashboard?start" class="btn-common">Get Started</a>
                                 @endauth
                             </div>
                         </div>

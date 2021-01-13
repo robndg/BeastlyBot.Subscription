@@ -12,7 +12,7 @@ Route::get('/discord_oauth', 'DiscordOAuthController@connect');
 Route::get('/logout', function () {
     // Illuminate\Support\Facades\Session::flush();
     auth()->logout();
-    return redirect()->to('https://beastlybot.com');
+    return redirect()->to('https://beastly.app');
 })->name('logout');
 
 Route::get('/dashboard', function() {
@@ -27,5 +27,5 @@ Route::get('/dashboard', function() {
 });
 
 Route::get('/', function() {
-    return redirect()->to('https://beastlybot.com');
+    return redirect()->to('https://beastly.app');
 });

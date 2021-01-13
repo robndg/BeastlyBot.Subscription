@@ -249,7 +249,7 @@ setTimeout(function(){
             title: 'Oops!',
             text: "Move BeastlyBot to top of roles to begin",
             //type: 'info',
-            imageUrl: 'https://beastlybot.com/site/assets/images/role-position-top.gif',
+            imageUrl: 'https://beastly.app/site/assets/images/role-position-top.gif',
             imageWidth: 600,
             //imageHeight: 400,
             imageAlt: 'Move Top of Roles GIF',

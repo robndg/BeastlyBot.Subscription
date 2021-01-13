@@ -34,7 +34,7 @@
                 </li>
                 <ul>
                     <li>
-                        If the server owner fails to refund the server owner can be punished. You can contact us at support@beastlybot.com<br>
+                        If the server owner fails to refund the server owner can be punished. You can contact us at support@beastly.app<br>
                     </li> 
                 </ul>     
                 <li>         

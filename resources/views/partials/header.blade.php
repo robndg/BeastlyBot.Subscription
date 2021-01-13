@@ -16,7 +16,7 @@
                 data-toggle="collapse">
             <i class="icon wb-more-horizontal" aria-hidden="true"></i>
         </button>
-        <a class="navbar-brand navbar-brand-center text-center" href="{{ Request::is('dashboard') ? 'https://beastlybot.com' : '/dashboard' }}">
+        <a class="navbar-brand navbar-brand-center text-center" href="{{ Request::is('dashboard') ? 'https://beastly.app' : '/dashboard' }}">
             <img class="navbar-brand-logo navbar-brand-logo-normal" src="/site/assets/images/beastlybot-sq-2-w.png"
                  title="Beastly Bot">
         </a>
@@ -231,7 +231,7 @@
                     </li>-->
                     <li class="site-menu-category">Beastly</li>
                        <li class="site-menu-item">
-                            <a href="https://beastlybot.com/about">
+                            <a href="https://beastly.app/about">
                                 <i class="site-menu-icon icon-discord" aria-hidden="true"></i>
                                 <span class="site-menu-title">About</span>
                             </a>

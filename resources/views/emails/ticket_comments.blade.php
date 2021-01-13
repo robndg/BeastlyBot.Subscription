@@ -6,7 +6,7 @@
 </head>
 <body>
 <p>
-    Hey {{ $ticketUsername }} you have a new reply from the Beastly Team. <a href="{{ url('dashboard?messages&open=' . $ticket->ticket_id) }}" target="_blank">View message on BeastlyBot.com</a>.
+    Hey {{ $ticketUsername }} you have a new reply from the Beastly Team. <a href="{{ url('dashboard?messages&open=' . $ticket->ticket_id) }}" target="_blank">View message on beastly.app</a>.
 </p>
  
 ---

@@ -36,7 +36,7 @@ Route::get('/slide-help-requesting-a-refund', function () {
 });
 Route::get('/slide-help-remove-bot', function () {
     return view('slide/help/slide-help-remove-bot');
-}); 
+});
 Route::get('/slide-help-withdraw-earnings', function () {
     return view('slide/help/slide-help-withdraw-earnings');
 });
@@ -45,20 +45,20 @@ Route::get('/slide-help-creating-a-promotion', function () {
 });
 
 Route::get('/impersonate/{id}', 'UserController@impersonate');
-Route::domain('beastlybot.com')->group(function ($router) {
+Route::domain('beastly.app')->group(function ($router) {
     require_once __DIR__ . "/section/site.php";
 });
-Route::domain('discord.beastlybot.com')->group(function ($router) {
+Route::domain('discord.beastly.app')->group(function ($router) {
 require_once __DIR__ . "/section/auth.php";
 require_once __DIR__ . "/section/help.php";
 });
 /**
  * All routes that require authentication
  */
-Route::domain('discord.beastlybot.com')->group(function ($router) {
-    
+Route::domain('discord.beastly.app')->group(function ($router) {
+
 Route::group(['middleware' => ['auth', 'web']], function () {
-  
+
     Route::get('/slide-help-creating-a-promotion', function () {
         return view('slide/help/slide-help-creating-a-promotion');
     });

@@ -34,7 +34,7 @@
 
         <div>
         <div class="p-15">
-          <p>You can give courtesy roles to users on your server in the form of a free trial. The subscription plan must be available for the role/duration, and have the user log into beastlybot.com at least once.
+          <p>You can give courtesy roles to users on your server in the form of a free trial. The subscription plan must be available for the role/duration, and have the user log into beastly.app at least once.
           
           *** do not set price to 0 (TODO: will fix before launch)</p>
         </div>

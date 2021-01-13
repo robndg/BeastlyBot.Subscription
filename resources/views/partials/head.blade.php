@@ -4,7 +4,7 @@
 
 @if (Request::path() != '/subscribe')
 <!--<meta name="description" content="The beastly subscription bot for communities.">-->
-<meta name="author" content="beastlybot.com">
+<meta name="author" content="beastly.app">
 @endif
 <!-- Stylesheets -->
 <link rel="stylesheet" href="{{ asset('global/css/bootstrap.min.css') }}">

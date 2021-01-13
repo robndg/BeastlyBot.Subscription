@@ -159,10 +159,10 @@
             <div class="row height-100 align-items-center">
                 <div class="col-lg-4 col-md-6 col-9">
                     <div class="logo style-2">
-                        <a href="https://beastlybot.com" class="logo-black logo-top"><img
+                        <a href="https://beastly.app" class="logo-black logo-top"><img
                                 src="{{asset('site/assets/images/beastlybot-logo4-w.png')}}" height="40" alt="logo"/>
                             <!--<h3 class="logo-top">Discord Beast</h3>--></a>
-                        <a href="https://beastlybot.com" class="logo-white logo-top"><img
+                        <a href="https://beastly.app" class="logo-white logo-top"><img
                                 src="{{asset('site/assets/images/beastlybot-logo4-w.png')}}" height="40" alt="logo"/>
                             <!--<h3 class="logo-top">Discord Beast</h3>--></a>
                     </div>
@@ -172,15 +172,15 @@
                         <div class="mainmenu style-2">
                             <nav>
                                 <ul class="list-none">
-                                    <li><a href="https://beastlybot.com/">Home</a>
+                                    <li><a href="https://beastly.app/">Home</a>
                                     </li>
-                                    <li><a href="https://beastlybot.com/faq">FAQs</a>
+                                    <li><a href="https://beastly.app/faq">FAQs</a>
                                     </li>
-                                    <li><a href="https://beastlybot.com/about">About</a>
+                                    <li><a href="https://beastly.app/about">About</a>
                                     </li>
-                                    {{-- <li><a href="https://beastlybot.com/blog">Blog</a>
+                                    {{-- <li><a href="https://beastly.app/blog">Blog</a>
                                     </li> --}}
-                                    <li><a href="https://beastlybot.com/status">Status</a>
+                                    <li><a href="https://beastly.app/status">Status</a>
                                     </li>
                                     {{-- <li><a href="#" onclick="return false;">Help</a>
                                         <ul class="submenu">
@@ -194,9 +194,9 @@
                                 </ul>
                             </nav>
                         </div>
-                        <!-- <button type="button" class="btn radius-50 help-line style-2" onclick="window.location.href = 'https\:\/\/discord.beastlybot.com\/dashboard' ">
+                        <!-- <button type="button" class="btn radius-50 help-line style-2" onclick="window.location.href = 'https\:\/\/discord.beastly.app\/dashboard' ">
                             {{--@auth--}}
-                            <a href="https://discord.beastlybot.com/dashboard">
+                            <a href="https://discord.beastly.app/dashboard">
                                 <i class="icon-discord"></i>
                                 Dash<span class="ds-sm-none">board</span></a>
                             {{--@else
@@ -271,8 +271,8 @@
                         <h4><span>About Us</span></h4>
                     </div>
                     <ul class="list-none">
-                        <li><a href="https://beastlybot.com/about">About Us</a></li>
-                        <li><a href="https://beastlybot.com/status">Status</a></li>
+                        <li><a href="https://beastly.app/about">About Us</a></li>
+                        <li><a href="https://beastly.app/status">Status</a></li>
                     </ul>
                 </div>
             </div>
@@ -282,8 +282,8 @@
                         <h4><span>Help</span></h4>
                     </div>
                     <ul class="list-none">
-                        <li><a href="https://beastlybot.com/faq">Frequently Asked Questions</a></li>
-                        <li><a href="https://discord.beastlybot.com/dashboard">Help Tutorials</a></li>
+                        <li><a href="https://beastly.app/faq">Frequently Asked Questions</a></li>
+                        <li><a href="https://discord.beastly.app/dashboard">Help Tutorials</a></li>
                     </ul>
                 </div>
             </div>

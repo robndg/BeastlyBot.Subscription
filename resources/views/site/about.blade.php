@@ -176,7 +176,7 @@
 								<p class="mt-20">We are always looking to hire the right talent to <br/> help us grow</p>
 							</div>
 							<div class="wow fadeInUp" data-wow-delay=".5s">
-								<a href="https://discord.beastlybot.com/dashboard" class="btn-common btn-pink radius-50 mt-35">Apply Now</a>
+								<a href="https://discord.beastly.app/dashboard" class="btn-common btn-pink radius-50 mt-35">Apply Now</a>
 							</div>
 						</div>
 					</div>
