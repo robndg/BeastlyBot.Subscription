@@ -70,6 +70,7 @@ Route::group(['middleware' => ['auth', 'web']], function () {
     require_once __DIR__ . "/section/order.php";
     require_once __DIR__ . "/section/admin.php";
     require_once __DIR__ . "/section/ticket.php";
+    require_once __DIR__ . "/section/paypal.php";
     });
 });
 

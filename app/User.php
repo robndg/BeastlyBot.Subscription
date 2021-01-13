@@ -18,6 +18,10 @@ class User extends Authenticatable
         return new StripeHelper($this);
     }
 
+    public function getPayPalAccount() {
+        return PayPalAccount::where('user_id', $this->id)->exists() ? PayPalAccount::where('user_id', $this->id)->first() : null;
+    }
+
     public function hasStripeAccount(): bool {
         return $this->getStripeHelper()->getCustomerAccount() != null;
     }
@@ -45,6 +49,14 @@ class User extends Authenticatable
 
     public function canAcceptPayments(): bool {
         return $this->getStripeHelper()->isExpressUser();
+    }
+
+    public function usingPayPal() {
+        return $this->payment_processor === 1;
+    }
+
+    public function usingStripe() {
+        return $this->payment_processor === 2;
     }
 
 }

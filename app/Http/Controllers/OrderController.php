@@ -26,7 +26,6 @@ class OrderController extends Controller {
     }
 
     public function setup(Request $request) {
-        \Log::info("HERE");
         if (! auth()->user()->hasStripeAccount()) 
             return response()->json(['success' => false, 'msg' => 'You do not have a linked stripe account.']);
         $express_promo = NULL;

@@ -21,6 +21,7 @@ class CreateUsersTable extends Migration
             $table->string('permissions')->nullable();
             $table->string('error')->nullable();
             $table->string('url_next')->nullable();
+            $table->integer('payment_processor')->default(0);
             // $table->rememberToken();
             $table->timestamps();
         });

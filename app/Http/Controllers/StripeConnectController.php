@@ -32,7 +32,7 @@ class StripeConnectController extends Controller
         $user = auth()->user();
 
         $stripe_account = StripeHelper::getAccountFromStripeConnect($code);
-        if ($stripe_account->country == 'US' && $user->StripeConnect->express_id == null) {
+        if (/*$stripe_account->country == 'US' &&*/ $user->StripeConnect->express_id == null) {
             $user->StripeConnect->express_id = $stripe_account->id;
             $user->StripeConnect->save();
             AlertHelper::alertSuccess('Stripe account created! You can now accept payments.');

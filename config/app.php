@@ -226,6 +226,8 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
+        'StripeHelper' => \App\StripeHelper::class,
+        'PayPalHelper' => \App\PayPal\PayPalHelper::class,
     ],
 
 ];

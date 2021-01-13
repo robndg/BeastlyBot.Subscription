@@ -14,6 +14,18 @@ use App\StripeHelper;
 Route::group(['middleware' => ['auth', 'web']], function () {
     Route::view('/account/settings', 'account.settings');
 
+    Route::get('/account/set-payment-processor', function() {
+        $payment_processor = request('id');
+
+        if ($payment_processor < 3) {
+            $user = auth()->user();
+            $user->payment_processor = $payment_processor;
+            $user->save();
+        }
+
+        return redirect('/dashboard');
+    });
+
     Route::get('/slide-account-settings', function() {
         return UserController::getViewWithInvoices('slide.slide-account-settings', 5);
     });
