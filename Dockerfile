@@ -6,7 +6,9 @@ COPY . /var/www/html/beastlybot
 
 WORKDIR /var/www/html/beastlybot
 
-RUN php -v
+RUN wget -qO- https://getpm2.com/install.sh | bash
+
+RUN npm install pm2 -g -y
 
 RUN apt-get update && apt-get install -y \
         libpng-dev \
@@ -43,6 +45,8 @@ RUN composer install
 RUN rm /etc/apache2/sites-available/000-default.conf
 
 RUN service apache2 start
+
+RUN pm2 start /var/www/html/beastlybot/node_discord_bot/index.js
 
 CMD php artisan serve --host=0.0.0.0 --port=8000
 
