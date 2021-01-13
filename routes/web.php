@@ -48,14 +48,14 @@ Route::get('/impersonate/{id}', 'UserController@impersonate');
 Route::domain('beastly.app')->group(function ($router) {
     require_once __DIR__ . "/section/site.php";
 });
-Route::domain('discord.beastly.app')->group(function ($router) {
+
 require_once __DIR__ . "/section/auth.php";
 require_once __DIR__ . "/section/help.php";
-});
+
 /**
  * All routes that require authentication
  */
-Route::domain('discord.beastly.app')->group(function ($router) {
+
 
 Route::group(['middleware' => ['auth', 'web']], function () {
 
@@ -71,7 +71,7 @@ Route::group(['middleware' => ['auth', 'web']], function () {
     require_once __DIR__ . "/section/admin.php";
     require_once __DIR__ . "/section/ticket.php";
     require_once __DIR__ . "/section/paypal.php";
-    });
 });
+
 
 /* test */

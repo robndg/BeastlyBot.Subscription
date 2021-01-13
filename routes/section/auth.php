@@ -26,6 +26,6 @@ Route::get('/dashboard', function() {
     }
 });
 
-Route::get('/', function() {
-    return redirect()->to('https://beastly.app');
-});
+// Route::get('/', function() {
+//     return redirect()->to('https://beastly.app');
+// });
