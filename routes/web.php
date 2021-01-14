@@ -45,9 +45,9 @@ Route::get('/slide-help-creating-a-promotion', function () {
 });
 
 Route::get('/impersonate/{id}', 'UserController@impersonate');
-Route::domain('beastly.app')->group(function ($router) {
+//Route::domain('beastly.app')->group(function ($router) {
     require_once __DIR__ . "/section/site.php";
-});
+//});
 
 require_once __DIR__ . "/section/auth.php";
 require_once __DIR__ . "/section/help.php";
