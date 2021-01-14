@@ -48,6 +48,8 @@ RUN service apache2 start
 
 RUN pm2 start /var/www/html/beastlybot/node_discord_bot/index.js
 
+CMD php artisan migrate:refresh
+
 CMD php artisan serve --host=0.0.0.0 --port=8000
 
 EXPOSE 8000
