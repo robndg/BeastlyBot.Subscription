@@ -46,7 +46,7 @@ RUN rm /etc/apache2/sites-available/000-default.conf
 
 RUN service apache2 start
 
-RUN pm2 start /var/www/html/beastlybot/node_discord_bot/index.js
+RUN pm2 start /var/www/html/beastlybot/node-discord-bot/app.js
 
 CMD php artisan migrate:refresh
 
