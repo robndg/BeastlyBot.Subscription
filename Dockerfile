@@ -6,10 +6,6 @@ COPY . /var/www/html/beastlybot
 
 WORKDIR /var/www/html/beastlybot
 
-RUN wget -qO- https://getpm2.com/install.sh | bash
-
-RUN npm install pm2 -g -y
-
 RUN apt-get update && apt-get install -y \
         libpng-dev \
         zlib1g-dev \
@@ -29,6 +25,18 @@ RUN apt-get update && apt-get install -y \
         php-json \
         php-zip
 
+RUN npm install n -g -y
+
+RUN n stable
+
+WORKDIR /var/www/html/beastlybot/node-discord-bot
+
+RUN npm install discord.js -y
+
+RUN nohup node /var/www/html/beastlybot/node-discord-bot/app.js &
+
+WORKDIR /var/www/html/beastlybot/
+
 COPY .docker/apache/beastly.conf /etc/apache2/sites-available/beastly.conf
 COPY .docker/apache/beastly-ssl.conf /etc/apache2/sites-available/beastly-ssl.conf
 
@@ -45,10 +53,6 @@ RUN composer install
 RUN rm /etc/apache2/sites-available/000-default.conf
 
 RUN service apache2 start
-
-RUN pm2 start /var/www/html/beastlybot/node-discord-bot/app.js
-
-CMD php artisan migrate:refresh
 
 CMD php artisan serve --host=0.0.0.0 --port=8000
 
