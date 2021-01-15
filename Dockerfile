@@ -25,18 +25,6 @@ RUN apt-get update && apt-get install -y \
         php-json \
         php-zip
 
-RUN npm install n -g -y
-
-RUN n stable
-
-WORKDIR /var/www/html/beastlybot/node-discord-bot
-
-RUN npm install discord.js -y
-
-RUN nohup node /var/www/html/beastlybot/node-discord-bot/app.js &
-
-WORKDIR /var/www/html/beastlybot/
-
 COPY .docker/apache/beastly.conf /etc/apache2/sites-available/beastly.conf
 COPY .docker/apache/beastly-ssl.conf /etc/apache2/sites-available/beastly-ssl.conf
 
