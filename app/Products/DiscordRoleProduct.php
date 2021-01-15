@@ -23,15 +23,15 @@ class DiscordRoleProduct extends Product
         $this->billing_cycle = $billing_cycle;
         parent::__construct('discord');
     }
-  
+
     public function checkoutValidate(): void {
         if(! DiscordStore::where('guild_id', $this->guild_id)->exists())
             throw new ProductMsgException('Discord store not found in database.');
 
         $this->discord_store = DiscordStore::where('guild_id', $this->guild_id)->first();
 
-        if(!$this->discord_store->live)
-            throw new ProductMsgException('Sorry, purchases are disabled in testing mode.');
+        // if(!$this->discord_store->live)
+        //     throw new ProductMsgException('Sorry, purchases are disabled in testing mode.');
 
         $discord_helper = new \App\DiscordHelper(auth()->user());
 
@@ -65,9 +65,9 @@ class DiscordRoleProduct extends Product
             throw new ProductMsgException('Role ID is not valid.');
         }
 
-        if (auth()->user()->getStripeHelper()->isSubscribedToProduct($this->guild_id . '_' . $this->role_id)) 
+        if (auth()->user()->getStripeHelper()->isSubscribedToProduct($this->guild_id . '_' . $this->role_id))
             throw new ProductMsgException('You are already subscribed to that role. You can edit your subscription in the subscriptions page.');
-        
+
     }
 
     public function create(Request $request) {
