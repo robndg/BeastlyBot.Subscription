@@ -28,11 +28,7 @@ RUN apt-get update && apt-get install -y \
 COPY .docker/apache/beastly.conf /etc/apache2/sites-available/beastly.conf
 COPY .docker/apache/beastly-ssl.conf /etc/apache2/sites-available/beastly-ssl.conf
 
-COPY .docker/apache/discord-beastly.conf /etc/apache2/sites-available/discord-beastly.conf
-COPY .docker/apache/discord-ssl-beastly.conf /etc/apache2/sites-available/discord-ssl-beastly.conf
-
-COPY .docker/apache/store-beastly.conf /etc/apache2/sites-available/store-beastly.conf
-COPY .docker/apache/store-ssl-beastly.conf /etc/apache2/sites-available/store-ssl-beastly.conf
+COPY .docker/php/xdebug.ini /etc/php/8.0/cli/conf.d/xdebug.ini
 
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
@@ -44,4 +40,4 @@ RUN service apache2 start
 
 CMD php artisan serve --host=0.0.0.0 --port=8000
 
-EXPOSE 8000
+EXPOSE 8000 9000 9001
