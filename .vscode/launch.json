@@ -8,19 +8,11 @@
         "name": "Listen for XDebug",
         "type": "php",
         "request": "launch",
-        "port": 9001,
+        "port": 9003,
         "pathMappings": {
           "/var/www/html/beastlybot/": "${workspaceRoot}/"
         },
         "log": true
-      },
-      {
-        "name": "Launch currently open script",
-        "type": "php",
-        "request": "launch",
-        "program": "docker",
-        "cwd": "run -it -v $(pwd):/var/www/html/beastlybot/ myapp",
-        "port": 9001
       }
     ]
   }
