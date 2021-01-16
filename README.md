@@ -15,14 +15,12 @@
    ```sh
    git checkout Master
    ```
-3. Build Docker Image
+3. DO NOT build Master locally, as it won't work. Checkout the local branch.
    ```sh
    docker build -t beastlybot:master .
    ```
-4. Run Docker Container
-   ```sh
-    docker run -p 8080:8000 beastlybot:master
-   ```
+4. Only make code changes in here.
+
 5. Watch the deployment
    ```sh
     https://github.com/JoeAshworth/BeastlyBot/actions
