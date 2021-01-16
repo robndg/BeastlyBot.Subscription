@@ -16,9 +16,7 @@
    git checkout Master
    ```
 3. DO NOT build Master locally, as it won't work. Checkout the local branch.
-   ```sh
-   docker build -t beastlybot:master .
-   ```
+
 4. Only make code changes in here.
 
 5. Watch the deployment
