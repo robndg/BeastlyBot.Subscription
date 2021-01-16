@@ -4,6 +4,11 @@
 ### Prerequisites
 
 - Docker
+- Ruby
+- Ultrahook
+  ```sh 
+  gem install ultrahook
+  ```
 
 ### Installation
 
@@ -27,6 +32,14 @@
    ```sh
     localhost:8080
    ```
+6. Open a new terminal
 
-
+7. Start Ultrahook
+   ```
+    ultrahook -k WjNV2nkyHAOizcKLGBp2uOrwVu3viAxc test 8080/stripe_webhooks
+   ```
+8. Change Webhook address to the output
+   ```
+    https://beastly-test.ultrahook.com
+   ```
 
