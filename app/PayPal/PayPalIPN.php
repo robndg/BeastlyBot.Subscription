@@ -20,7 +20,7 @@ class PaypalIPN
     const INVALID = 'INVALID';
 
     function __construct() {
-        if (env('APP_DEBUG') == true) {
+        if (env('APP_ENV') == 'local') {
             $this->useSandbox();
         }
     }

