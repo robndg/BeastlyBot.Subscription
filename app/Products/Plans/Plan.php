@@ -30,7 +30,7 @@ abstract class Plan
         } else {
             StripeHelper::setApiKey();
             try {
-                $this->stripe_plan_obj = \Stripe\Plan::retrieve($this->getStripeID());
+                $this->stripe_plan_obj = \Stripe\Price::retrieve($this->getStripeID());
                 Cache::put('plan_' . $this->getStripeID(), $this->stripe_plan_obj, 60 * 10);
             } catch (\Exception $e) {
                 Cache::put('plan_' . $this->getStripeID(), "null", 60 * 10);
@@ -56,7 +56,7 @@ abstract class Plan
 
         if($price < 1) return;
 
-        $plan = \Stripe\Plan::create([
+       /* $plan = \Stripe\Plan::create([
             "amount" => $price * 100,
             "interval" => $this->interval,
             "interval_count" => $this->interval_cycle,
@@ -66,7 +66,19 @@ abstract class Plan
                 'user_id' => auth()->user()->id
             ],
             "id" => $this->getStripeID(),
-        ]);
+        ]);*/
+
+        $cur = "usd";
+
+        $plan = \Stripe\Price::create([
+            'unit_amount' => $price * 100,
+            'currency' => $cur,
+            'recurring' => ['interval' => $this->interval],
+            'product' => $this->product->getStripeID(),
+            'metadata' => [
+                'product_UUID' => $this->product->getStripeID()
+            ],
+          ]);
 
         Cache::put('plan_' . $this->getStripeID(), $plan, 60 * 10);
 

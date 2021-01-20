@@ -58,17 +58,17 @@
                                         <i class="wb-triangle-down font-size-24 mb-10 blue-600"></i>
                                         <div>
                                         
-                                            <span class="font-size-16">${{ number_format(($plan->getStripePlan()->amount / 100), 2, '.', ',') }}</span>
+                                            <span class="font-size-16">${{ number_format(($plan->getStripePlan()->unit_amount / 100), 2, '.', ',') }}</span>
                                         </div>
 
                                     </div>
                                     @if($first)
-                                    <input id="inputRadios{{ $plan->interval_cycle }}Months" name="inputRadios"  onclick="updatePrices('{{ $plan->interval_cycle }}', '{{ ($plan->getStripePlan()->amount / 100) }}')" type="radio" class="to-labelauty" data-plugin="labelauty" data-labelauty=" " checked/>
+                                    <input id="inputRadios{{ $plan->interval_cycle }}Months" name="inputRadios"  onclick="updatePrices('{{ $plan->interval_cycle }}', '{{ ($plan->getStripePlan()->unit_amount / 100) }}')" type="radio" class="to-labelauty" data-plugin="labelauty" data-labelauty=" " checked/>
                                     @php
                                     $first = false;
                                     @endphp
                                     @else
-                                    <input id="inputRadios{{ $plan->interval_cycle }}Months"  name="inputRadios" onclick="updatePrices('{{ $plan->interval_cycle }}', '{{ ($plan->getStripePlan()->amount / 100) }}')" type="radio" class="to-labelauty" data-plugin="labelauty" data-labelauty=" " />
+                                    <input id="inputRadios{{ $plan->interval_cycle }}Months"  name="inputRadios" onclick="updatePrices('{{ $plan->interval_cycle }}', '{{ ($plan->getStripePlan()->unit_amount / 100) }}')" type="radio" class="to-labelauty" data-plugin="labelauty" data-labelauty=" " />
                                     @endif
                                 </div>
                             </div>
@@ -80,7 +80,7 @@
             </div>
         </div>
         <div class="pt-0 pt-md-25 pt-lg-25 pt-xl-50">
-            <h3 class="mt-0 pb-md-10 text-white">Total: <span class="font-weight-200">$<span id="big_price_label">{{ number_format(($plans[0]->getStripePlan()->amount / 100), 2, '.', ',') }}</span></span></h3>
+            <h3 class="mt-0 pb-md-10 text-white">Total: <span class="font-weight-200">$<span id="big_price_label">{{ number_format(($plans["day"]->getStripePlan()->unit_amount/ 100), 2, '.', ',') }}</span></span></h3>
             <div>
                 <input type="text" class="form-control form-control-lg w-200 mx-auto" placeholder="Coupon Code" id="couponCode" disabled>
                 <p id="coupon_info"></p>
@@ -199,17 +199,17 @@
         $('#payButton').attr('disabled', false);
         $('#coupon_info').text('');
 
-        $('#inputRadios1Months').removeAttr('checked');
-        $('#inputRadios3Months').removeAttr('checked');
-        $('#inputRadios6Months').removeAttr('checked');
-        $('#inputRadios12Months').removeAttr('checked');
+        $('#inputRadios1Day').removeAttr('checked');
+        $('#inputRadios1Week').removeAttr('checked');
+        $('#inputRadios1Month').removeAttr('checked');
+        $('#inputRadios1Year').removeAttr('checked');
     }
 
     function getSelectedDuration() {
-        var duration_1_month = $('#inputRadios1Months');
-        var duration_3_month = $('#inputRadios3Months');
-        var duration_6_month = $('#inputRadios6Months');
-        var duration_12_month = $('#inputRadios12Months');
+        var duration_1_month = $('#inputRadios1Day');
+        var duration_3_month = $('#inputRadios3Week');
+        var duration_6_month = $('#inputRadios1Month');
+        var duration_12_month = $('#inputRadios1Year');
 
         if (duration_1_month !== undefined && duration_1_month.is(':checked')) return 1;
         if (duration_3_month !== undefined && duration_3_month.is(':checked')) return 3;

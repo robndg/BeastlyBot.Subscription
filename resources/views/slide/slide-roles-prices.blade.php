@@ -12,12 +12,10 @@
     <div class="tab-pane fade active show">
         <div class="row">
             <div class="col-md-12">
-
-                @for($i = 0; $i < 13; $i++)
-                    @if($i === 1 || $i === 3 || $i === 6 || $i === 12)
+                
                         <div
                             class="list-group-item d-flex flex-row flex-wrap align-items-center justify-content-between">
-                            <h5>{{ $i }} month</h5>
+                            <h5>1 day</h5>
 
                             <div>
                                 <div class="d-flex flex-row flex-wrap align-items-center justify-content-between">
@@ -26,18 +24,77 @@
                                             <div class="input-group-prepend">
                                                 <span class="input-group-text">$</span>
                                             </div>
-                                            <input id="price_{{ $i }}m" type="text" class="form-control w-100"
+                                            <input id="price_1day" type="text" class="form-control w-100"
                                                    placeholder="0.00"
-                                                   value="{{ $prices[$i] }}" autocomplete="off">
+                                                   value="day" autocomplete="off">
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <hr>
-                    @endif
-                @endfor
+                        <div
+                            class="list-group-item d-flex flex-row flex-wrap align-items-center justify-content-between">
+                            <h5>1 week</h5>
 
+                            <div>
+                                <div class="d-flex flex-row flex-wrap align-items-center justify-content-between">
+                                    <div class="d-block pl-15">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">$</span>
+                                            </div>
+                                            <input id="price_1week" type="text" class="form-control w-100"
+                                                   placeholder="0.00"
+                                                   value="week" autocomplete="off">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div
+                            class="list-group-item d-flex flex-row flex-wrap align-items-center justify-content-between">
+                            <h5>1 month</h5>
+
+                            <div>
+                                <div class="d-flex flex-row flex-wrap align-items-center justify-content-between">
+                                    <div class="d-block pl-15">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">$</span>
+                                            </div>
+                                            <input id="price_1month" type="text" class="form-control w-100"
+                                                   placeholder="0.00"
+                                                   value="month" autocomplete="off">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+                        <div
+                            class="list-group-item d-flex flex-row flex-wrap align-items-center justify-content-between">
+                            <h5>1 year</h5>
+
+                            <div>
+                                <div class="d-flex flex-row flex-wrap align-items-center justify-content-between">
+                                    <div class="d-block pl-15">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">$</span>
+                                            </div>
+                                            <input id="price_1year" type="text" class="form-control w-100"
+                                                   placeholder="0.00"
+                                                   value="year" autocomplete="off">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr>
+             
+               
             </div>
 
         </div>
@@ -66,10 +123,10 @@
             url: '/update_discord_prices',
             type: 'POST',
             data: {
-                'price_1_month': $('#price_1m').val(),
-                'price_3_month': $('#price_3m').val(),
-                'price_6_month': $('#price_6m').val(),
-                'price_12_month': $('#price_12m').val(),
+                'price_1_day': $('#price_1day').val(),
+                'price_1_week': $('#price_1week').val(),
+                'price_1_month': $('#price_1month').val(),
+                'price_1_year': $('#price_1year').val(),
                 'role_id': role_id,
                 'role_name': Global.role_name,
                 'guild_id': guild_id,

@@ -108,7 +108,7 @@ class ProductController extends Controller {
             $key = 'plan_' . $discord_plan->getStripeID();
             
             if($discord_plan->getStripePlan() != null) {
-                $prices[$duration] = $discord_plan->getStripePlan()->amount / 100;
+                $prices[$duration] = $discord_plan->getStripePlan()->unit_amount / 100;
             } else {
                 $prices[$duration] = 0;
             }

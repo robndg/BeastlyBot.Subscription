@@ -30,8 +30,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="row no-space text-center">
-                                @for($i = 0; $i < 13; $i++)
-                                @if($i === 1 || $i === 3 || $i === 6 || $i === 12)
+                         
                                 <div class="col-6 col-sm-3">
                                     <div class="card border-0 vertical-align h-100">
                                     <div class="vertical-align-middle font-size-16">
@@ -40,20 +39,81 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">$</span>
                                                 </div>
-                                                <input id="price_{{ $i }}m" type="text" class="form-control"
+                                                <input id="price_1day" type="text" class="form-control"
                                                     placeholder="0.00"
-                                                    value="{{ $prices[$i] }}" autocomplete="off">
+                                                    value="{{-- $prices['day'] --}}" autocomplete="off">
                                             </div>
                                         </div>
                                         <i class="wb-triangle-down font-size-24 mb-10 blue-600"></i>
                                         <div>
-                                        <span class="font-size-12">{{ $i }} month</span>
+                                        <span class="font-size-12">1 day</span>
                                         </div>
                                     </div>
                                     </div>
                                 </div>
-                                @endif
-                                @endfor
+
+                                <div class="col-6 col-sm-3">
+                                    <div class="card border-0 vertical-align h-100">
+                                    <div class="vertical-align-middle font-size-16">
+                                        <div class="d-block">
+                                            <div class="input-group w-120 mx-auto">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">$</span>
+                                                </div>
+                                                <input id="price_1week" type="text" class="form-control"
+                                                    placeholder="0.00"
+                                                    value="{{-- $prices['week'] --}}" autocomplete="off">
+                                            </div>
+                                        </div>
+                                        <i class="wb-triangle-down font-size-24 mb-10 blue-600"></i>
+                                        <div>
+                                        <span class="font-size-12">1 week</span>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-6 col-sm-3">
+                                    <div class="card border-0 vertical-align h-100">
+                                    <div class="vertical-align-middle font-size-16">
+                                        <div class="d-block">
+                                            <div class="input-group w-120 mx-auto">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">$</span>
+                                                </div>
+                                                <input id="price_1month" type="text" class="form-control"
+                                                    placeholder="0.00"
+                                                    value="{{-- $prices['month'] --}}" autocomplete="off">
+                                            </div>
+                                        </div>
+                                        <i class="wb-triangle-down font-size-24 mb-10 blue-600"></i>
+                                        <div>
+                                        <span class="font-size-12">1 month</span>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-6 col-sm-3">
+                                    <div class="card border-0 vertical-align h-100">
+                                    <div class="vertical-align-middle font-size-16">
+                                        <div class="d-block">
+                                            <div class="input-group w-120 mx-auto">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text">$</span>
+                                                </div>
+                                                <input id="price_1year" type="text" class="form-control"
+                                                    placeholder="0.00"
+                                                    value="{{-- $prices['year'] --}}" autocomplete="off">
+                                            </div>
+                                        </div>
+                                        <i class="wb-triangle-down font-size-24 mb-10 blue-600"></i>
+                                        <div>
+                                        <span class="font-size-12">1 year</span>
+                                        </div>
+                                    </div>
+                                    </div>
+                                </div>
 
                             
                                 <div class="col-12">
@@ -161,9 +221,9 @@ $('textarea#product-description').on('keyup', function(){
             data: {
                 'action': 'update',
                 'product_type': 'discord',
-                'interval': 'month',
-                'interval_cycle': 1,
-                'price': $('#price_1m').val(),
+                'interval': 'day',
+                'interval_cycle': "day",
+                'price': $('#price_1day').val(),
                 'role_id': '{{ $role->id }}',
                 'role_name': '{{ $role->name }}',
                 'guild_id': '{{ $guild_id }}',
@@ -177,9 +237,9 @@ $('textarea#product-description').on('keyup', function(){
                 data: {
                     'action': 'update',
                     'product_type': 'discord',
-                    'interval': 'month',
-                    'interval_cycle': 3,
-                    'price': $('#price_3m').val(),
+                    'interval': 'week',
+                    'interval_cycle': "week",
+                    'price': $('#price_1week').val(),
                     'role_id': '{{ $role->id }}',
                     'role_name': '{{ $role->name }}',
                     'guild_id': '{{ $guild_id }}',
@@ -194,7 +254,7 @@ $('textarea#product-description').on('keyup', function(){
                         'product_type': 'discord',
                         'interval': 'month',
                         'interval_cycle': 6,
-                        'price': $('#price_6m').val(),
+                        'price': $('#price_1month').val(),
                         'role_id': '{{ $role->id }}',
                         'role_name': '{{ $role->name }}',
                         'guild_id': '{{ $guild_id }}',
@@ -207,9 +267,9 @@ $('textarea#product-description').on('keyup', function(){
                         data: {
                             'action': 'update',
                             'product_type': 'discord',
-                            'interval': 'month',
-                            'interval_cycle': 12,
-                            'price': $('#price_12m').val(),
+                            'interval': 'year',
+                            'interval_cycle': "year",
+                            'price': $('#price_1year').val(),
                             'role_id': '{{ $role->id }}',
                             'role_name': '{{ $role->name }}',
                             'guild_id': '{{ $guild_id }}',

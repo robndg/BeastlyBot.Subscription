@@ -100,7 +100,8 @@ class ExpressProduct extends Product
 
     public function getStripePlan() {
         StripeHelper::setApiKey();
-        return \Stripe\Plan::retrieve($this->plan_id);
+        return \Stripe\Prices::retrieve($this->plan_id);
+        //return \Stripe\Plan::retrieve($this->plan_id);
     }
 
 }

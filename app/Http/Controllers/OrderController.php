@@ -64,7 +64,26 @@ class OrderController extends Controller {
 
         $stripe_customer = auth()->user()->getStripeHelper()->getCustomerAccount();
 
-        $checkout_data = [
+
+        $stripe = StripeHelper::getStripeClient();
+
+          $session = \Stripe\Checkout\Session::create([
+            'payment_method_types' => ['card'],
+            'line_items' => [[
+              'price' => $product->getStripePlan()->id,
+              'quantity' => 1,
+            ]],
+            'subscription_data' => [
+              'application_fee_percent' => 5,
+            ],
+            'mode' => 'subscription',
+            'success_url' => $product->getCallbackSuccessURL(),
+            'cancel_url' => $product->getCallbackCancelURL(),
+            //'customer' => $stripe_customer->id,
+          ], ['stripe_account' => StripeConnect::where('user_id', $discord_store->user_id)->first()->express_id]);
+
+
+       /* $checkout_data = [
             'payment_method_types' => ['card'],
             'mode' => 'subscription',
             'subscription_data' => [
@@ -77,9 +96,9 @@ class OrderController extends Controller {
             'success_url' => $product->getCallbackSuccessURL(),
             'cancel_url' => $product->getCallbackCancelURL(),
             'customer' => $stripe_customer->id,
-        ];
+        ];*/
 
-        if(!empty($request['coupon_code'])) {
+        /*if(!empty($request['coupon_code'])) {
             if(DiscordStore::where('guild_id', $request['guild_id'])->exists()) {
                 $store = DiscordStore::where('guild_id', $request['guild_id'])->first();
                 $checkout_data['subscription_data']['coupon'] = $store->user_id . $request['coupon_code'];
@@ -90,7 +109,7 @@ class OrderController extends Controller {
         }
         
         $stripe = StripeHelper::getStripeClient();
-        $session = $stripe->checkout->sessions->create($checkout_data, array("stripe_account" => StripeConnect::where('user_id', $discord_store->user_id)->first()));
+        $session = $stripe->checkout->sessions->create($checkout_data, array("stripe_account" => StripeConnect::where('user_id', $discord_store->user_id)->first()));*/
         
         return response()->json(['success' => true, 'msg' => $session->id]);
     }

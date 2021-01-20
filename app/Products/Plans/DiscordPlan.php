@@ -28,7 +28,7 @@ class DiscordPlan extends Plan
         if($this->getStripePlan() !== null) {
             if($this->getStripePlan()->amount != intval($request['price']) * 100) {
                 try {
-                    $stripe->plans->delete($this->getStripeID(), []);
+                    $stripe->prices->delete($this->getStripeID(), []);
                 } catch (\Exception $e) {}
             } else {
                 $same_price = true;
@@ -41,7 +41,18 @@ class DiscordPlan extends Plan
         }
 
         if($request['price'] > 0 && !$same_price) {
-            $plan = $stripe->plans->create([
+            $cur = "usd";
+
+            $plan = $stripe->prices->create([
+                'unit_amount' => ntval($request['price']) * 100,
+                'currency' => $cur,
+                'recurring' => ['interval' => $this->interval],
+                'product' => $this->product->getStripeID(),
+                'metadata' => [
+                    'product_UUID' => $this->product->getStripeID()
+                ],
+            ]);
+           /* $plan = $stripe->plans->create([
                 "amount" => intval($request['price']) * 100,
                 "interval" => $this->interval,
                 "interval_count" => $this->interval_cycle,
@@ -51,7 +62,7 @@ class DiscordPlan extends Plan
                     'user_id' => auth()->user()->id
                 ],
                 "id" => $this->getStripeID(),
-            ]);
+            ]);*/
 
             Cache::forget('plan_' . $this->getStripeID());
             Cache::put('plan_' . $this->getStripeID(), $plan, 60 * 10);

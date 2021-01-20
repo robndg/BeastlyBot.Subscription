@@ -19,9 +19,9 @@ Route::get('/slide-product-purchase/{guild_id}/{role_id}', function($guild_id, $
     $role = $discord_helper->getRole($guild_id, $role_id);
     $plans = array();
 
-    foreach(array(1, 3, 6, 12) as $months) {
-        $discord_product = new DiscordRoleProduct($guild_id, $role_id, $months);
-        $plan = new DiscordPlan($discord_product, 'month', $months);
+    foreach(array("day", "week", "month", "year") as $interval) {
+        $discord_product = new DiscordRoleProduct($guild_id, $role_id, $interval);
+        $plan = new DiscordPlan($discord_product, 'interval', $interval);
 
         if($plan->getStripePlan() != null) {
             array_push($plans, $plan);
