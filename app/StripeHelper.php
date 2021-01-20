@@ -148,7 +148,7 @@ class StripeHelper
 
     /*public static function getAccountFromStripeConnect(string $code): \Stripe\Account {
         $token_request_body = array(
-            'client_secret' => env('APP_ENV') == 'local' ? env('STRIPE_CLIENT_SECRET_TEST') : env('STRIPE_CLIENT_SECRET'),
+            'client_secret' => env('APP_TEST') == 'true' ? env('STRIPE_CLIENT_SECRET_TEST') : env('STRIPE_CLIENT_SECRET'),
             'grant_type' => 'authorization_code',
             'client_id' => env('STRIPE_CLIENT_ID'),
             'code' => $code,
@@ -169,7 +169,7 @@ class StripeHelper
 
     public static function getAccountFromStripeConnect(string $code): \Stripe\Account {
         $token_request_body = array(
-            'client_secret' => env('APP_ENV') == 'local' ? env('STRIPE_CLIENT_SECRET_TEST') : env('STRIPE_CLIENT_SECRET'),
+            'client_secret' => env('APP_TEST') == 'true' ? env('STRIPE_CLIENT_SECRET_TEST') : env('STRIPE_CLIENT_SECRET'),
             'grant_type' => 'authorization_code',
             'client_id' => env('STRIPE_CLIENT_ID'),
             'code' => $code,
@@ -189,19 +189,19 @@ class StripeHelper
     }
 
     public static function setApiKey() {
-        \Stripe\Stripe::setApiKey(env('APP_ENV') == 'local' ? env('STRIPE_CLIENT_SECRET_TEST') : env('STRIPE_CLIENT_SECRET'));
+        \Stripe\Stripe::setApiKey(env('APP_TEST') == 'true' ? env('STRIPE_CLIENT_SECRET_TEST') : env('STRIPE_CLIENT_SECRET'));
     }
 
     public static function getStripeClient(): \Stripe\StripeClient {
-        return new \Stripe\StripeClient(env('APP_ENV') == 'local' ? env('STRIPE_CLIENT_SECRET_TEST') : env('STRIPE_CLIENT_SECRET'));
+        return new \Stripe\StripeClient(env('APP_TEST') == 'true' ? env('STRIPE_CLIENT_SECRET_TEST') : env('STRIPE_CLIENT_SECRET'));
     }
 
     public static function getClientID() {
-        return env('APP_ENV') == 'local' ? env('STRIPE_CLIENT_ID_TEST') : env('STRIPE_CLIENT_ID');
+        return env('APP_TEST') == 'true' ? env('STRIPE_CLIENT_ID_TEST') : env('STRIPE_CLIENT_ID');
     }
 
     public static function getStripePublic() {
-        return env('APP_ENV') == 'local' ? env('STRIPE_CLIENT_PUBLIC_TEST') : env('STRIPE_CLIENT_PUBLIC_TEST');
+        return env('APP_TEST') == 'true' ? env('STRIPE_CLIENT_PUBLIC_TEST') : env('STRIPE_CLIENT_PUBLIC_TEST');
     }
 
     public static function getConnectURL() {
