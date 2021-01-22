@@ -103,7 +103,7 @@ class ProductController extends Controller {
         $prices = [];
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
         StripeHelper::setApiKey();
-        foreach ([1, 3, 6, 12] as $duration) {
+        foreach (["day", "week", "month", "year"] as $duration) {
             $discord_plan = new DiscordPlan(new DiscordRoleProduct($guild_id, $role_id, $duration), 'month', $duration);
             $key = 'plan_' . $discord_plan->getStripeID();
             
@@ -180,6 +180,9 @@ class ProductController extends Controller {
 
 
         $banned = $discord_helper->isUserBanned($discord_store->guild_id, \App\DiscordOAuth::where('user_id', auth()->user()->id)->first()->discord_id);
+        
+       
+
 
         return view('subscribe')->with('guild_id', $discord_store->guild_id)->with('owner_array', $owner_array)->with('shop_url', $discord_store->url)->with('roles', $roles)->with('active', $active)->with('guild', $discord_helper->getGuild($discord_store->guild_id))->with('banned', $banned)->with('descriptions', $descriptions);
     }

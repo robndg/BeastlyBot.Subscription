@@ -23,6 +23,8 @@ class DiscordPlan extends Plan
             ]);
         }
 
+    // if(! \App\Price::where('guild_id', $this->product->guild_id)->exists()) {
+
         $same_price = false;
 
         if($this->getStripePlan() !== null) {
@@ -85,7 +87,7 @@ class DiscordPlan extends Plan
                 ]);
             }
 
-            $key = 'price_' . $this->product->getStripeID() . '_' . $this->interval_cycle;
+            $key = 'price_' . $this->product->getStripeID() . '_' . $this->uuid;
             Cache::put($key, $request['price'], 60 * 5);
         } catch(\Exception $e) {
             \Log::info($e);
@@ -96,7 +98,8 @@ class DiscordPlan extends Plan
 
     public function getStripeID(): string
     {
-        return $this->product->getStripeID() . '_' . $this->interval_cycle . '_r';
+        $this->product->getStripeID();
+        return $this->product->getStripeID() . '_' . $this->uuid;
     }
 
 }

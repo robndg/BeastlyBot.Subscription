@@ -156,6 +156,7 @@ class DiscordRoleProduct extends Product
 
     public function getStripeID(): string
     {
+        //return 'discord_' . $this->UUID;
         return 'discord_' . $this->guild_id . '_' . $this->role_id;
     }
 
@@ -172,7 +173,7 @@ class DiscordRoleProduct extends Product
 
     public function getStripePlan() {
         StripeHelper::setApiKey();
-        return \Stripe\Plan::retrieve($this->getStripeID() . '_' . $this->billing_cycle . '_r');
+        return \Stripe\Price::retrieve($this->getStripeID() . '_' . $this->billing_cycle . '_r');
     }
 
     public function createProduct() {

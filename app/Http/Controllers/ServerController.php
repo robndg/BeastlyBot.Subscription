@@ -106,7 +106,7 @@ class ServerController extends Controller {
         $subscribers = [];
 
         foreach($roles as $role) {
-            $discord_product = new DiscordRoleProduct($id, $role->id, null);
+            $discord_product = new DiscordRoleProduct($id, $role->id, null, null);
             $stripe_product = $discord_product->getStripeProduct();
             if($stripe_product != null && $stripe_product->active) {
                 array_push($active, $role->id);

@@ -24,7 +24,8 @@ RUN apt-get update && apt-get install -y \
         php-mysql \
         php-bcmath \
         php-json \
-        php-zip
+        php-zip \
+        nano
 
 COPY .docker/apache/beastly.conf /etc/apache2/sites-available/beastly.conf
 COPY .docker/apache/beastly-ssl.conf /etc/apache2/sites-available/beastly-ssl.conf

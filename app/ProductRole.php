@@ -6,10 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProductRole extends Model
 {
-    protected $fillable = ['discord_store_id', 'role_id'];
+    protected $fillable = ['UUID', 'discord_store_id', 'role_id'];
 
     public function store()
     {
         return $this->belongsTo(DiscordStore::class);
     }
+
+   /* public function prices()
+    {
+        return $this->hasMany(Price::class);
+    }*/
 }

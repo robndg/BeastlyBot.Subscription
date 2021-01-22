@@ -80,7 +80,7 @@
             </div>
         </div>
         <div class="pt-0 pt-md-25 pt-lg-25 pt-xl-50">
-            <h3 class="mt-0 pb-md-10 text-white">Total: <span class="font-weight-200">$<span id="big_price_label">{{ number_format(($plans["day"]->getStripePlan()->unit_amount/ 100), 2, '.', ',') }}</span></span></h3>
+            <h3 class="mt-0 pb-md-10 text-white">Total: <span class="font-weight-200">$<span id="big_price_label">{{-- number_format(($plans["day"]->getStripePlan()->unit_amount/ 100), 2, '.', ',') --}}</span></span></h3>
             <div>
                 <input type="text" class="form-control form-control-lg w-200 mx-auto" placeholder="Coupon Code" id="couponCode" disabled>
                 <p id="coupon_info"></p>
