@@ -87,11 +87,7 @@ class DiscordPlan extends Plan
                 ]);
             }
 
-<<<<<<< HEAD
             $key = 'price_' . $this->product->getStripeID() . '_' . $this->interval_cycle; // TODO UUID
-=======
-            $key = 'price_' . $this->product->getStripeID() . '_' . $this->uuid;
->>>>>>> 4291d4b085eb72c32defec48d457d73779fce67a
             Cache::put($key, $request['price'], 60 * 5);
         } catch(\Exception $e) {
             \Log::info($e);
@@ -103,11 +99,7 @@ class DiscordPlan extends Plan
     public function getStripeID(): string
     {
         $this->product->getStripeID();
-<<<<<<< HEAD
         return $this->product->getStripeID() . '_' . $this->interval_cycle . '_r'; // TODO UUID
-=======
-        return $this->product->getStripeID() . '_' . $this->uuid;
->>>>>>> 4291d4b085eb72c32defec48d457d73779fce67a
     }
 
 }

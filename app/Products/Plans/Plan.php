@@ -62,11 +62,7 @@ abstract class Plan
             
         }else{
             $product_price = new App\Price([
-<<<<<<< HEAD
             'UUID' => Str::uuid()->toString(),
-=======
-            'UUID' => Str::random(32),
->>>>>>> 4291d4b085eb72c32defec48d457d73779fce67a
             'interval' => $this->interval,
             'product_id' => $this->product->getStripeID(),
             ]);
