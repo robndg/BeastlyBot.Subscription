@@ -174,7 +174,11 @@ class DiscordRoleProduct extends Product
 
     public function getStripePlan() {
         StripeHelper::setApiKey();
+<<<<<<< HEAD
         return \Stripe\Price::retrieve($this->getStripeID() . '_' . $this->billing_cycle . '_r'); // TODO ROB: change to UUID
+=======
+        return \Stripe\Price::retrieve($this->getStripeID() . '_' . $this->billing_cycle . '_r');
+>>>>>>> 4291d4b085eb72c32defec48d457d73779fce67a
     }
 
     public function createProduct() {

@@ -38,7 +38,7 @@ class ProductController extends Controller {
             // find the product type to initiate
             switch ($request['product_type']) {
                 case "discord":
-                    $product = new DiscordRoleProduct($request['guild_id'], $request['role_id'], $interval_cycle, $product_UUID, );
+                    $product = new DiscordRoleProduct($request['guild_id'], $request['role_id'], $interval_cycle, $product_UUID);
                 break;
                 default:
                     throw new ProductMsgException('Could not find product by that type.');

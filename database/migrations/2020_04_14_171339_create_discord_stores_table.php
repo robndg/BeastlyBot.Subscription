@@ -18,7 +18,10 @@ class CreateDiscordStoresTable extends Migration
             $table->bigInteger('guild_id')->unique();
             $table->string('user_id');
             $table->string('url')->unique();
+<<<<<<< HEAD
             $table->string('UUID')->unique();
+=======
+>>>>>>> 4291d4b085eb72c32defec48d457d73779fce67a
             $table->string('payment_processor')->default(1);
             $table->boolean('live')->default(false);
             $table->longText('description')->nullable();
