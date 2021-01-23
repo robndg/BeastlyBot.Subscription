@@ -47,6 +47,7 @@ $(document).on('click', '.btn_save-roles', function (e) {
 
             e.preventDefault();
             var role_id = $(this).data('role_id');
+            var product_UUID = $(this).data('role_id');
 
             var clicked = false;
             $('#toggle-product_' + guild_id + '_' + role_id).addClass('disabled').attr("disabled", true);
@@ -72,6 +73,7 @@ $(document).on('click', '.btn_save-roles', function (e) {
                         'role_id': role_id,
                         'guild_name': Global.name,
                         'name': $('#rolename-' + role_id).text(),
+                        'product_UUID' : product_UUID,
                         _token: '{{ csrf_token() }}'
                     },
                 }).done(function (msg) {

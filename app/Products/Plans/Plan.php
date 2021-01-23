@@ -7,6 +7,7 @@ use App\Products\ProductMsgException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
 use App\StripeHelper;
+use Illuminate\Support\Str;
 
 abstract class Plan 
 {
@@ -54,6 +55,25 @@ abstract class Plan
         } catch (\Exception $e) {
         }
 
+        $cur = "usd";
+
+        if(App\Price::where('product_id', $this->product->getStripeID())->where('interval', $this->interval)->exists()){ // TODO Rob: might search by UUID
+            $product_price = App\Price::where('product_id', $this->product->getStripeID())->where('interval', $this->interval)->first();
+            
+        }else{
+            $product_price = new App\Price([
+            'UUID' => Str::uuid()->toString(),
+            'interval' => $this->interval,
+            'product_id' => $this->product->getStripeID(),
+            ]);
+            $product_price->save();
+            
+        }
+        $product_price->price = $price;
+        $product_price->cur = $cur;
+        $product_price->status = 0;
+        $product_price->save();
+
         if($price < 1) return;
 
        /* $plan = \Stripe\Plan::create([
@@ -68,7 +88,7 @@ abstract class Plan
             "id" => $this->getStripeID(),
         ]);*/
 
-        $cur = "usd";
+        
 
         $plan = \Stripe\Price::create([
             'unit_amount' => $price * 100,
@@ -76,11 +96,15 @@ abstract class Plan
             'recurring' => ['interval' => $this->interval],
             'product' => $this->product->getStripeID(),
             'metadata' => [
-                'product_UUID' => $this->product->getStripeID()
+                'product_UUID' => $product_price->UUID,
             ],
           ]);
 
         Cache::put('plan_' . $this->getStripeID(), $plan, 60 * 10);
+
+        $product_price->stripe_price_id = $plan->id;
+        $product_price->status = 1;
+        $product_price->save();
 
         return response()->json(['success' => true, 'msg' => 'Plan created!', 'active' => true]);
     }

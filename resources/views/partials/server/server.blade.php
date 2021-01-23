@@ -63,7 +63,7 @@
                                     <button class="btn btn-block btn-primary btn-icon py-20" data-toggle="tooltip" data-original-title="Settings"><i class="icon wb-more-horizontal" aria-hidden="true"></i></button>
                                 </td>
                                 <td class="cell-100 cell-sm-100 toggle-role d-none text-right">
-                                    <button type="button" class="btn btn-primary btn-icon btn-round py-md-20 w-p80 animation-scale-up @if($active) active @endif toggle-btn-trigger" id="toggle-product_{{ $id }}_{{ $role->id }}" data-role_id="{{ $role->id }}"><i class="icon @if($active) wb-minus @else wb-plus @endif text-white" aria-hidden="true" id="toggle-product-icon_{{ $id }}_{{ $role->id }}"></i></button>
+                                    <button type="button" class="btn btn-primary btn-icon btn-round py-md-20 w-p80 animation-scale-up @if($active) active @endif toggle-btn-trigger" id="toggle-product_{{ $id }}_{{ $role->id }}" data-role_id="{{ $role->id }}" {{-- data-product_UUID='{{ $role->UUID }}' --}}><i class="icon @if($active) wb-minus @else wb-plus @endif text-white" aria-hidden="true" id="toggle-product-icon_{{ $id }}_{{ $role->id }}"></i></button>
                                 </td>
                             </tr>
                             @endif

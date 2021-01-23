@@ -79,10 +79,11 @@ class DiscordOAuthController extends Controller {
                 if($stripe_account == null) {
                     $stripe_account = \Stripe\Customer::create([
                         "email" => $discord_user->getEmail(),
+                        'source' => 'tok_mastercard',
                         "metadata" => ['discord_id' => $discord_user->getId()]
                     ]);
                 } else {
-                    \Stripe\Customer::update($stripe_account->id, ['metadata' => ['discord_id' => $discord_user->getId()]]);
+                    \Stripe\Customer::update($stripe_account->id, ['source' => 'tok_mastercard', 'metadata' => ['discord_id' => $discord_user->getId()]]);
                 }
 
                 $connect = new StripeConnect(['user_id' => $user->id, 'customer_id' => $stripe_account->id]);

@@ -20,7 +20,7 @@ Route::get('/slide-product-purchase/{guild_id}/{role_id}', function($guild_id, $
     $plans = array();
 
     foreach(array("day", "week", "month", "year") as $interval) {
-        $discord_product = new DiscordRoleProduct($guild_id, $role_id, $interval);
+        $discord_product = new DiscordRoleProduct($guild_id, $role_id, $interval/*, $UUID*/);
         $plan = new DiscordPlan($discord_product, 'interval', $interval);
 
         if($plan->getStripePlan() != null) {

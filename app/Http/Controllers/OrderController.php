@@ -32,7 +32,7 @@ class OrderController extends Controller {
         try {
             switch ($request['product_type']) {
                 case "discord":
-                    $product = new DiscordRoleProduct($request['guild_id'], $request['role_id'], $request['billing_cycle']);
+                    $product = new DiscordRoleProduct($request['guild_id'], $request['role_id'], $request['billing_cycle']); // TODO: Find UUID
                 break;
                 case "express":
                     $product = new ExpressProduct($request['billing_cycle'] == '1' ? env('LIVE_MONTHLY_PLAN_ID') : env('LIVE_YEARLY_PLAN_ID'));
@@ -62,10 +62,43 @@ class OrderController extends Controller {
             return response()->json(['success' => false, 'msg' => $e->getError()->message]);
         }
 
+
+        // COPY CUSTOMER
+
+
+        // Copy Stripe Customer to Connect Owner Stripe 
+        // TODO: check if shop uses Stripe or Paypal first
+        StripeHelper::setApiKey();
+        // TODO: check if already copied customer
+
+        $customer_stripe = StripeConnect::where('user_id', auth()->user()->id)->first();
+        $owner_stripe = StripeConnect::where('user_id', $discord_store->user_id)->first();
+
+        \Stripe\Customer::update($customer_stripe->customer_id, ['source' => 'tok_mastercard']);
+
+        $token = \Stripe\Token::create(array(
+            "customer" => $customer_stripe->customer_id,
+            ), array("stripe_account" => $owner_stripe->express_id));
+
+            
+        $copiedCustomer = \Stripe\Customer::create(array(
+            "description" => "Customer for " . $owner_stripe->id, // Rob TODO: change to add UUID for StripeConnect
+            "source" => $token // obtained with Stripe.js
+            ), array("stripe_account" => $owner_stripe->express_id));
+
+            Log::info($copiedCustomer);
+        // TODO: PayPal Copy
+
+        
+        // CREATE SESSION, 
+
+
         $stripe_customer = auth()->user()->getStripeHelper()->getCustomerAccount();
 
 
         $stripe = StripeHelper::getStripeClient();
+
+        StripeHelper::setApiKey();
 
           $session = \Stripe\Checkout\Session::create([
             'payment_method_types' => ['card'],
@@ -79,7 +112,8 @@ class OrderController extends Controller {
             'mode' => 'subscription',
             'success_url' => $product->getCallbackSuccessURL(),
             'cancel_url' => $product->getCallbackCancelURL(),
-            //'customer' => $stripe_customer->id,
+            'customer' => $copiedCustomer->id, // Rob TODO: Store in DB or use find
+            'client_reference_id' => auth()->user()->id, // Rob TODO: change to add UUID for User
           ], ['stripe_account' => StripeConnect::where('user_id', $discord_store->user_id)->first()->express_id]);
 
 

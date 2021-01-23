@@ -12,4 +12,9 @@ class ProductRole extends Model
     {
         return $this->belongsTo(DiscordStore::class);
     }
+
+   /* public function prices()
+    {
+        return $this->hasMany(Price::class);
+    }*/
 }

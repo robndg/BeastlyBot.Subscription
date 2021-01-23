@@ -20,7 +20,7 @@
       <div class="card-block p-20">
         <div class="counter counter-lg counter-inverse text-left">
           <div class="counter-label mb-20">
-            <div>LATEST PAYOUT <i class="icon wb-info-circle ml-1 text-white" aria-hidden="true"
+            <div>PAYOUT <i class="icon wb-info-circle ml-1 text-white" aria-hidden="true"
               data-plugin="webuiPopover"
               data-content="&lt;p&gt;Your shops recent payed out balance, on the way to your bank. You’ll receive payouts daily.&lt;/p&gt;" data-trigger="hover"
               data-animation="pop"></i></div>

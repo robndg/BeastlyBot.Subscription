@@ -13,14 +13,15 @@ use App\StripeHelper;
 class DiscordRoleProduct extends Product
 {
 
-    public $guild_id, $role_id, $billing_cycle;
+    public $guild_id, $role_id, $billing_cycle, $product_UUID;
     public $discord_store;
 
-    public function __construct($guild_id, $role_id, $billing_cycle)
+    public function __construct($guild_id, $role_id, $billing_cycle/*, $product_UUID*/)
     {
         $this->guild_id = $guild_id;
         $this->role_id = $role_id;
         $this->billing_cycle = $billing_cycle;
+        //$this->UUID = $product_UUID;
         parent::__construct('discord');
     }
 
@@ -65,7 +66,7 @@ class DiscordRoleProduct extends Product
             throw new ProductMsgException('Role ID is not valid.');
         }
 
-        if (auth()->user()->getStripeHelper()->isSubscribedToProduct($this->guild_id . '_' . $this->role_id))
+        if (auth()->user()->getStripeHelper()->isSubscribedToProduct($this->guild_id . '_' . $this->role_id)) // TODO ROB: change to UUID
             throw new ProductMsgException('You are already subscribed to that role. You can edit your subscription in the subscriptions page.');
 
     }
@@ -156,6 +157,7 @@ class DiscordRoleProduct extends Product
 
     public function getStripeID(): string
     {
+        //return 'discord_' . $this->UUID;
         return 'discord_' . $this->guild_id . '_' . $this->role_id;
     }
 
@@ -172,7 +174,7 @@ class DiscordRoleProduct extends Product
 
     public function getStripePlan() {
         StripeHelper::setApiKey();
-        return \Stripe\Plan::retrieve($this->getStripeID() . '_' . $this->billing_cycle . '_r');
+        return \Stripe\Price::retrieve($this->getStripeID() . '_' . $this->billing_cycle . '_r'); // TODO ROB: change to UUID
     }
 
     public function createProduct() {
@@ -193,6 +195,7 @@ class DiscordRoleProduct extends Product
                 ]);
                 Cache::put('product_' . $this->getStripeID(), $this->stripe_product_obj, 60 * 10);
             }
+
         }
     }
 

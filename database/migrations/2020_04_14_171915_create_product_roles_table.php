@@ -17,7 +17,8 @@ class CreateProductRolesTable extends Migration
             $table->id();
             $table->bigInteger('discord_store_id');
             $table->bigInteger('role_id');
-            $table->string('description');
+            $table->string('description')->nullable();
+            $table->string('UUID')->unique();
             $table->timestamps();
         });
     }

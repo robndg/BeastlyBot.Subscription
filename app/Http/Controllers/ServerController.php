@@ -22,6 +22,7 @@ use App\Stat;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use App\StripeHelper;
+use Illuminate\Support\Str;
 
 class ServerController extends Controller {
 
@@ -87,7 +88,7 @@ class ServerController extends Controller {
         $discord_store = null;
 
         if(! DiscordStore::where('guild_id', $id)->exists()) {
-            $discord_store = new DiscordStore(['guild_id' => $id, 'url' => $id, 'user_id' => auth()->user()->id]);
+            $discord_store = new DiscordStore(['guild_id' => $id, 'url' => $id, 'user_id' => auth()->user()->id, 'UUID' => Str::uuid()]);
             $discord_store->save();
 
             $stats = new Stat(['type' => 1, 'type_id' => $discord_store->id]);
@@ -103,10 +104,11 @@ class ServerController extends Controller {
         $roles = $discord_helper->getRoles($id);
 
         $active = array();
+        $uuid = array();
         $subscribers = [];
 
         foreach($roles as $role) {
-            $discord_product = new DiscordRoleProduct($id, $role->id, null);
+            $discord_product = new DiscordRoleProduct($id, $role->id, null, null);
             $stripe_product = $discord_product->getStripeProduct();
             if($stripe_product != null && $stripe_product->active) {
                 array_push($active, $role->id);
