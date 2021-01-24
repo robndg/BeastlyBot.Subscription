@@ -104,14 +104,18 @@ class ServerController extends Controller {
         $roles = $discord_helper->getRoles($id);
 
         $active = array();
-        $uuid = array();
+        $product_roles = [];
+
         $subscribers = [];
 
-        foreach($roles as $role) {
+        foreach($roles as $role) { 
             $discord_product = new DiscordRoleProduct($id, $role->id, null, null);
-            $stripe_product = $discord_product->getStripeProduct();
-            if($stripe_product != null && $stripe_product->active) {
-                array_push($active, $role->id);
+            $product = $discord_product->getProduct(); // TODO: check if product active in Stripe/PayPal and change product DB
+            if($product != null) {
+                if($product->active == 1){
+                    array_push($active, $role->id);
+                }
+                $product_roles[$role->id] = $product;
                 $subscribers[$role->id] = Subscription::where('store_id', $discord_store->id)->where('status', '<=', 3)->where('status', '<=', 2)->where('metadata', 'LIKE', '%' . $role->id . '%')->count();
             } else {
                 $subscribers[$role->id] = 0;
@@ -150,7 +154,7 @@ class ServerController extends Controller {
         // });
 
         // TODO: Member count not working. Returns null in guild for some reason, so does members. Have to use old code to update member count
-        return view('server')->with('id', $id)->with('shop', $discord_store)->with('has_order', false)->with('roles', $roles)->with('active_roles', $active)->with('guild', $discord_helper->getGuild($id))->with('subscribers', $subscribers)->with('total_payout', $total_payout)->with('pending_payout', $pending_payout)->with('average_weekly', $average_weekly)->with('users_roles', $users_roles)->with('invoices', $invoices)->with('subscriptions', $subscriptions)->with('bot_positioned', $discord_helper->isBotPositioned($id));
+        return view('server')->with('id', $id)->with('shop', $discord_store)->with('has_order', false)->with('roles', $roles)/*->with('products', $products)*/->with('product_roles', $product_roles)->with('guild', $discord_helper->getGuild($id))->with('subscribers', $subscribers)->with('total_payout', $total_payout)->with('pending_payout', $pending_payout)->with('average_weekly', $average_weekly)->with('users_roles', $users_roles)->with('invoices', $invoices)->with('subscriptions', $subscriptions)->with('bot_positioned', $discord_helper->isBotPositioned($id));
     }
 
     /* --------------------------------------------------------------------
@@ -166,7 +170,7 @@ class ServerController extends Controller {
         Used:
         -- server blade (roles_script): to un-hide active roles in list
     -------------------------------------------------------------------- */
-    public static function getStatusRoles(Request $request){
+    public static function getStatusRoles(Request $request){ // TODO ROB: change to DB
         $roles = $request['roles'];
 
         $status_roles = array();
@@ -204,19 +208,28 @@ class ServerController extends Controller {
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
         StripeHelper::setApiKey();
 
-        \Log::info($role_id);
+
+        $store = DiscordStore::where('guild_id', $guild_id)->first();
+
+        if(! ProductRole::where('discord_store_id', $store->id)->where('role_id', $role_id)->exists()) {
+            $product_role = new ProductRole(['id' => Str::uuid(),'discord_store_id' => $store->id, 'role_id' => $role_id, 'active' => 0]);
+            $product_role->save();
+        } else {
+            $product_role = ProductRole::where('discord_store_id', $store->id)->where('role_id', $role_id)->first();
+        }
+
 
         try {
-            $discord_product = new DiscordRoleProduct($guild_id, $role_id, null);
-            $product = $discord_product->getStripeProduct();
+            $discord_product = new DiscordRoleProduct($guild_id, $role_id, null, null);
+            $product = $discord_product->getProduct();
             $store = DiscordStore::where('guild_id', $guild_id)->first();
             $desc = ProductRole::where('discord_store_id', $store->id)->where('role_id', $role_id)->first();
             $shop_url = $store->url;
             $discord_helper = new \App\DiscordHelper(auth()->user());
-            return view('slide.slide-roles-settings')->with('guild_id', $guild_id)->with('role', $discord_helper->getRole($guild_id, $role_id))->with('shop_url', $shop_url)->with('enabled', $product->active)->with('prices', ProductController::getPricesForRole($guild_id, $role_id))->with('desc', $desc);
+            return view('slide.slide-roles-settings')->with('guild_id', $guild_id)->with('role', $discord_helper->getRole($guild_id, $role_id))->with('shop_url', $shop_url)->with('product', $product_role)->with('prices', ProductController::getPricesForRole($guild_id, $role_id))->with('desc', $desc);
         } catch (\Exception $e) {
             if (env('APP_DEBUG')) Log::error($e);
-            return view('slide.slide-roles-settings')->with('enabled', false)->with('role', $discord_helper->getRole($guild_id, $role_id))->with('guild_id', $guild_id)->with('role_id', $role_id)->with('prices', ProductController::getPricesForRole($guild_id, $role_id));
+            return view('slide.slide-roles-settings')->with('enabled', false)->with('role', $discord_helper->getRole($guild_id, $role_id))->with('guild_id', $guild_id)->with('role_id', $role_id)->with('product', $product_role)->with('prices', ProductController::getPricesForRole($guild_id, $role_id));
         }
     }
 

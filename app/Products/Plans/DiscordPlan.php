@@ -4,6 +4,7 @@ namespace App\Products\Plans;
 
 use Illuminate\Support\Facades\Cache;
 use App\StripeHelper;
+use App\Price;
 //use App\Products\ProductMsgException;
 
 class DiscordPlan extends Plan

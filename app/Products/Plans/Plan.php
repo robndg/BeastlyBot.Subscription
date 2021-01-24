@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
 use App\StripeHelper;
 use Illuminate\Support\Str;
+use App\Price;
 
 abstract class Plan 
 {
@@ -47,6 +48,8 @@ abstract class Plan
     public function create(Request $request) {
         $price = $request['price'];
 
+        $product_id = $request['product_id'];
+
         if (! $this->validPrice($price)) throw new ProductMsgException('Invalid price for ' . $this->interval_cycle . ' ' . $this->interval . '.');
 
         // if the plan already exists, delete it.
@@ -54,25 +57,6 @@ abstract class Plan
             $this->delete($request);
         } catch (\Exception $e) {
         }
-
-        $cur = "usd";
-
-        if(App\Price::where('product_id', $this->product->getStripeID())->where('interval', $this->interval)->exists()){ // TODO Rob: might search by UUID
-            $product_price = App\Price::where('product_id', $this->product->getStripeID())->where('interval', $this->interval)->first();
-            
-        }else{
-            $product_price = new App\Price([
-            'UUID' => Str::uuid()->toString(),
-            'interval' => $this->interval,
-            'product_id' => $this->product->getStripeID(),
-            ]);
-            $product_price->save();
-            
-        }
-        $product_price->price = $price;
-        $product_price->cur = $cur;
-        $product_price->status = 0;
-        $product_price->save();
 
         if($price < 1) return;
 
@@ -88,6 +72,26 @@ abstract class Plan
             "id" => $this->getStripeID(),
         ]);*/
 
+
+        $cur = "usd";
+
+        if(\App\Price::where('product_id', $product_id)->where('interval', $this->interval)->exists()){ // TODO Rob: might search by UUID
+            $product_price = \App\Price::where('product_id', $product_id)->where('interval', $this->interval)->first();
+            
+        }else{
+            $product_price = new \App\Price([
+            'id' => Str::uuid(),
+            'interval' => $this->interval,
+            'product_id' => $product_id,
+            'price' => intval($price),
+            ]);
+            $product_price->save();
+            
+        }
+        $product_price->price = intval($price);
+        $product_price->cur = $cur;
+        $product_price->status = 0;
+        $product_price->save();
         
 
         $plan = \Stripe\Price::create([

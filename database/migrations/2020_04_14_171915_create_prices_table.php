@@ -14,14 +14,14 @@ class CreatePricesTable extends Migration
     public function up()
     {
         Schema::create('prices', function (Blueprint $table) {
-            $table->id();
-            $table->bigInteger('product_id');
-            $table->string('UUID')->unique();
+            $table->uuid('id')->primary();
+            $table->text('product_id');
+           // $table->string('UUID')->unique();
             
             $table->string('stripe_price_id')->nullable();
             $table->string('paypal_price_id')->nullable();
             
-            $table->double('price')->nullable();
+            $table->integer('price')->nullable();
             $table->string('cur')->default('usd');
             $table->string('interval')->default('monthly');
 
@@ -30,7 +30,7 @@ class CreatePricesTable extends Migration
             $table->string('end_date')->nullable(); // date time
             $table->integer('max_sales')->nullable();
 
-            $table->double('discount')->nullable();
+            $table->integer('discount')->nullable();
             $table->string('discount_end')->nullable(); // date time
             $table->integer('discount_max')->nullable();
 

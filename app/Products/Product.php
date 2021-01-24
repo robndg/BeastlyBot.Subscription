@@ -7,16 +7,18 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use App\StripeHelper;
 
+
 abstract class Product 
 {
   
-    protected $product_type;
+    protected $product_type; // = discord
     protected $stripe_product_obj;
+    protected $product_obj;
 
     public function __construct(string $product_type)
     {
         $this->product_type = $product_type;
-
+        
         if(Cache::has('product_' . $this->getStripeID())) {
             if(Cache::get('product_' . $this->getStripeID()) != 'null') {
                 $this->stripe_product_obj = Cache::get('product_' . $this->getStripeID());
@@ -30,6 +32,7 @@ abstract class Product
                 Cache::put('product_' . $this->getStripeID(), "null", 60 * 10);
             }
         }
+        
         
     }
 
@@ -69,6 +72,14 @@ abstract class Product
 
     public function getStripeProduct() {
         return $this->stripe_product_obj;
+    }
+
+    public function getProduct() {
+        if($this != null){
+            return $this;
+        }else{
+            return null;
+        }
     }
 
     public function getExpressOwnerID() {

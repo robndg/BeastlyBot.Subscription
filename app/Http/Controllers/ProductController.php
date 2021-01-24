@@ -7,12 +7,16 @@ use App\ProductRole;
 use App\Ban;
 use App\StripeConnect;
 use App\StripeHelper;
+use App\Price;
+
+
 use Illuminate\Support\Facades\Cache;
 
 use App\Products\DiscordRoleProduct;
 use App\Products\Plans\DiscordPlan;
 use App\Products\ProductMsgException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 
 class ProductController extends Controller {
@@ -25,7 +29,7 @@ class ProductController extends Controller {
 
         $interval_cycle = $request['interval_cycle'];
 
-        $product_UUID = $request['product_UUID'];
+        $active = 1;//$request['active'];
 
         // check if stripe express user
         $owner_array = \App\User::where('id', (DiscordStore::where('guild_id', $request['guild_id'])->first()->user_id))->first();
@@ -33,12 +37,14 @@ class ProductController extends Controller {
             return response()->json(['success' => false, 'msg' => 'StripeError']);
         }
 
+       
 
         try {
+            
             // find the product type to initiate
             switch ($request['product_type']) {
                 case "discord":
-                    $product = new DiscordRoleProduct($request['guild_id'], $request['role_id'], $interval_cycle, $product_UUID);
+                $product = new DiscordRoleProduct($request['guild_id'], $request['role_id'], $interval_cycle, $active/*$product_UUID*/);
                 break;
                 default:
                     throw new ProductMsgException('Could not find product by that type.');
@@ -69,21 +75,50 @@ class ProductController extends Controller {
         $interval = $request['interval'];
         $interval_cycle = $request['interval_cycle'];
 
-        $product_UUID = $request['product_UUID'];
+        $product_id = $request['product_id'];
 
-        $price_UUID = $request['product_UUID'];
+        $price_id = $request['price_id'];
+
+        $price = $request['price'];
+
+        $active = 1;
 
         try {
             // find the product type to initiate
             switch ($request['product_type']) {
                 case "discord":
-                $plan = new DiscordPlan(new DiscordRoleProduct($request['guild_id'], $request['role_id'], $interval_cycle/*, $product_UUID*/), $interval, $interval_cycle, /*$price_UUID*/);
+                $plan = new DiscordPlan(new DiscordRoleProduct($request['guild_id'], $request['role_id'], $interval_cycle, $active/*, $product_UUID*/), $interval, $interval_cycle, /*$price_UUID*/);
                 break;
                 default:
                     throw new ProductMsgException('Could not find product by that type.');
                 break;
             }
 
+
+            $cur = "usd";
+            if($price = null){
+                $price = 0.00;
+            }
+
+            if(Price::where('product_id', $product_id)->where('interval', $interval)->exists()){ // TODO Rob: might search by UUID
+                $product_price = \App\Price::where('product_id', $product_id)->where('interval', $interval)->first();
+                
+            }else{
+                $product_price = new \App\Price([
+                'id' => Str::uuid(),
+                'interval' => $interval,
+                'product_id' => $product_id,
+                'price' => intval($price),
+                ]);
+                $product_price->save();
+                
+            }
+            $product_price->price = intval($price);
+            $product_price->cur = $cur;
+            $product_price->status = 0;
+            $product_price->save();
+
+            // TODO Colby : Figure out how to make other plans than just day, and have it not duplicate. Dont delete just update
             StripeHelper::setApiKey();
             if($request['action'] == 'delete') {
                 return $plan->delete($request);
@@ -108,10 +143,11 @@ class ProductController extends Controller {
     // TODO: Fix this, this won't work properly
     public static function getPricesForRole($guild_id, $role_id) {
         $prices = [];
+        $active = true;
         // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
         StripeHelper::setApiKey();
         foreach (["day", "week", "month", "year"] as $duration) {
-            $discord_plan = new DiscordPlan(new DiscordRoleProduct($guild_id, $role_id, $duration), 'month', $duration);
+            $discord_plan = new DiscordPlan(new DiscordRoleProduct($guild_id, $role_id, $duration, $active), 'month', $duration);
             $key = 'plan_' . $discord_plan->getStripeID(); 
             
             if($discord_plan->getStripePlan() != null) {

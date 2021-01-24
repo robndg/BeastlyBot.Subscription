@@ -115,10 +115,10 @@
                                     </div>
                                 </div>
 
-                            
+                             
                                 <div class="col-12">
-                                    <button id="prices_btn" type="button" class="btn btn-dark btn-lg btn-block @if(!$enabled) disabled @endif"
-                                        onclick="updatePrices()" @if(!$enabled) disabled @endif>Update Prices
+                                    <button id="prices_btn" type="button" class="btn btn-dark btn-lg btn-block {{--@if(!$enabled) disabled @endif--}}"
+                                        onclick="updatePrices()" {{-- @if(!$enabled) disabled @endif --}}>Update Prices
                                     </button>
                                 </div>
 
@@ -140,14 +140,14 @@
                                     <div class="col-12">
                                         @if(isset($desc))
                                             <textarea id='product-description' class="lit-group-item form-control" placeholder="These awesome perks..."
-                                                    @if(!$enabled) disabled
-                                                    @endif>{{ $desc->description }}</textarea>
+                                                    {{-- @if(!$enabled) disabled
+                                                    @endif --}}>{{ $desc->description }}</textarea>
                                         @else
                                             <textarea id='product-description' class="lit-group-item form-control" placeholder="These awesome perks.."
-                                                    @if(!$enabled) disabled @endif></textarea>
+                                                    {{-- @if(!$enabled) disabled @endif --}}></textarea>
                                         @endif
-                                        <button type="button" class="btn btn-block mt-10 btn-dark btn-lg @if(!$enabled) disabled @endif" id="desc-btn"
-                                            @if(!$enabled) disabled @else onclick="updateProductDesc()" @endif>Update Description
+                                        <button type="button" class="btn btn-block mt-10 btn-dark btn-lg {{-- @if(!$enabled) disabled @endif --}}" id="desc-btn"
+                                            {{--@if(!$enabled) disabled @else --}} onclick="updateProductDesc()" {{-- @endif --}}>Update Description
                                         </button>
                                     </div>
                                 </div>
@@ -203,6 +203,7 @@ $('textarea#product-description').on('keyup', function(){
 
     var guild_id = '{{ $guild_id }}';
     var role_id = '{{ $role->id }}';
+    var product_id = '{{ $product->id }}';
 
     // TODO: For now we close the slide but we need to turn off the switcheries
     function updatePrices() {
@@ -221,6 +222,7 @@ $('textarea#product-description').on('keyup', function(){
             data: {
                 'action': 'update',
                 'product_type': 'discord',
+                'product_id': product_id,
                 'interval': 'day',
                 'interval_cycle': "day",
                 'price': $('#price_1day').val(),
@@ -237,6 +239,7 @@ $('textarea#product-description').on('keyup', function(){
                 data: {
                     'action': 'update',
                     'product_type': 'discord',
+                    'product_id': product_id,
                     'interval': 'week',
                     'interval_cycle': "week",
                     'price': $('#price_1week').val(),
@@ -252,6 +255,7 @@ $('textarea#product-description').on('keyup', function(){
                     data: {
                         'action': 'update',
                         'product_type': 'discord',
+                        'product_id': product_id,
                         'interval': 'month',
                         'interval_cycle': 6,
                         'price': $('#price_1month').val(),
@@ -267,6 +271,7 @@ $('textarea#product-description').on('keyup', function(){
                         data: {
                             'action': 'update',
                             'product_type': 'discord',
+                            'product_id': product_id,
                             'interval': 'year',
                             'interval_cycle': "year",
                             'price': $('#price_1year').val(),

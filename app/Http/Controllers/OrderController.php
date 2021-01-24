@@ -63,13 +63,14 @@ class OrderController extends Controller {
         }
 
 
-        // COPY CUSTOMER
-
+       
+        // TODO ROB
+        // COPY STRIPE CUSTOMER to store / check if CUSTOMER in DB for this Store -> use UUID in session
+            // TODO: check if shop uses Stripe or Paypal first
 
         // Copy Stripe Customer to Connect Owner Stripe 
-        // TODO: check if shop uses Stripe or Paypal first
+        
         StripeHelper::setApiKey();
-        // TODO: check if already copied customer
 
         $customer_stripe = StripeConnect::where('user_id', auth()->user()->id)->first();
         $owner_stripe = StripeConnect::where('user_id', $discord_store->user_id)->first();

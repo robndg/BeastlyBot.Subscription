@@ -17,4 +17,11 @@ class StoreCustomer extends Model
     {
         return $this->hasMany(Price::class);
     }*/
+
+
+    protected $casts = [
+        'metadata' => 'array',
+        'stripe_metadata' => 'array',
+        'paypal_metadata' => 'array',
+    ];
 }

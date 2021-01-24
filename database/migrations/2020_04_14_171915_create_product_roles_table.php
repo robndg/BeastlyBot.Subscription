@@ -14,11 +14,12 @@ class CreateProductRolesTable extends Migration
     public function up()
     {
         Schema::create('product_roles', function (Blueprint $table) {
-            $table->id();
-            $table->bigInteger('discord_store_id');
+            $table->uuid('id')->primary();
+            $table->uuid('discord_store_id');
             $table->bigInteger('role_id');
             $table->string('description')->nullable();
-            $table->string('UUID')->unique();
+            $table->integer('active')->default(0);
+            //$table->string('UUID')->unique();
             $table->timestamps();
         });
     }
