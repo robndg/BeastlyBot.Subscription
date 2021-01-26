@@ -94,8 +94,9 @@ class ProductController extends Controller {
                 break;
             }
 
+            // ^^ Colby: this checks stripe for everything, needs to check DB... so I make it below as Price. Product table is made in ServerController
 
-            $cur = "usd";
+            $cur = "usd"; // Comes global owner stripe
             if($price = null){
                 $price = 0.00;
             }
@@ -119,7 +120,7 @@ class ProductController extends Controller {
             $product_price->save();
 
             // TODO Colby : Figure out how to make other Plans than just day, and have it not duplicate. Dont delete just update
-      
+            
             StripeHelper::setApiKey();
             if($request['action'] == 'delete') {
                 return $plan->delete($request);
@@ -225,9 +226,6 @@ class ProductController extends Controller {
 
         $banned = $discord_helper->isUserBanned($discord_store->guild_id, \App\DiscordOAuth::where('user_id', auth()->user()->id)->first()->discord_id);
         
-       
-
-
         return view('subscribe')->with('guild_id', $discord_store->guild_id)->with('owner_array', $owner_array)->with('shop_url', $discord_store->url)->with('roles', $roles)->with('active', $active)->with('guild', $discord_helper->getGuild($discord_store->guild_id))->with('banned', $banned)->with('descriptions', $descriptions);
     }
 
