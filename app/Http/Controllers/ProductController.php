@@ -118,7 +118,8 @@ class ProductController extends Controller {
             $product_price->status = 0;
             $product_price->save();
 
-            // TODO Colby : Figure out how to make other plans than just day, and have it not duplicate. Dont delete just update
+            // TODO Colby : Figure out how to make other Plans than just day, and have it not duplicate. Dont delete just update
+      
             StripeHelper::setApiKey();
             if($request['action'] == 'delete') {
                 return $plan->delete($request);
@@ -231,3 +232,4 @@ class ProductController extends Controller {
     }
 
 }
+
