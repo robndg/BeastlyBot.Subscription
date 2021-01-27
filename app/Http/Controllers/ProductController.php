@@ -87,7 +87,7 @@ class ProductController extends Controller {
             // find the product type to initiate
             switch ($request['product_type']) {
                 case "discord":
-                $plan = new DiscordPlan(new DiscordRoleProduct($request['guild_id'], $request['role_id'], $interval_cycle, $active/*, $product_UUID*/), $interval, $interval_cycle, /*$price_UUID*/);
+                $plan = new DiscordPlan(new DiscordRoleProduct($request['guild_id'], $request['role_id'], $interval, $active), $interval, $interval_cycle);
                 break;
                 default:
                     throw new ProductMsgException('Could not find product by that type.');
@@ -97,10 +97,8 @@ class ProductController extends Controller {
             // ^^ Colby: this checks stripe for everything, needs to check DB... so I make it below as Price. Product table is made in ServerController
 
             $cur = "usd"; // Comes global owner stripe
-            if($price = null){
-                $price = 0.00;
-            }
-
+          
+            
             if(Price::where('product_id', $product_id)->where('interval', $interval)->exists()){ // TODO Rob: might search by UUID
                 $product_price = \App\Price::where('product_id', $product_id)->where('interval', $interval)->first();
                 
@@ -109,12 +107,14 @@ class ProductController extends Controller {
                 'id' => Str::uuid(),
                 'interval' => $interval,
                 'product_id' => $product_id,
-                'price' => intval($price),
+                'price' => $price * 100,
                 ]);
                 $product_price->save();
+                $product_price = \App\Price::where('product_id', $product_id)->where('interval', $interval)->first();
+                Log::info($product_price->id);
                 
             }
-            $product_price->price = intval($price);
+            $product_price->price = $price * 100;
             $product_price->cur = $cur;
             $product_price->status = 0;
             $product_price->save();
@@ -123,16 +123,20 @@ class ProductController extends Controller {
             
             StripeHelper::setApiKey();
             if($request['action'] == 'delete') {
-                return $plan->delete($request);
+               // return $plan->delete($request); TODO ROB: Make this do right thing
             } else {
-                if($plan->getProduct()->getStripeProduct() == null) {
-                    $plan->getProduct()->create($request);
+
+                if("stripe" == "stripe"){
+                    if($plan->getProduct()->getStripeProduct() == null) {
+                        $plan->getProduct()->create($request);
+                    }
+                    if($plan->getStripePlan() == null) {
+                        return $plan->create($request);
+                    } else {
+                        return $plan->update($request);
+                    }
                 }
-                if($plan->getStripePlan() == null) {
-                    return $plan->create($request);
-                } else {
-                    return $plan->update($request);
-                }
+                //return $plan->create($request);
             }
         } catch(ProductMsgException $e) {
             return response()->json(['success' => false, 'msg' => $e->getMessage()]);

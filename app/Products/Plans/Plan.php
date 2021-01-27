@@ -58,24 +58,24 @@ abstract class Plan
         } catch (\Exception $e) {
         }
 
-        if($price < 1) return;
-
-       /* $plan = \Stripe\Plan::create([
+        if($price < 1) return; // TODO ROB: If price null set 0
+/*
+        $plan = \Stripe\Plan::create([
             "amount" => $price * 100,
             "interval" => $this->interval,
             "interval_count" => $this->interval_cycle,
             "product" => $this->product->getStripeID(),
             "currency" => "usd",
             'metadata' => [
-                'user_id' => auth()->user()->id
+                'user_id' => auth()->user()->id 
             ],
             "id" => $this->getStripeID(),
         ]);*/
 
 
-        $cur = "usd";
+        $cur = "usd"; // Comes global owner stripe
 
-        if(\App\Price::where('product_id', $product_id)->where('interval', $this->interval)->exists()){ // TODO Rob: might search by UUID
+        if(Price::where('product_id', $product_id)->where('interval', $this->interval)->exists()){ // TODO Rob: might search by UUID
             $product_price = \App\Price::where('product_id', $product_id)->where('interval', $this->interval)->first();
             
         }else{
@@ -83,34 +83,36 @@ abstract class Plan
             'id' => Str::uuid(),
             'interval' => $this->interval,
             'product_id' => $product_id,
-            'price' => intval($price),
+            'price' => intval($price) * 100,
             ]);
             $product_price->save();
+            //Log::info($product->id);
             
         }
-        $product_price->price = intval($price);
+        $product_price->price = intval($price) * 100;
         $product_price->cur = $cur;
         $product_price->status = 0;
         $product_price->save();
         
+        $product_price = \App\Price::where('product_id', $product_id)->where('interval', $this->interval)->first();
 
         $plan = \Stripe\Price::create([
-            'unit_amount' => $price * 100,
+            'unit_amount' => intval($price) * 100,
             'currency' => $cur,
             'recurring' => ['interval' => $this->interval],
-            'product' => $this->product->getStripeID(),
+            'product' => $this->product->getStripeID(), // TODO: change to $product_price->id
             'metadata' => [
-                'product_UUID' => $product_price->UUID,
+                'product_uuid' => $product_price->id, 
             ],
           ]);
 
-        Cache::put('plan_' . $this->getStripeID(), $plan, 60 * 10);
-
+       // Cache::put('plan_' . $this->getStripeID(), $product_price, 60 * 10);
+        $product_id->product_id = $product_id;
         $product_price->stripe_price_id = $plan->id;
         $product_price->status = 1;
         $product_price->save();
 
-        return response()->json(['success' => true, 'msg' => 'Plan created!', 'active' => true]);
+        return response()->json(['success' => true, 'msg' => 'Plan created!1', 'active' => true]);
     }
     
     /* 

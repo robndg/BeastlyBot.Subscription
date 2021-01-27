@@ -31,7 +31,9 @@ class DiscordPlan extends Plan
         if($this->getStripePlan() !== null) {
             if($this->getStripePlan()->amount != intval($request['price']) * 100) {
                 try {
-                    $stripe->prices->delete($this->getStripeID(), []);
+                    //$stripe->prices->delete($this->getStripeID(), []); TODO Rob: make plan 0 or archive price
+                    //$product_price = \App\Price::where('product_id', $product_id)->where('interval', $this->interval)->first();
+                    
                 } catch (\Exception $e) {}
             } else {
                 $same_price = true;
@@ -44,9 +46,8 @@ class DiscordPlan extends Plan
         }
 
         if($request['price'] > 0 && !$same_price) {
-            $cur = "usd";
 
-            $plan = $stripe->prices->create([
+           /* $plan = $stripe->prices->create([
                 'unit_amount' => ntval($request['price']) * 100,
                 'currency' => $cur,
                 'recurring' => ['interval' => $this->interval],
@@ -54,7 +55,30 @@ class DiscordPlan extends Plan
                 'metadata' => [
                     'product_UUID' => $this->product->getStripeID()
                 ],
-            ]);
+            ]);*/
+
+             $cur = "usd"; // Comes global owner stripe
+         
+            if(Price::where('product_id', $product_id)->where('interval', $interval)->exists()){ // TODO Rob: might search by UUID
+                $product_price = \App\Price::where('product_id', $product_id)->where('interval', $interval)->first();
+                
+            }else{
+                $product_price = new \App\Price([
+                'id' => Str::uuid(),
+                'interval' => $interval,
+                'product_id' => $product_id,
+                'price' => intval($price) * 100,
+                ]);
+                $product_price->save();
+                $product_price = \App\Price::where('product_id', $product_id)->where('interval', $interval)->first();
+                Log::info($product_price->id);
+                
+            }
+            $product_price->price = $price * 100;
+            $product_price->cur = $cur;
+            $product_price->status = 0;
+            $product_price->save();
+
            /* $plan = $stripe->plans->create([
                 "amount" => intval($request['price']) * 100,
                 "interval" => $this->interval,
@@ -66,6 +90,16 @@ class DiscordPlan extends Plan
                 ],
                 "id" => $this->getStripeID(),
             ]);*/
+
+            $plan = \Stripe\Price::create([
+                'unit_amount' => $price * 100,
+                'currency' => $cur,
+                'recurring' => ['interval' => $this->interval],
+                'product' => $this->product->getStripeID(),
+                'metadata' => [
+                    'product_UUID' => $product_price->UUID, 
+                ],
+              ]);
 
             Cache::forget('plan_' . $this->getStripeID());
             Cache::put('plan_' . $this->getStripeID(), $plan, 60 * 10);

@@ -13,6 +13,8 @@ class Price extends Model
         return $this->belongsTo(ProductRole::class);
     }
 
+   // public $incrementing = false;
+
     protected $casts = [
         'metadata' => 'array',
         'start_time'=>'datetime:Y-m-d H:i:s',

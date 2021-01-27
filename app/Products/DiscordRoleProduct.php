@@ -13,7 +13,7 @@ use App\StripeHelper;
 class DiscordRoleProduct extends Product
 {
 
-    public $guild_id, $role_id, $billing_cycle, $active/*, $product_UUID*/;
+    public $id, $guild_id, $role_id, $billing_cycle, $active/*, $product_UUID*/;
     public $discord_store;
 
     public function __construct($guild_id, $role_id, $billing_cycle, $active/*, $product_UUID*/)
@@ -68,13 +68,14 @@ class DiscordRoleProduct extends Product
         }
 
         // TODO ROB: check if UUID plan is enabled and if total count under amount can sell etc.
+        // TODO COLBY: only use stripeHelper if for Stripe product, and if needed
 
         if (auth()->user()->getStripeHelper()->isSubscribedToProduct($this->guild_id . '_' . $this->role_id)) // TODO ROB: change to UUID
             throw new ProductMsgException('You are already subscribed to that role. You can edit your subscription in the subscriptions page.');
 
     }
 
-    public function create(Request $request) {
+    public function create(Request $request) { // TODO COLBY: (ROB: I create this product in table after this function to add stripe_id or paypal_id). So updates go to product from DB, probably archive product in Stripe or PayPal (so old subscriptions still work). But yeah, product UUID never changes only prices UUIDs if new ones are added later (can archive old Prices and set 0 in database)
         //$this->createProduct();
 
         if($this->getStripeProduct() == null) {
