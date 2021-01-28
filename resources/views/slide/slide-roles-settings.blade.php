@@ -21,8 +21,6 @@
     <div class="tab-pane fade active show" id="sidebar-userlist">
         <div>
 
-
-
            <div>
                 <div class="row">
                     <div class="col-12">
@@ -30,7 +28,7 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="row no-space text-center">
-                         
+                             @foreach(["day", "week", "month", "year"] as $interval)
                                 <div class="col-6 col-sm-3">
                                     <div class="card border-0 vertical-align h-100">
                                     <div class="vertical-align-middle font-size-16">
@@ -39,83 +37,20 @@
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text">$</span>
                                                 </div>
-                                                <input id="price_1day" type="text" class="form-control"
+                                                <input id="price_1{{ $interval }}" type="text" class="form-control"
                                                     placeholder="0.00"
-                                                    value="{{-- $prices['day'] --}}" autocomplete="off">
+                                                     @if($prices[$interval]) value="{{ number_format($prices[$interval],2) }}" @endif autocomplete="off">
                                             </div>
                                         </div>
-                                        <i class="wb-triangle-down font-size-24 mb-10 blue-600"></i>
+                                        <i class="wb-triangle-down font-size-24 mb-10  @if($prices[$interval]) green-600 @else blue-600 @endif"></i>
                                         <div>
-                                        <span class="font-size-12">1 day</span>
+                                        <span class="font-size-12">1 {{ $interval }}</span>
                                         </div>
                                     </div>
                                     </div>
                                 </div>
+                                @endforeach
 
-                                <div class="col-6 col-sm-3">
-                                    <div class="card border-0 vertical-align h-100">
-                                    <div class="vertical-align-middle font-size-16">
-                                        <div class="d-block">
-                                            <div class="input-group w-120 mx-auto">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">$</span>
-                                                </div>
-                                                <input id="price_1week" type="text" class="form-control"
-                                                    placeholder="0.00"
-                                                    value="{{-- $prices['week'] --}}" autocomplete="off">
-                                            </div>
-                                        </div>
-                                        <i class="wb-triangle-down font-size-24 mb-10 blue-600"></i>
-                                        <div>
-                                        <span class="font-size-12">1 week</span>
-                                        </div>
-                                    </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-6 col-sm-3">
-                                    <div class="card border-0 vertical-align h-100">
-                                    <div class="vertical-align-middle font-size-16">
-                                        <div class="d-block">
-                                            <div class="input-group w-120 mx-auto">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">$</span>
-                                                </div>
-                                                <input id="price_1month" type="text" class="form-control"
-                                                    placeholder="0.00"
-                                                    value="{{-- $prices['month'] --}}" autocomplete="off">
-                                            </div>
-                                        </div>
-                                        <i class="wb-triangle-down font-size-24 mb-10 blue-600"></i>
-                                        <div>
-                                        <span class="font-size-12">1 month</span>
-                                        </div>
-                                    </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-6 col-sm-3">
-                                    <div class="card border-0 vertical-align h-100">
-                                    <div class="vertical-align-middle font-size-16">
-                                        <div class="d-block">
-                                            <div class="input-group w-120 mx-auto">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">$</span>
-                                                </div>
-                                                <input id="price_1year" type="text" class="form-control"
-                                                    placeholder="0.00"
-                                                    value="{{-- $prices['year'] --}}" autocomplete="off">
-                                            </div>
-                                        </div>
-                                        <i class="wb-triangle-down font-size-24 mb-10 blue-600"></i>
-                                        <div>
-                                        <span class="font-size-12">1 year</span>
-                                        </div>
-                                    </div>
-                                    </div>
-                                </div>
-
-                             
                                 <div class="col-12">
                                     <button id="prices_btn" type="button" class="btn btn-dark btn-lg btn-block {{--@if(!$enabled) disabled @endif--}}"
                                         onclick="updatePrices()" {{-- @if(!$enabled) disabled @endif --}}>Update Prices
@@ -201,9 +136,9 @@ $('textarea#product-description').on('keyup', function(){
         });
     }
 
-    var guild_id = '{{ $guild_id }}';
-    var role_id = '{{ $role->id }}';
-    var product_id = '{{ $product->id }}';
+    var guild_id = '{{ $guild_id }}'
+    var role_id = '{{ $role->id }}'
+    var product_id = '{{ $product_role->id }}'
 
     // TODO: For now we close the slide but we need to turn off the switcheries
     function updatePrices() {
@@ -217,70 +152,22 @@ $('textarea#product-description').on('keyup', function(){
         });
         Toast.showLoading();
         $.ajax({
-            url: '/plan',
+            url: '/bknd-000/plan',
             type: 'POST',
             data: {
                 'action': 'update',
                 'product_type': 'discord',
-                'product_id': product_id,
-                'interval': 'day',
-                'interval_cycle': "day",
-                'price': $('#price_1day').val(),
+                'product_id': '{{ $product_role->id }}',
+                'price_interval_day': $('#price_1day').val(),
+                'price_interval_week': $('#price_1week').val(),
+                'price_interval_month': $('#price_1month').val(),
+                'price_interval_year': $('#price_1year').val(),
                 'role_id': '{{ $role->id }}',
                 'role_name': '{{ $role->name }}',
                 'guild_id': '{{ $guild_id }}',
                 _token: '{{ csrf_token() }}'
             },
-        }).done(function (msg, enabled) {
-
-            $.ajax({
-                url: '/plan',
-                type: 'POST',
-                data: {
-                    'action': 'update',
-                    'product_type': 'discord',
-                    'product_id': product_id,
-                    'interval': 'week',
-                    'interval_cycle': "week",
-                    'price': $('#price_1week').val(),
-                    'role_id': '{{ $role->id }}',
-                    'role_name': '{{ $role->name }}',
-                    'guild_id': '{{ $guild_id }}',
-                    _token: '{{ csrf_token() }}'
-                },
-            }).done(function (msg, enabled) {
-                $.ajax({
-                    url: '/plan',
-                    type: 'POST',
-                    data: {
-                        'action': 'update',
-                        'product_type': 'discord',
-                        'product_id': product_id,
-                        'interval': 'month',
-                        'interval_cycle': 6,
-                        'price': $('#price_1month').val(),
-                        'role_id': '{{ $role->id }}',
-                        'role_name': '{{ $role->name }}',
-                        'guild_id': '{{ $guild_id }}',
-                        _token: '{{ csrf_token() }}'
-                    },
                 }).done(function (msg, enabled) {
-                    $.ajax({
-                        url: '/plan',
-                        type: 'POST',
-                        data: {
-                            'action': 'update',
-                            'product_type': 'discord',
-                            'product_id': product_id,
-                            'interval': 'year',
-                            'interval_cycle': "year",
-                            'price': $('#price_1year').val(),
-                            'role_id': '{{ $role->id }}',
-                            'role_name': '{{ $role->name }}',
-                            'guild_id': '{{ $guild_id }}',
-                            _token: '{{ csrf_token() }}'
-                        },
-                    }).done(function (msg, enabled) {
                         if (msg['success']) {
                             Toast.fire({
                                 title: 'Success!',
@@ -313,9 +200,8 @@ $('textarea#product-description').on('keyup', function(){
             
                         $('#btn_visit-shop').removeClass('d-none');
                     });
-                });
-            });
-        });
+        
+         
     }
 </script>
 

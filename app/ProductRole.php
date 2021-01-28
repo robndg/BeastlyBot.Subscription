@@ -12,6 +12,9 @@ class ProductRole extends Model
     {
         return $this->belongsTo(DiscordStore::class);
     }
+    protected $casts = [
+        'id' => 'string'
+    ];
 
    /* public function prices()
     {

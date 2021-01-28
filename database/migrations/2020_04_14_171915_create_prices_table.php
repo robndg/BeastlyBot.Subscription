@@ -15,7 +15,7 @@ class CreatePricesTable extends Migration
     {
         Schema::create('prices', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->text('product_id');
+            $table->uuid('product_id');
            // $table->string('UUID')->unique();
             
             $table->string('stripe_price_id')->nullable();

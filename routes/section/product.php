@@ -3,6 +3,7 @@
 use App\Shop;
 use App\DiscordStore;
 use App\DiscordHelper;
+use App\ProductPlanController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use App\Products\DiscordRoleProduct;

@@ -1,6 +1,7 @@
 <?php
 
 use App\DiscordStore;
+use App\ProductPlanController;
 
 use App\Shop;
 use App\User;
@@ -70,3 +71,5 @@ Route::post('/save-server-settings', 'ServerController@updateShop');
 Route::post('/save-go-live', 'ServerController@updateStatus');
 
 Route::post('/bknd-000/ban-user-from-store', 'ServerController@banUserFromStore');
+
+Route::post('/bknd-000/plan', 'ProductPlanController@create');

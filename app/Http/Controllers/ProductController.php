@@ -27,7 +27,7 @@ class ProductController extends Controller {
 
     public function product(Request $request) {
 
-        $interval_cycle = $request['interval_cycle'];
+        $interval = $request['interval'];
 
         $active = 1;//$request['active'];
 
@@ -36,15 +36,13 @@ class ProductController extends Controller {
         if(!$owner_array->getStripeHelper()->isExpressUser()){
             return response()->json(['success' => false, 'msg' => 'StripeError']);
         }
-
-       
-
+        
         try {
             
             // find the product type to initiate
             switch ($request['product_type']) {
                 case "discord":
-                $product = new DiscordRoleProduct($request['guild_id'], $request['role_id'], $interval_cycle, $active/*$product_UUID*/);
+                $product = new DiscordRoleProduct($request['guild_id'], $request['role_id'], $interval, $active/*$product_UUID*/);
                 break;
                 default:
                     throw new ProductMsgException('Could not find product by that type.');
@@ -99,18 +97,18 @@ class ProductController extends Controller {
             $cur = "usd"; // Comes global owner stripe
           
             
-            if(Price::where('product_id', $product_id)->where('interval', $interval)->exists()){ // TODO Rob: might search by UUID
-                $product_price = \App\Price::where('product_id', $product_id)->where('interval', $interval)->first();
+            if(Price::where('product_id', $plan->id)->where('interval', $interval)->exists()){ // TODO Rob: might search by UUID
+                $product_price = \App\Price::where('product_id', $plan->id)->where('interval', $interval)->first();
                 
             }else{
                 $product_price = new \App\Price([
                 'id' => Str::uuid(),
                 'interval' => $interval,
-                'product_id' => $product_id,
+                'product_id' => $plan->id,//$product_id,
                 'price' => $price * 100,
                 ]);
                 $product_price->save();
-                $product_price = \App\Price::where('product_id', $product_id)->where('interval', $interval)->first();
+                $product_price = \App\Price::where('product_id', $plan->id)->where('interval', $interval)->first();
                 Log::info($product_price->id);
                 
             }

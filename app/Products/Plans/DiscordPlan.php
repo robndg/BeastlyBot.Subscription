@@ -122,8 +122,8 @@ class DiscordPlan extends Plan
                 ]);
             }
 
-            $key = 'price_' . $this->product->getStripeID() . '_' . $this->interval_cycle; // TODO UUID
-            Cache::put($key, $request['price'], 60 * 5);
+           // $key = 'price_' . $this->product->getStripeID() . '_' . $this->interval_cycle; // TODO UUID
+           // Cache::put($key, $request['price'], 60 * 5);
         } catch(\Exception $e) {
             \Log::info($e);
         }

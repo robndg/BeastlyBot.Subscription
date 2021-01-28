@@ -9,6 +9,7 @@ use App\DiscordStore;
 use App\User;
 use App\Product;
 use App\ProductRole;
+use App\Price;
 use App\Products\DiscordRoleProduct;
 use App\Refund;
 use DateTime;
@@ -23,6 +24,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use App\StripeHelper;
 use Illuminate\Support\Str;
+use App\ProductPlanController;
 
 class ServerController extends Controller {
 
@@ -218,18 +220,37 @@ class ServerController extends Controller {
             $product_role = ProductRole::where('discord_store_id', $store->id)->where('role_id', $role_id)->first();
         }
 
+        $prices = [];
+
+
+        $product_prices = Price::where('product_id', $product_role->id)->where('status', '<', 2)->get();
+            
+        foreach (["day", "week", "month", "year"] as $interval) {
+            if($product_prices->where('interval', $interval)->first()){
+                $prices[$interval] = $product_prices->where('interval', $interval)->first()->price / 100;
+            }else{
+                $prices[$interval] = null;
+            }
+            // TODO ROB2: move this to checkout;
+            // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
+           
+        }
+
+        
 
         try {
-            $discord_product = new DiscordRoleProduct($guild_id, $role_id, null, null);
-            $product = $discord_product->getProduct();
+            //$discord_product = new DiscordRoleProduct($guild_id, $role_id, null, null);
+            //$product = $discord_product->getProduct();
             $store = DiscordStore::where('guild_id', $guild_id)->first();
             $desc = ProductRole::where('discord_store_id', $store->id)->where('role_id', $role_id)->first();
             $shop_url = $store->url;
             $discord_helper = new \App\DiscordHelper(auth()->user());
-            return view('slide.slide-roles-settings')->with('guild_id', $guild_id)->with('role', $discord_helper->getRole($guild_id, $role_id))->with('shop_url', $shop_url)->with('product', $product_role)->with('prices', ProductController::getPricesForRole($guild_id, $role_id))->with('desc', $desc);
+           
+            return view('slide.slide-roles-settings')->with('guild_id', $guild_id)->with('role', $discord_helper->getRole($guild_id, $role_id))->with('shop_url', $shop_url)->with('product_role', $product_role)->with('prices', $prices)->with('desc', $desc);
         } catch (\Exception $e) {
             if (env('APP_DEBUG')) Log::error($e);
-            return view('slide.slide-roles-settings')->with('enabled', false)->with('role', $discord_helper->getRole($guild_id, $role_id))->with('guild_id', $guild_id)->with('role_id', $role_id)->with('product', $product_role)->with('prices', ProductController::getPricesForRole($guild_id, $role_id));
+            Log::info("slide failed");
+        return view('slide.slide-roles-settings')->with('enabled', false)->with('role', $discord_helper->getRole($guild_id, $role_id))->with('guild_id', $guild_id)->with('role_id', $role_id)->with('product_role', $product_role)->with('prices', $prices);
         }
     }
 

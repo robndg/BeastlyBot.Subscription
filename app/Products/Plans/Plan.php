@@ -82,7 +82,7 @@ abstract class Plan
             $product_price = new \App\Price([
             'id' => Str::uuid(),
             'interval' => $this->interval,
-            'product_id' => $product_id,
+            'product_id' => $this->product->getStripeID(),//$product_id,
             'price' => intval($price) * 100,
             ]);
             $product_price->save();
