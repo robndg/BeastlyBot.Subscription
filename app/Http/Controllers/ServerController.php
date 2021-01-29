@@ -100,6 +100,8 @@ class ServerController extends Controller {
             
         } else {
             $discord_store = DiscordStore::where('guild_id', $id)->first();
+            $discord_store->live = 1;
+            $discord_store->save();
 
             $stats = Stat::where('type', 1)->where('type_id', $discord_store->id)->first();
         }

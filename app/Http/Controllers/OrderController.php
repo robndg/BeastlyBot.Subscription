@@ -123,28 +123,30 @@ class OrderController extends Controller {
 
         $token = \Stripe\Token::create(array(
             "customer" => $customer_stripe->customer_id,
-            ), array("stripe_account" => $owner_stripe->express_id));
+            ), array("stripe_account" => $owner_stripe->express_id, "livemode" => false));
 
             
         $copiedCustomer = \Stripe\Customer::create(array(
             "description" => "Customer Created: " . auth()->user()->getDiscordHelper()->getUsername(), // Rob TODO: change to add UUID for StripeConnect
             "source" => $token // obtained with Stripe.js
-            ), array("stripe_account" => $owner_stripe->express_id));
+            ), array("stripe_account" => $owner_stripe->express_id, "livemode" => false));
 
         Log::info($copiedCustomer);
       
-        StripeHelper::setApiKey();
         $plan = \Stripe\Price::create([
             'unit_amount' => intval($product_price->price),
             'currency' => $product_price->cur,
             'recurring' => ['interval' => $product_price->interval],
             'product' => $product->getStripeID(), // TODO: change to $product_price->id
+            /*'product_data' => [
+                'name' => auth()->user()->getDiscordHelper()->getUsername(),
+            ],*/
             'metadata' => [
                 'price' => $product_price->id, 
                 'customer' => $copiedCustomer->id,
                 'product' => $product->id,
             ],
-          ]);
+        ]);
 
          // Log::info($plan);
         
@@ -163,7 +165,28 @@ class OrderController extends Controller {
 
         StripeHelper::setApiKey();
         try {
-            $checkout_data = [
+
+            $checkout_data = [ // TODO Colby: Either use checkout_data below this one (plan->id), or make this work and add metadata so we know what role to add with webhook
+                'payment_method_types' => ['card'],
+                'line_items' => [[
+                  'price_data' => [
+                    'currency' => $product_price->cur,
+                    'recurring' => ['interval' => $product_price->interval],
+                    'product_data' => [
+                      'name' => auth()->user()->getDiscordHelper()->getUsername() . ' - Product',
+                    ],
+                    //'product' => $plan->id,  // wish this could work, but i think has to be made each time in product_data (unless we can test in non-test mode)
+                    'unit_amount' => intval($product_price->price),
+                  ],
+                  'quantity' => 1,
+                ]],
+                'customer' => $copiedCustomer->id,
+                'mode' => 'subscription',
+                'success_url' => $product->getCallbackSuccessURL(),
+                'cancel_url' => $product->getCallbackCancelURL(),
+            ];
+
+           /* $checkout_data = [
                 'payment_method_types' => ['card'],
                 'line_items' => [[
                 'price' => $plan->id,
@@ -177,36 +200,26 @@ class OrderController extends Controller {
                 'cancel_url' => $product->getCallbackCancelURL(),
                 'customer' => $copiedCustomer->id, // Rob TODO: Store in DB or use find
                 'client_reference_id' => auth()->user()->id, // Rob TODO: change to add UUID for User
-            ]; // <!-- Standard now*/
+            ];*/
 
 
-           /* $checkout_session = \Stripe\Checkout\Session::create([
+           /*$checkout_data = [
                 'payment_method_types' => ['card'],
                 'mode' => 'subscription',
                 
-                'line_items' => [[
-                   //'product' => $product->getStripeID(),
-                  'price_data' => [
-                    'currency' => $product_price->cur,
-                    'unit_amount' => intval($product_price->price),
-                    "recurring" => [
-                        "interval" => $product_price->interval,
-                        "interval_count"=> 1,
+                'line_items' => [[   
+                   
+                         'price' => $plan->id,
+                        'quantity' => 1,
+                        ]
                     ],
-                    'product' => $product->getStripeID(),
-                    
-                    
-                  ],
-                 // 'price' => $plan->id,
-                  'quantity' => 1,
-                ]],
                 'subscription_data' => [
                     'application_fee_percent' => 4,
                 ],
                 'success_url' =>  $product->getCallbackSuccessURL(),
                 'cancel_url' => $product->getCallbackCancelURL(),
                 'customer' => $copiedCustomer->id, // Rob TODO: Store in DB or use find
-                ], ['stripe_account' => $owner_stripe->express_id]);*/
+            ];*/
 
 
             //Log::info($session);
@@ -226,7 +239,7 @@ class OrderController extends Controller {
                     'customer' => $stripe_customer->id,
                 ];*/
 
-                if(!empty($request['coupon_code'])) {
+               /* if(!empty($request['coupon_code'])) {
                     if(DiscordStore::where('guild_id', $request['guild_id'])->exists()) {
                         $store = DiscordStore::where('guild_id', $request['guild_id'])->first();
                         $checkout_data['subscription_data']['coupon'] = $store->user_id . $request['coupon_code'];
@@ -234,12 +247,12 @@ class OrderController extends Controller {
                 }
                 if($express_promo != NULL){
                     $checkout_data['subscription_data']['coupon'] = $express_promo;
-                }
+                }*/
                 
-        
+                Log::info($owner_stripe->express_id);
                 $session = $stripe->checkout->sessions->create($checkout_data, array("stripe_account" => $owner_stripe->express_id));
-
-                return response()->json(['success' => true, 'msg' => $checkout_session->id]);
+                Log::info($session);
+                return response()->json(['success' => true, 'msg' => $session->id]);
         //Log::info($session);
         }catch (\Stripe\Exception\InvalidRequestException $e) {
             Log::info($e);
@@ -341,7 +354,7 @@ class OrderController extends Controller {
             'cancel_url' => $product->getCallbackCancelURL(),
             'customer' => $copiedCustomer->id, // Rob TODO: Store in DB or use find
             'client_reference_id' => auth()->user()->id, // Rob TODO: change to add UUID for User
-          ], ['stripe_account' => StripeConnect::where('user_id', $discord_store->user_id)->first()->express_id]);
+          ], ['stripe_account' => $owner_stripe->express_id]);
 
 
        /* $checkout_data = [
