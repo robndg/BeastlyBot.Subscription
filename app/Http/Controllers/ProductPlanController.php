@@ -71,6 +71,10 @@ class ProductPlanController extends Controller
 
         Log::info("ProductId");
         Log::info($product_id);
+
+        if($product_id == 0){
+            return response()->json(['success' => false, 'msg' => 'Please refresh the page and try again.']);
+        }
        
 
         // foreach interval
@@ -89,10 +93,17 @@ class ProductPlanController extends Controller
                 ProductRole::where('id', $product_id)->update(['active' => 1]);
             }
             // disable old product prices
-            $disabled = Price::where('product_id', $product_id)->where('interval', $interval)->update(['status' => 2]); // 2 is updated to new one
+            $disabled = Price::where('product_id', $product_id)->where('interval', $interval)/*->with('assigned', '!=', null)*/->update(['status' => 0]); // 2 is updated to new one
             Log::info($disabled);
             // create new product price
-           
+           /* $create_new_bool = true;
+            if(Price::where('product_id', $product_id)->where('interval', $interval)->with('assigned', null)->with('active', 1)->first()){
+                $getpricehere = Price::where('product_id', $product_id)->where('interval', $interval)->with('assigned', null)->with('active', 1)->first();
+                if($price != $getpricehere->price){
+                    $create_new_bool = false;
+                }
+                
+            }*/
            // Log::info([$price_id, $product_id, $stripe_price_id, $paypal_price_id, $price, $cur, $interval, $assigned_to, $start_date, $end_date, $max_sales, $discount, $discount_end, $discount_max, $status, null]);
             if($price != null && $price > 0 && $price != "NULL" && $price != NULL){
                 $product_price = new Price(['id' => Str::uuid(), 'product_id' => $product_id, 'stripe_price_id' => $stripe_price_id, 'paypal_price_id' => $paypal_price_id, 'price' => $price, 'cur' => $cur, 'interval' => $interval, 'assigned_to' => $assigned_to, 'start_date' => $start_date, 'end_date' => $end_date, 'max_sales' => $max_sales, 'discount' => $discount, 'discount_end' => $discount_end, 'discount_max' => $discount_max, 'status' => $status, 'metadata' => null]);

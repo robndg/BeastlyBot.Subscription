@@ -3,10 +3,12 @@
 use App\Shop;
 use App\DiscordStore;
 use App\DiscordHelper;
+use App\ProductRole;
 use App\ProductPlanController;
+use App\Price;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
-use App\Products\DiscordRoleProduct;
+use App\Products\DiscordRoleProduct; 
 use App\Products\Plans\DiscordPlan;
 use Illuminate\Support\Facades\Cache;
 
@@ -15,21 +17,53 @@ Route::get('/slide-product-purchase/{guild_id}/{role_id}', function($guild_id, $
         return view('slide.slide-product-purchase')->with('shop', DiscordStore::where('guild_id', $guild_id)->first())->with('role_id', $role_id)->with('prices', ProductController::getPricesForRole($guild_id, $role_id))->with('affiliate_id', \request('affiliate_id'));
     }
 
+    $discord_store = null;
+
+    if(! DiscordStore::where('guild_id', $guild_id)->exists()) {
+        // add error
+        Log::info("Product Store not Found");
+    } else {
+        $store = DiscordStore::where('guild_id', $guild_id)->first();
+    }
+
+    if(! ProductRole::where('discord_store_id', $store->id)->where('role_id', $role_id)->exists()) {
+        // add error
+        Log::info("Product Role not Found");
+    } else {
+        $product_role = ProductRole::where('discord_store_id', $store->id)->where('role_id', $role_id)->first();
+    }
+
+    $prices = [];
+
+    $product_prices = Price::where('product_id', $product_role->id)->where('status', '<', 2)->get();
+        
+    foreach (["day", "week", "month", "year"] as $interval) {
+        if($product_prices->where('interval', $interval)->first()){
+            $prices[$interval] = $product_prices->where('interval', $interval)->first()->price / 100;
+        }else{
+            $prices[$interval] = null;
+        }
+        // TODO ROB2: move this to checkout;
+        // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
+       
+    }
+
     $discord_helper = new DiscordHelper(auth()->user());
     $guild = $discord_helper->getGuild($guild_id);
-    $role = $discord_helper->getRole($guild_id, $role_id);
-    $plans = array();
+    $role = $discord_helper->getRole($guild_id, $role_id, 1, true);
+    //$plans = array();
 
-    foreach(array("day", "week", "month", "year") as $interval) {
-        $discord_product = new DiscordRoleProduct($guild_id, $role_id, $interval, $active/*, $UUID*/);
+
+   /* foreach(array("day", "week", "month", "year") as $interval) {
+        $discord_product = new DiscordRoleProduct($guild_id, $role_id, $interval, $active, $UUID);
         $plan = new DiscordPlan($discord_product, 'interval', $interval);
 
         if($plan->getStripePlan() != null) {
             array_push($plans, $plan);
         }
-    }
+    }*/
 
-    return view('slide.slide-product-purchase')->with('guild', $guild)->with('plans', $plans)->with('discord_helper', $discord_helper)->with('role', $role)->with('store', DiscordStore::where('guild_id', $guild_id)->first());
+    return view('slide.slide-product-purchase')->with('guild', $guild)->with('prices', $prices)->with('discord_helper', $discord_helper)->with('role', $role)->with('store', DiscordStore::where('guild_id', $guild_id)->first());
 });
 
 Route::get('/slide-special-purchase/{guild_id}/{role_id}/{special_id}/{discord_id}', function($guild_id, $role_id, $special_id, $discord_id) {

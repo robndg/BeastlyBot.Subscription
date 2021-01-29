@@ -48,32 +48,60 @@
                             $first = true;
                             @endphp
 
-                            @foreach($plans as $plan)
+                            @foreach(["day", "week", "month", "year"] as $interval)
+                                @if($prices[$interval])
+                                <div class="col-6 col-md-3 mx-auto">
+                                    <div class="card vertical-align h-150 mt-15 mt-md-0" >
+                                        <div class="text-center vertical-align-middle font-size-16 pb-15">
+                                                <h4 class="font-weight-200 pt-5">1 {{ $interval }}</h4>
+                                            <i class="wb-triangle-down font-size-24 mb-10 blue-600"></i>
+                                            <div>
+                                            
+                                                <span class="font-size-16">${{ number_format($prices[$interval],2) }}</span>
+                                            </div> 
+
+                                        </div>
+                                        @if($first)
+                                        <input id="inputRadios1{{ $interval }}" name="inputRadios"  onclick="updatePrices('{{ $interval }}', '{{ number_format($prices[$interval],2) }}')" type="radio" class="to-labelauty" data-plugin="labelauty" data-labelauty=" " checked/>
+                                        @php
+                                        $first = false;
+                                        @endphp
+                                        @else
+                                        <input id="inputRadios1{{ $interval}}"  name="inputRadios" onclick="updatePrices('{{ $interval }}', '{{ number_format($prices[$interval],2) }}')" type="radio" class="to-labelauty" data-plugin="labelauty" data-labelauty=" " />
+                                        @endif
+                                    </div>
+                                </div>
+                                @endif
+
+                              
+                            @endforeach
+
+                           {{-- @foreach($prices as $plan)
 
                             
                             <div class="col-6 col-md-3 mx-auto">
                                 <div class="card vertical-align h-150 mt-15 mt-md-0" >
                                     <div class="text-center vertical-align-middle font-size-16 pb-15">
-                                            <h4 class="font-weight-200 pt-5">{{ $plan->interval_cycle }} @if($plan->interval_cycle > 1)Months @else Month @endif</h4>
+                                            <h4 class="font-weight-200 pt-5">1 {{ $plan->interval }}</h4>
                                         <i class="wb-triangle-down font-size-24 mb-10 blue-600"></i>
                                         <div>
                                         
-                                            <span class="font-size-16">${{ number_format(($plan->getStripePlan()->unit_amount / 100), 2, '.', ',') }}</span>
-                                        </div>
+                                            <span class="font-size-16">${{ number_format(($plan->price / 100), 2, '.', ',') }}</span>
+                                        </div> 
 
                                     </div>
                                     @if($first)
-                                    <input id="inputRadios{{ $plan->interval_cycle }}Months" name="inputRadios"  onclick="updatePrices('{{ $plan->interval_cycle }}', '{{ ($plan->getStripePlan()->unit_amount / 100) }}')" type="radio" class="to-labelauty" data-plugin="labelauty" data-labelauty=" " checked/>
+                                    <input id="inputRadios1{{ $plan->interval_cycle }}Months" name="inputRadios"  onclick="updatePrices('{{ $plan->interval_cycle }}', '{{ ($plan->getStripePlan()->unit_amount / 100) }}')" type="radio" class="to-labelauty" data-plugin="labelauty" data-labelauty=" " checked/>
                                     @php
                                     $first = false;
                                     @endphp
                                     @else
-                                    <input id="inputRadios{{ $plan->interval_cycle }}Months"  name="inputRadios" onclick="updatePrices('{{ $plan->interval_cycle }}', '{{ ($plan->getStripePlan()->unit_amount / 100) }}')" type="radio" class="to-labelauty" data-plugin="labelauty" data-labelauty=" " />
+                                    <input id="inputRadios1{{ $plan->interval_cycle }}Months"  name="inputRadios" onclick="updatePrices('{{ $plan->interval_cycle }}', '{{ ($plan->getStripePlan()->unit_amount / 100) }}')" type="radio" class="to-labelauty" data-plugin="labelauty" data-labelauty=" " />
                                     @endif
                                 </div>
                             </div>
 
-                            @endforeach
+                            @endforeach --}}
                         </div>
                     </div>
                 </div>
@@ -95,7 +123,7 @@
                            role="button">Pay</a>
                         @else
                         <a href="#" onclick="beginCheckout()" class="btn btn-success btn-lg btn-block" id="payButton"
-                           role="button" @if(count($plans) > 1) disabled @endif>Pay</a>
+                           role="button" @if(count($prices) > 1) disabled @endif>Pay</a>
                         @endif
                     </div>
                 </div>
@@ -199,22 +227,22 @@
         $('#payButton').attr('disabled', false);
         $('#coupon_info').text('');
 
-        $('#inputRadios1Day').removeAttr('checked');
-        $('#inputRadios1Week').removeAttr('checked');
-        $('#inputRadios1Month').removeAttr('checked');
-        $('#inputRadios1Year').removeAttr('checked');
+        $('#inputRadios1day').removeAttr('checked');
+        $('#inputRadios1week').removeAttr('checked');
+        $('#inputRadios1month').removeAttr('checked');
+        $('#inputRadios1year').removeAttr('checked');
     }
 
     function getSelectedDuration() {
-        var duration_1_month = $('#inputRadios1Day');
-        var duration_3_month = $('#inputRadios3Week');
-        var duration_6_month = $('#inputRadios1Month');
-        var duration_12_month = $('#inputRadios1Year');
+        var duration_1_month = $('#inputRadios1day');
+        var duration_3_month = $('#inputRadios3week');
+        var duration_6_month = $('#inputRadios1month');
+        var duration_12_month = $('#inputRadios1year');
 
-        if (duration_1_month !== undefined && duration_1_month.is(':checked')) return 1;
-        if (duration_3_month !== undefined && duration_3_month.is(':checked')) return 3;
-        if (duration_6_month !== undefined && duration_6_month.is(':checked')) return 6;
-        if (duration_12_month !== undefined && duration_12_month.is(':checked')) return 12;
+        if (duration_1_month !== undefined && duration_1_month.is(':checked')) return "day";
+        if (duration_3_month !== undefined && duration_3_month.is(':checked')) return "week";
+        if (duration_6_month !== undefined && duration_6_month.is(':checked')) return "month";
+        if (duration_12_month !== undefined && duration_12_month.is(':checked')) return "year";
     }
 
     function formatMoney(number, decPlaces, decSep, thouSep) {
@@ -268,7 +296,7 @@
                 'coupon_code': $('#couponCode').val(),
                 //'server_icon': $('#guild_icon').attr('src'),
                 //'guild_name': '{{ $guild->name }}',
-                //'role_name': '{{ $role->name }}',
+                'role_name': '{{ $role->name }}',
                 _token: '{{ csrf_token() }}'
             },
         }).done(function (msg) {

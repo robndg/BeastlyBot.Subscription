@@ -87,6 +87,7 @@ class ServerController extends Controller {
             return redirect('/dashboard');
         }*/
 
+    
         $discord_store = null;
 
         if(! DiscordStore::where('guild_id', $id)->exists()) {

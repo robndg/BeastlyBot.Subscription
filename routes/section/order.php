@@ -39,5 +39,5 @@ Route::get('/slide-invoice', function() {
 
 Route::get('/checkout', 'OrderController@checkout');
 
-Route::post('/process-checkout', 'OrderController@setup');
+Route::post('/process-checkout', 'OrderController@setupOrder'); //TODO add bknd-000
 

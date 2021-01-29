@@ -23,7 +23,8 @@ class DiscordOAuthController extends Controller {
             // AlertHelper::alertDanger('Failed to connect Discord account!');
             return redirect('/');
         }
-        
+  
+
         $provider = self::getProvider();
         $user = null;
         try {
@@ -54,6 +55,7 @@ class DiscordOAuthController extends Controller {
                 ]);
                 $user->DiscordOAuth()->save($oauth);
                 auth()->login($user);
+                
             } else {
                 // if the user does exist we just update their tokens
                 $user->DiscordOAuth->access_token = $token->getToken();

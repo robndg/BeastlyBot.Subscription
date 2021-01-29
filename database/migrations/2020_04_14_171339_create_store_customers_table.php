@@ -14,8 +14,8 @@ class CreateStoreCustomersTable extends Migration
     public function up()
     {
         Schema::create('store_customers', function (Blueprint $table) {
-            $table->id();
-            $table->string('UUID')->unique();
+            //$table->id();
+            $table->uuid('id')->unique();
             $table->bigInteger('user_id'); // can get discord id through this
             $table->bigInteger('discord_store_id'); // for searching if create customer in store for connect
             $table->string('customer_stripe_id')->nullable(); // 
@@ -28,6 +28,8 @@ class CreateStoreCustomersTable extends Migration
             $table->json('stripe_metadata')->nullable(); // can store and update user prefs
             $table->json('paypal_metadata')->nullable(); // can store and update user prefs
 
+            $table->json('referal_code')->nullable();
+
             $table->integer('enabled')->default(1); // can use to ban stripe/paypal payments (0) or if shop owner stripe account changes (10)
 
             $table->json('metadata')->nullable(); // our own metadata
@@ -35,6 +37,7 @@ class CreateStoreCustomersTable extends Migration
             $table->timestamps();
         });
     }
+
 
     /**
      * Reverse the migrations.

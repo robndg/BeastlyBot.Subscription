@@ -109,7 +109,7 @@ class ProductController extends Controller {
                 ]);
                 $product_price->save();
                 $product_price = \App\Price::where('product_id', $plan->id)->where('interval', $interval)->first();
-                Log::info($product_price->id);
+                Log::info($product_price->id); 
                 
             }
             $product_price->price = $price * 100;
@@ -215,7 +215,7 @@ class ProductController extends Controller {
  
         foreach($roles as $role) {
             $subscribers[$role->id] = Cache::get('subscribers_' . $role->id);
-            $discord_product = new DiscordRoleProduct($discord_store->guild_id, $role->id, null);
+            $discord_product = new DiscordRoleProduct($discord_store->guild_id, $role->id, null, true);
             $stripe_product = $discord_product->getStripeProduct();
             if($stripe_product != null && $stripe_product->active) {
                 array_push($active, $role->id);
