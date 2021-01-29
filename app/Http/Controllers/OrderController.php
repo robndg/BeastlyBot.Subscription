@@ -168,6 +168,22 @@ class OrderController extends Controller {
 
             $checkout_data = [ // TODO Colby: Either use checkout_data below this one (plan->id), or make this work lol
                 'payment_method_types' => ['card'],
+                'line_items' => [[
+                  'name' => 'Kavholm rental',
+                  'amount' => $product_price->price,
+                  'currency' => $product_price->cur,
+                  'quantity' => 1,
+                ]],
+                'payment_intent_data' => [
+                  'application_fee_amount' => 5,
+                  'transfer_data' => [
+                    'destination' => $owner_stripe->express_id,
+                  ],
+                ],
+                'success_url' => 'https://example.com/success',
+                'cancel_url' => 'https://example.com/failure',
+
+                /*'payment_method_types' => ['card'],
                 'mode' => 'subscription',
                 'line_items' => [[
                   'price_data' => [
@@ -175,7 +191,7 @@ class OrderController extends Controller {
                     'recurring' => ['interval' => $product_price->interval],
                     'product_data' => [
                       'name' => auth()->user()->getDiscordHelper()->getUsername() . ' - Product',
-                      'metadata' => ['product_price' => $product_price, 'product_role' => $product_role->id]
+                      'metadata' => ['product_price' => $product_price->price, 'product_role' => $product_role->id]
                     ],
                     //'product' => $plan->id,  // wish this could work, but i think has to be made each time in product_data (unless we can test in non-test mode)
                     'unit_amount' => intval($product_price->price),
@@ -186,78 +202,10 @@ class OrderController extends Controller {
                     'application_fee_percent' => 4,
                     // line items for plan depricated here
                 ],
-                /*'transfer_data' => [
-                    'destination' => $owner_stripe->express_id,
-                ],*/
                 'customer' => $copiedCustomer->id,
                 'success_url' => $product->getCallbackSuccessURL(),
-                'cancel_url' => $product->getCallbackCancelURL(),
+                'cancel_url' => $product->getCallbackCancelURL(),*/
             ];
-
-           /* $checkout_data = [
-                'payment_method_types' => ['card'],
-                'line_items' => [[
-                'price' => $plan->id,
-                'quantity' => 1,
-                ]],
-                'subscription_data' => [
-                'application_fee_percent' => 4,
-                ],
-                'mode' => 'subscription',
-                'success_url' => $product->getCallbackSuccessURL(),
-                'cancel_url' => $product->getCallbackCancelURL(),
-                'customer' => $copiedCustomer->id, // Rob TODO: Store in DB or use find
-                'client_reference_id' => auth()->user()->id, // Rob TODO: change to add UUID for User
-            ];*/
-
-
-           /*$checkout_data = [
-                'payment_method_types' => ['card'],
-                'mode' => 'subscription',
-                
-                'line_items' => [[   
-                   
-                         'price' => $plan->id,
-                        'quantity' => 1,
-                        ]
-                    ],
-                'subscription_data' => [
-                    'application_fee_percent' => 4,
-                ],
-                'success_url' =>  $product->getCallbackSuccessURL(),
-                'cancel_url' => $product->getCallbackCancelURL(),
-                'customer' => $copiedCustomer->id, // Rob TODO: Store in DB or use find
-            ];*/
-
-
-            //Log::info($session);
-       
-            /* $checkout_data = [
-                    'payment_method_types' => ['card'],
-                    'mode' => 'subscription',
-                    'subscription_data' => [
-                        'application_fee_percent' => 5,
-                        'items' => [[
-                            'plan' => $plan->id,
-                            'quantity' => '1'
-                        ]]
-                    ],
-                    'success_url' => $product->getCallbackSuccessURL(),
-                    'cancel_url' => $product->getCallbackCancelURL(),
-                    'customer' => $stripe_customer->id,
-                ];*/
-
-               /* if(!empty($request['coupon_code'])) {
-                    if(DiscordStore::where('guild_id', $request['guild_id'])->exists()) {
-                        $store = DiscordStore::where('guild_id', $request['guild_id'])->first();
-                        $checkout_data['subscription_data']['coupon'] = $store->user_id . $request['coupon_code'];
-                    }
-                }
-                if($express_promo != NULL){
-                    $checkout_data['subscription_data']['coupon'] = $express_promo;
-                }*/
-                
-                Log::info($owner_stripe->express_id);
             $session = $stripe->checkout->sessions->create($checkout_data, array("stripe_account" => $owner_stripe->express_id));
                 Log::info($session);
                 return response()->json(['success' => true, 'msg' => $session->id]);

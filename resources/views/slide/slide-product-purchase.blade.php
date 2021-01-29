@@ -260,7 +260,7 @@
     }
 
     function beginCheckout() {
-        if(!is_member) {
+        if(is_member) {
             Swal.fire({
                 title: 'Not a member!',
                 text: 'Please join the server before purchasing any roles.',
