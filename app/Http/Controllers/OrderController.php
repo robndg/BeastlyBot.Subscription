@@ -166,22 +166,30 @@ class OrderController extends Controller {
         StripeHelper::setApiKey();
         try {
 
-            $checkout_data = [ // TODO Colby: Either use checkout_data below this one (plan->id), or make this work and add metadata so we know what role to add with webhook
+            $checkout_data = [ // TODO Colby: Either use checkout_data below this one (plan->id), or make this work lol
                 'payment_method_types' => ['card'],
+                'mode' => 'subscription',
                 'line_items' => [[
                   'price_data' => [
                     'currency' => $product_price->cur,
                     'recurring' => ['interval' => $product_price->interval],
                     'product_data' => [
                       'name' => auth()->user()->getDiscordHelper()->getUsername() . ' - Product',
+                      'metadata' => ['product_price' => $product_price, 'product_role' => $product_role->id]
                     ],
                     //'product' => $plan->id,  // wish this could work, but i think has to be made each time in product_data (unless we can test in non-test mode)
                     'unit_amount' => intval($product_price->price),
                   ],
                   'quantity' => 1,
                 ]],
+                'subscription_data' => [
+                    'application_fee_percent' => 4,
+                    // line items for plan depricated here
+                ],
+                /*'transfer_data' => [
+                    'destination' => $owner_stripe->express_id,
+                ],*/
                 'customer' => $copiedCustomer->id,
-                'mode' => 'subscription',
                 'success_url' => $product->getCallbackSuccessURL(),
                 'cancel_url' => $product->getCallbackCancelURL(),
             ];
@@ -250,7 +258,7 @@ class OrderController extends Controller {
                 }*/
                 
                 Log::info($owner_stripe->express_id);
-                $session = $stripe->checkout->sessions->create($checkout_data, array("stripe_account" => $owner_stripe->express_id));
+            $session = $stripe->checkout->sessions->create($checkout_data, array("stripe_account" => $owner_stripe->express_id));
                 Log::info($session);
                 return response()->json(['success' => true, 'msg' => $session->id]);
         //Log::info($session);
