@@ -24,7 +24,7 @@
 
             <div class="col-md-10 offset-md-1">
          
-                <div class="card card-shadow card-responsive" id="paymentsChart">
+               {{-- <div class="card card-shadow card-responsive" id="paymentsChart">
                     <div class="card-block p-0">
                     <div class="p-30" style="height:120px;">
                         <div class="row">
@@ -56,8 +56,8 @@
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    @if($subscriptions->count() > 0)
+                    </div>--}}
+                    {{-- @if($subscriptions->count() > 0)
                 
 
                                 <table class="table mb-0" data-plugin="animateList" data-animate="fade" data-child="tr">
@@ -104,13 +104,13 @@
                                                 @endif
                                             @endif
                                         </tr>
-                                    @endforeach
+                                    @endforeach 
                                     </tbody>
                                 </table>
                         
-                    @endif
+                    @endif --}}
                     <div class="float-right mt-20">
-                    {{ $subscriptions->render() }}
+                     {{-- $subscriptions->render() --}}
                     </div>
 
                     <div class="ct-chart h-150"></div>

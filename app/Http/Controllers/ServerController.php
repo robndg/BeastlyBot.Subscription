@@ -132,13 +132,13 @@ class ServerController extends Controller {
         $users_roles = $this::getUsersRoles($discord_store->id);
 
         // 1 got to make paid out table work
-        $total_payout = PaidOutInvoice::where('store_id', $discord_store->id)->whereNull('refunded')->whereNull('reversed')->sum('amount');
+       /* $total_payout = PaidOutInvoice::where('store_id', $discord_store->id)->whereNull('refunded')->whereNull('reversed')->sum('amount');
         // 2
         $average_weekly = PaidOutInvoice::where('store_id', $discord_store->id)->whereNull('refunded')->whereNull('reversed')->whereBetween('created_at', [Carbon::now()->subDays(8), Carbon::now()])->sum('amount');
         // 3
         $pending_payout = Subscription::where('store_id', $discord_store->id)->whereNull('latest_paid_out_invoice_id')->where('status', '<=', 4)->orWhereRaw('latest_paid_out_invoice_id != latest_invoice_id')->where('store_id', $discord_store->id)->where('status', '<=', 4)->sum('latest_invoice_amount');
         // $pending_total = Subscription::where('store_id', $discord_store->id)->where(Carbon::createFromFormat('Y-m-d', 'latest_invoice_paid_at') > Carbon::now()->subDays(15))->sum('reward');
-        $subscriptions = Subscription::where('store_id', $discord_store->id)->orderBy('updated_at', 'DESC')->paginate(5);
+        $subscriptions = Subscription::where('store_id', $discord_store->id)->orderBy('updated_at', 'DESC')->paginate(5); */
 
         // get all the invoices for payments tab
         StripeHelper::setApiKey();
@@ -159,7 +159,7 @@ class ServerController extends Controller {
         // });
 
         // TODO: Member count not working. Returns null in guild for some reason, so does members. Have to use old code to update member count
-        return view('server')->with('id', $id)->with('shop', $discord_store)->with('has_order', false)->with('roles', $roles)/*->with('products', $products)*/->with('product_roles', $product_roles)->with('guild', $discord_helper->getGuild($id))->with('subscribers', $subscribers)->with('total_payout', $total_payout)->with('pending_payout', $pending_payout)->with('average_weekly', $average_weekly)->with('users_roles', $users_roles)->with('invoices', $invoices)->with('subscriptions', $subscriptions)->with('bot_positioned', $discord_helper->isBotPositioned($id));
+        return view('server')->with('id', $id)->with('shop', $discord_store)->with('has_order', false)->with('roles', $roles)/*->with('products', $products)*/->with('product_roles', $product_roles)->with('guild', $discord_helper->getGuild($id))->with('subscribers', $subscribers)/*->with('total_payout', $total_payout)->with('pending_payout', $pending_payout)->with('average_weekly', $average_weekly)*/->with('users_roles', $users_roles)->with('invoices', $invoices)/*->with('subscriptions', $subscriptions)*/->with('bot_positioned', $discord_helper->isBotPositioned($id));
     }
 
     /* --------------------------------------------------------------------

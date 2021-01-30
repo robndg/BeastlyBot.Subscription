@@ -100,7 +100,7 @@
                                     @include('partials/server/loaders/new-payments')                
                                 </tbody>
                                 <tbody id="recent-transactions-table">
-                                    @foreach(\App\Subscription::where('store_id', $shop->id)->whereDay('latest_invoice_paid_at', '=', date('d'))->whereMonth('latest_invoice_paid_at', '=', date('m'))->whereYear('latest_invoice_paid_at', '=', date('Y'))->orderBy('latest_invoice_paid_at', 'DESC')->take(25)->get() as $sub) 
+                                 {{--   @foreach(\App\Subscription::where('store_id', $shop->id)->whereDay('latest_invoice_paid_at', '=', date('d'))->whereMonth('latest_invoice_paid_at', '=', date('m'))->whereYear('latest_invoice_paid_at', '=', date('Y'))->orderBy('latest_invoice_paid_at', 'DESC')->take(25)->get() as $sub) 
                                     @php
                                         $discord_id = \App\DiscordOAuth::where('user_id', $sub->user_id)->first()->discord_id;
                                         $discord_helper = new \App\DiscordHelper(\App\User::where('id', $sub->user_id)->first());
@@ -118,7 +118,7 @@
                                         <td class="content"><div>{{ $discord_helper->getUsername() }}</div></td>
                                         <td class="green-600 w-120 text-right pr-20">+ ${{ number_format($sub->latest_invoice_amount / 100, 2, '.', ',') }}</td>
                                     </tr>
-                                    @endforeach  
+                                    @endforeach   --}}
                                 </tbody>
                             </table>
                         </div>
