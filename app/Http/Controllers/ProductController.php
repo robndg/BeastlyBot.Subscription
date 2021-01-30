@@ -8,6 +8,7 @@ use App\Ban;
 use App\StripeConnect;
 use App\StripeHelper;
 use App\Price;
+use App\StoreCustomer;
 
 
 use Illuminate\Support\Facades\Cache;

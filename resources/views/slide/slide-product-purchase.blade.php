@@ -260,7 +260,7 @@
     }
 
     function beginCheckout() {
-        if(is_member) {
+        if(is_member) { // TODO Rob: add back !
             Swal.fire({
                 title: 'Not a member!',
                 text: 'Please join the server before purchasing any roles.',
@@ -303,14 +303,28 @@
             if (msg['success']) {
                 swal.close();
                 console.log(msg['msg']);
-                stripe.redirectToCheckout({
+                
+                var stripeconnected = Stripe("{{ env('STRIPE_CLIENT_PUBLIC_TEST') }}", {
+                    stripeAccount: "{{ App\StripeConnect::where('user_id', $store->user_id)->first()->express_id }}"
+                });
+
+                var stripeid = msg['msg'];
+                stripeconnected.redirectToCheckout({
+                    sessionId: stripeid
+                }).then(function (result) {
+                // If `redirectToCheckout` fails due to a browser or network
+                // error, display the localized error message to your customer
+                       // console.log(result.error.message)
+                });
+                /*stripe.redirectToCheckout({
                     sessionId: msg['msg']
+                    
                 }).then(function (result) {
                     // If `redirectToCheckout` fails due to a browser or network
                     // error, display the localized error message to your customer
                     // using `result.error.message`.
                     alert(result.error.message);
-                });
+                });*/
             } else {
                 Swal.fire({
                     title: 'Failure',

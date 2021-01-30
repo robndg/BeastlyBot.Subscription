@@ -11,7 +11,7 @@ use App\StripeConnect;
 use App\StripeHelper;
 use App\Price;
 use App\Product;
-
+Use App\StoreCustomer;
 use Illuminate\Support\Facades\Cache;
 
 use App\Products\DiscordRoleProduct;

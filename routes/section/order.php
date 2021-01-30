@@ -10,6 +10,8 @@ Route::get('/checkout-success', 'OrderController@checkoutSuccess');
 
 Route::get('/checkout-cancel', 'OrderController@checkoutCancel');
 
+Route::get('/success/randomsubscriptionid', 'OrderController@checkoutSuccessRole');
+
 Route::get('/slide-invoice', function() {
     $invoice = null;
     $id = \request('id');

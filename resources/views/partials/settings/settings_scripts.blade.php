@@ -42,6 +42,7 @@
                     stripe.redirectToCheckout({
                         sessionId: msg['msg']
                     }).then(function (result) {
+                        result.error.message
                         // TODO: Do this for all including the product-purchase slide
                         // If `redirectToCheckout` fails due to a browser or network
                         // error, display the localized error message to your customer

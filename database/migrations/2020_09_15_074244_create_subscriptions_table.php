@@ -18,7 +18,7 @@ class CreateSubscriptionsTable extends Migration
             
             $table->bigInteger('user_id');
             $table->bigInteger('partner_id');
-            $table->bigInteger('stripe_connect_id');
+            $table->string('store_customer_id'); //uuid
 
             // Invoices
             $table->integer('status')->default(1); // maybe 1 good, 2 overdue, 3 cancelled, 4 disputed
@@ -34,7 +34,8 @@ class CreateSubscriptionsTable extends Migration
             $table->integer('connection_type')->default(1); // 1 discord, 2 twitter etc
             $table->integer('connection_id'); // links to ex) discord_o_auths ID
             $table->bigInteger('store_id'); // links to ex) discord_store ID
-            $table->string('product_id'); // links to ex) product_roles ID
+            $table->string('price_id')->nullable(); // links to ex) product
+            $table->string('product_id')->nullable(); // links to ex) product_roles ID (maybe copied)
             $table->integer('level')->default(1); // level of payout time of order
 
             // Store Policy at time Purchase

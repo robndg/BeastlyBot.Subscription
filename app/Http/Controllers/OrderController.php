@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Auth;
 use App\AlertHelper;
-
 use App\Order;
 use App\Products\DiscordRoleProduct;
 use App\Products\ExpressProduct;
@@ -11,6 +11,7 @@ use App\Products\ProductMsgException;
 use App\Refund;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Session;
 use Stripe\Exception\InvalidRequestException;
 use App\User;
@@ -19,6 +20,7 @@ use App\StripeConnect;
 use App\Ban;
 use App\StripeHelper;
 use App\DiscordHelper;
+use App\StoreCustomer;
 
 class OrderController extends Controller {
 
@@ -38,8 +40,9 @@ class OrderController extends Controller {
             */
     public function setupOrder(Request $request){
  
-        if (! auth()->user()->hasStripeAccount()) 
+        /*if (! auth()->user()->hasStripeAccount()){
             return response()->json(['success' => false, 'msg' => 'You do not have a linked stripe account.']);
+        }
         $express_promo = NULL;
         try {
             switch ($request['product_type']) {
@@ -72,18 +75,22 @@ class OrderController extends Controller {
         } catch(\Stripe\Exception\ApiErrorException $e) {
             if(env('APP_DEBUG')) Log::error($e);
             return response()->json(['success' => false, 'msg' => $e->getError()->message]);
-        }
-        Log::info($request['role_id']);
-        $role_id = $request['role_id'];
-        $interval = $request['billing_cycle'];
-        Log::info($request['billing_cycle']);
+        }*/
+        $role_name = $request['role_name'];
+        $ref_code = $request['ref_code']; // null for now
+        $price_id = $request['price_id']; // null for now
+
+        Log::info($request['role_id']); // todo remove
+        $role_id = $request['role_id']; // todo remove
+        $interval = $request['billing_cycle']; // todo remove
+        Log::info($request['billing_cycle']); // todo remove for uuid
         $product_role = \App\ProductRole::where('role_id', 'LIKE', '%' . $role_id . '%')/*->where('active', 1)*/->first();
         Log::info($product_role);
         // Find Product not assigned
         $product_price = \App\Price::where('product_id', $product_role->id)->where('interval', $interval)->where('status', 1)->where('assigned_to', null)->first();
         // Check if can order (total, - 1 after order)
         Log::info($product_price);
-        if($product_price->max_sales){
+        if($product_price->max_sales != null){
             if($product_price->max_sales == 0){
                 return response()->json(['success' => false, 'msg' => 'This plan has been sold out or no longer available.']);
             }
@@ -106,106 +113,133 @@ class OrderController extends Controller {
                 
         }
 
-        // Check if user has stripe account, create 
+        $discord_store = DiscordStore::where('id', $product_role->discord_store_id)->first();
+        $discord_helper = new \App\DiscordHelper(User::find($discord_store->user_id));
+
+        $guild = $discord_helper->getGuild($discord_store->guild_id);
+
+        //$script_setup = false; // for later script migration use
+        $user_id = Auth::id();
+
+
+        ///// Initiate Stripe Checkout /////
+
+        // Check if user has stripe account, create?
         if (! auth()->user()->hasStripeAccount()) 
         return response()->json(['success' => false, 'msg' => 'You do not have a linked stripe account.']);
-        // Create price in Stripe (or PayPal)
-
-
-
 
         StripeHelper::setApiKey();
 
-        $customer_stripe = StripeConnect::where('user_id', auth()->user()->id)->first();
+        // 1) Get Customer and Owner Stripe
+        $customer_stripe = StripeConnect::where('user_id', $user_id)->first();
         $owner_stripe = StripeConnect::where('user_id', $discord_store->user_id)->first();
 
-        \Stripe\Customer::update($customer_stripe->customer_id, ['source' => 'tok_mastercard']);
+        // Update Customer Stripe to have Payment Source (TODO: check if necessary)
+        \Stripe\Customer::update($customer_stripe->customer_id, ['source' => 'tok_mastercard']); 
 
-        $token = \Stripe\Token::create(array(
+        // Create Stripe Token for Customer vs Stripe
+        $stripe_token = \Stripe\Token::create(array(
             "customer" => $customer_stripe->customer_id,
-            ), array("stripe_account" => $owner_stripe->express_id, "livemode" => false));
+            ), array("stripe_account" => $owner_stripe->express_id, "livemode" => false)); // TODO: remove livemode false
 
-            
-        $copiedCustomer = \Stripe\Customer::create(array(
-            "description" => "Customer Created: " . auth()->user()->getDiscordHelper()->getUsername(), // Rob TODO: change to add UUID for StripeConnect
-            "source" => $token // obtained with Stripe.js
-            ), array("stripe_account" => $owner_stripe->express_id, "livemode" => false));
+        // Get or Create StoreCustomer in DB (will move to top when adding PayPal so we dont duplicate code)
+        if(StoreCustomer::where('discord_store_id', $discord_store->id)->where('user_id', $user_id)->exists()){ 
+           // $store_customer = StoreCustomer::where('store_stripe', $store_stripe->id, 'customer_stripe', $customer_stripe->id)->update(['token' => $token]);
+            $store_customer = StoreCustomer::where('discord_store_id', $discord_store->id)->where('user_id', $user_id)->first();
+            $store_customer->update(['customer_stripe' => $customer_stripe->id]); // Redundency if store had PayPal entry only
+            $store_customer->update(['stripe_token' => $stripe_token->id]);
+            $store_customer->update(['stripe_metadata' => $stripe_token]);
+            $store_customer->save();
+        }else{
+            // Stripe, Copy from master Stripe to Owner
+            $copiedCustomer = \Stripe\Customer::create(array(
+                "description" => "Customer Created for "/*auth()->user()->getDiscordHelper()->getUsername()*/, // Rob TODO: maybe change or add store name
+                "source" => $stripe_token
+                ), array("stripe_account" => $owner_stripe->express_id, "livemode" => false));
+            // Create new Customer for Store  'customer_stripe_id', 'customer_paypal_id', 'customer_cur', 'stripe_token', 'paypal_token', 'stripe_metadata', 'paypal_metadata', 'enabled', 'metadata'
+            $store_customer = new StoreCustomer(['id' => Str::uuid(), 'user_id' => $user_id, 'discord_store_id' => $discord_store->id, 'customer_stripe_id' => $copiedCustomer->id, 'customer_paypal_id' => null, 'customer_cur' => 'usd', 'stripe_token' => $stripe_token->id, 'paypal_token' => null, 'stripe_metadata' => $stripe_token, 'paypal_metadata' => null, 'referal_code' => Str::random(8), 'enabled' => 0, 'ip_address' => null, 'metadata' => null]);
+            $store_customer->save();
+        }
 
-        Log::info($copiedCustomer);
-      
-        $plan = \Stripe\Price::create([
-            'unit_amount' => intval($product_price->price),
-            'currency' => $product_price->cur,
-            'recurring' => ['interval' => $product_price->interval],
-            'product' => $product->getStripeID(), // TODO: change to $product_price->id
-            /*'product_data' => [
-                'name' => auth()->user()->getDiscordHelper()->getUsername(),
-            ],*/
-            'metadata' => [
-                'price' => $product_price->id, 
-                'customer' => $copiedCustomer->id,
-                'product' => $product->id,
-            ],
+        $store_customer = StoreCustomer::where('discord_store_id', $discord_store->id)->where('user_id', $user_id)->first();
+
+        // Either copy master Product or Create/Archive New
+        $copiedProduct_name = $product_role->id . '_' . $store_customer->id; // UUIDS
+        $copiedProduct = \Stripe\Product::create([
+            'name' => $copiedProduct_name,
         ]);
 
-         // Log::info($plan);
-        
-         // $stripe_price_id = $plan->id;
-
-          //$product_price = new Price(['id' => Str::uuid(), 'product_id' => $product_id, 'stripe_price_id' => $stripe_price_id, 'paypal_price_id' => $paypal_price_id, 'price' => $price, 'cur' => $cur, 'interval' => $interval, 'assigned_to' => $assigned_to, 'start_date' => $start_date, 'end_date' => $end_date, 'max_sales' => $max_sales, 'discount' => $discount, 'discount_end' => $discount_end, 'discount_max' => $discount_max, 'status' => $status, 'metadata' => null]);
-         // $product_price->save();
+        // Keep for future idea
+        //$product_price = new Price(['id' => Str::uuid(), 'product_id' => $product_id, 'stripe_price_id' => $stripe_price_id, 'paypal_price_id' => $paypal_price_id, 'price' => $price, 'cur' => $cur, 'interval' => $interval, 'assigned_to' => $assigned_to, 'start_date' => $start_date, 'end_date' => $end_date, 'max_sales' => $max_sales, 'discount' => $discount, 'discount_end' => $discount_end, 'discount_max' => $discount_max, 'status' => $status, 'metadata' => null]);
+        // $product_price->save();
         // Pass the UUID so orders cant be duplicate assigned
 
         
-        // CREATE SESSION, 
+        //// CREATE STRIPE SESSION ////
 
-        $stripe_customer = auth()->user()->getStripeHelper()->getCustomerAccount();
+        //$stripe_customer = auth()->user()->getStripeHelper()->getCustomerAccount();
 
         $stripe = StripeHelper::getStripeClient();
 
         StripeHelper::setApiKey();
+    
         try {
-
-            $checkout_data = [ // TODO Colby: Either use checkout_data below this one (plan->id), or make this work lol
+            $checkout_data = [
+                'cancel_url' => 'http://localhost:8080/shop/799348185586991155',//$product->getCallbackCancelURL(), // product_role id, interval
+                'success_url' => 'http://localhost:8080/success/randomsubscriptionid',/* . $copiedProduct->id . '/' . $product_price->id . '/' . $store_customer->id . '/' . $role_name,*///$product->getCallbackSuccessURL(),
                 'payment_method_types' => ['card'],
-                'line_items' => [[
-                  'name' => 'Kavholm rental',
-                  'amount' => $product_price->price,
-                  'currency' => $product_price->cur,
-                  'quantity' => 1,
-                ]],
-                'payment_intent_data' => [
-                  'application_fee_amount' => 5,
-                  'transfer_data' => [
-                    'destination' => $owner_stripe->express_id,
-                  ],
+                "mode" => "subscription",
+                "client_reference_id" => $store_customer->id,
+                "customer" => $store_customer->customer_stripe_id,
+                "line_items" => [
+                    [
+                    "quantity" => "1",
+                    "description" => "Subscription to BeastlyBot",
+                    "price_data" => [
+                        "currency" => "usd",
+                        "product_data" => [
+                        "name" => $guild->name . " Subscription",
+                        "description" => "Subscription to " . $role_name, // TODO: change to discord_helper role name
+                            "metadata" => [
+                                "productId" => $copiedProduct->id,
+                            ]
+                        ],
+                        "unit_amount" => intval($product_price->price),
+                        "recurring" => [
+                        "interval" => $product_price->interval,
+                        "interval_count" => "1"
+                        ]
+                    ]
+                    ]
                 ],
-                'success_url' => 'https://example.com/success',
-                'cancel_url' => 'https://example.com/failure',
-
-                /*'payment_method_types' => ['card'],
-                'mode' => 'subscription',
-                'line_items' => [[
-                  'price_data' => [
-                    'currency' => $product_price->cur,
-                    'recurring' => ['interval' => $product_price->interval],
-                    'product_data' => [
-                      'name' => auth()->user()->getDiscordHelper()->getUsername() . ' - Product',
-                      'metadata' => ['product_price' => $product_price->price, 'product_role' => $product_role->id]
-                    ],
-                    //'product' => $plan->id,  // wish this could work, but i think has to be made each time in product_data (unless we can test in non-test mode)
-                    'unit_amount' => intval($product_price->price),
-                  ],
-                  'quantity' => 1,
-                ]],
-                'subscription_data' => [
-                    'application_fee_percent' => 4,
-                    // line items for plan depricated here
-                ],
-                'customer' => $copiedCustomer->id,
-                'success_url' => $product->getCallbackSuccessURL(),
-                'cancel_url' => $product->getCallbackCancelURL(),*/
+                "subscription_data" => [
+                    "application_fee_percent" => 4,
+                        "metadata" => [
+                            /*"guildId" => "*****",
+                            "userId" => "*****",
+                            "discordGuildId" => "******************",
+                            "discordUserId" => "******************",
+                            "type" => "*******",
+                            "ipAddress" => "*************",*/
+                            'product_name' => $copiedProduct_name, // For if referal can find easier to refund
+                            'product_id' => $product_role->id, // uuid
+                            'price_id' => $product_price->id, // uuid
+                            'type' => 'discord_subscription', // for future 
+                            "referralCode" => $ref_code // probably null
+                    ]
+                ]
             ];
+
+            /*if(!empty($request['coupon_code'])) {
+                if(DiscordStore::where('guild_id', $request['guild_id'])->exists()) {
+                    $store = DiscordStore::where('guild_id', $request['guild_id'])->first();
+                    $checkout_data['subscription_data']['coupon'] = $store->user_id . $request['coupon_code'];
+                }
+            }
+            if($express_promo != NULL){
+                $checkout_data['subscription_data']['coupon'] = $express_promo;
+            }*/
+           
             $session = $stripe->checkout->sessions->create($checkout_data, array("stripe_account" => $owner_stripe->express_id));
                 Log::info($session);
                 return response()->json(['success' => true, 'msg' => $session->id]);
@@ -220,134 +254,43 @@ class OrderController extends Controller {
 
 
     }
-    public function setup(Request $request) {
-        if (! auth()->user()->hasStripeAccount()) 
-            return response()->json(['success' => false, 'msg' => 'You do not have a linked stripe account.']);
-        $express_promo = NULL;
-        try {
-            switch ($request['product_type']) {
-                case "discord":
-                    $product = new DiscordRoleProduct($request['guild_id'], $request['role_id'], $request['billing_cycle']); // TODO: Find UUID
-                break;
-                case "express":
-                    $product = new ExpressProduct($request['billing_cycle'] == '1' ? env('LIVE_MONTHLY_PLAN_ID') : env('LIVE_YEARLY_PLAN_ID'));
-                    $express_promo = ($request['billing_cycle'] == '1' ? 'wRSDRBPq' : 'ategNaIz');
-                break;
-                default:
-                    throw new ProductMsgException('Could not find product by that type.');
-                break;
-            }
-         
-            if(auth()->user()->getStripeHelper()->isSubscribedToProduct($product->getStripeProduct()->id)) {
-                throw new ProductMsgException('You are already subscribed to that product.');
-            }
-            if($request['guild_id'] != NULL){
-                $discord_store = DiscordStore::where('guild_id', $request['guild_id'])->first();
-                
-                if(Ban::where('user_id', auth()->user()->id)->where('active', 1)->where('type', 1)->where('discord_store_id', $discord_store->id)->exists() && auth()->user()->id != $discord_store->user_id){
-                    throw new ProductMsgException('You are banned from purchasing products from this store.');
-                }
-            }
+    
 
-            $product->checkoutValidate();
-        } catch(ProductMsgException $e) {
-            return response()->json(['success' => false, 'msg' => $e->getMessage()]);
-        } catch(\Stripe\Exception\ApiErrorException $e) {
-            if(env('APP_DEBUG')) Log::error($e);
-            return response()->json(['success' => false, 'msg' => $e->getError()->message]);
+    public function checkoutSuccessRole(Request $request) {
+
+        Log::info($request->all());
+        $success = \request('success');
+        //\request('product_type')
+        //$copied_product_id, $product_price_id, $customer_id, $role_name
+        // If the customer does not exist we have to cancel the order as we won't have a stripe account to charge
+        if (! auth()->user()->hasStripeAccount())  {
+            AlertHelper::alertError('You do not have a linked stripe account.');
+            return redirect('/dashboard');
         }
+        $role_name = "blahhhh";
+        $role_name = \request('role_name');
+        AlertHelper::alertSuccess('Congratulations. ' . $role_name . ' is yours!');
 
+       /* $store_customer = StoreCustomer::where('id', $customer_id)->first();
+        $store_customer->enabled = 1;
+        $store_customer->save();
 
-       
-        // TODO ROB
-        // COPY STRIPE CUSTOMER to store / check if CUSTOMER in DB for this Store -> use UUID in session
-            // TODO: check if shop uses Stripe or Paypal first
-
-        // Copy Stripe Customer to Connect Owner Stripe 
-        
-        StripeHelper::setApiKey();
-
-        $customer_stripe = StripeConnect::where('user_id', auth()->user()->id)->first();
-        $owner_stripe = StripeConnect::where('user_id', $discord_store->user_id)->first();
-
-       // \Stripe\Customer::update($customer_stripe->customer_id, ['source' => 'tok_mastercard']);
-
-        $token = \Stripe\Token::create(array(
-            "customer" => $customer_stripe->customer_id,
-            ), array("stripe_account" => $owner_stripe->express_id));
-
-            
-        $copiedCustomer = \Stripe\Customer::create(array(
-            "description" => "Customer for " . $owner_stripe->id, // Rob TODO: change to add UUID for StripeConnect
-            "source" => $token // obtained with Stripe.js
-            ), array("stripe_account" => $owner_stripe->express_id));
-
-            Log::info($copiedCustomer);
-        // TODO: PayPal Copy
-
-        
-        // CREATE SESSION, 
-
-
-        $stripe_customer = auth()->user()->getStripeHelper()->getCustomerAccount();
-
-
-        $stripe = StripeHelper::getStripeClient();
-
-       // StripeHelper::setApiKey();
-
-          $session = \Stripe\Checkout\Session::create([
-            'payment_method_types' => ['card'],
-            'line_items' => [[
-              'price' => $product->getStripePlan()->id,
-              'quantity' => 1,
-            ]],
-            'subscription_data' => [
-              'application_fee_percent' => 5,
-            ],
-            'mode' => 'subscription',
-            'success_url' => $product->getCallbackSuccessURL(),
-            'cancel_url' => $product->getCallbackCancelURL(),
-            'customer' => $copiedCustomer->id, // Rob TODO: Store in DB or use find
-            'client_reference_id' => auth()->user()->id, // Rob TODO: change to add UUID for User
-          ], ['stripe_account' => $owner_stripe->express_id]);
-
-
-       /* $checkout_data = [
-            'payment_method_types' => ['card'],
-            'mode' => 'subscription',
-            'subscription_data' => [
-                'application_fee_percent' => 5,
-                'items' => [[
-                    'plan' => $product->getStripePlan()->id,
-                    'quantity' => '1'
-                ]]
-            ],
-            'success_url' => $product->getCallbackSuccessURL(),
-            'cancel_url' => $product->getCallbackCancelURL(),
-            'customer' => $stripe_customer->id,
-        ];*/
-
-        /*if(!empty($request['coupon_code'])) {
-            if(DiscordStore::where('guild_id', $request['guild_id'])->exists()) {
-                $store = DiscordStore::where('guild_id', $request['guild_id'])->first();
-                $checkout_data['subscription_data']['coupon'] = $store->user_id . $request['coupon_code'];
+        $product_price = \App\Price::where('id', $product_price_id)->first();
+        if($product_price->max_sales){
+            if($product_price->max_sales > 0){
+                $product_price = $product_price->max_sales - 1;
+                $product_price->save();
             }
-        }
-        if($express_promo != NULL){
-            $checkout_data['subscription_data']['coupon'] = $express_promo;
-        }
-        
-        $stripe = StripeHelper::getStripeClient();
-        $session = $stripe->checkout->sessions->create($checkout_data, array("stripe_account" => StripeConnect::where('user_id', $discord_store->user_id)->first()));*/
-        
-        return response()->json(['success' => true, 'msg' => $session->id]);
+        }*/
+        $product = new DiscordRoleProduct(\request('guild_id'), \request('role_id'), \request('billing_cycle'), null); // TODO Rob: remove this
+        return $success ? $product->checkoutSuccess() : $product->checkoutCancel();
     }
+
 
     public function checkout() {
       
         // Assign and recreate after payment
-
+        Log::info(\request());
         $success = \request('success');
 
         if($success)
@@ -361,24 +304,7 @@ class OrderController extends Controller {
             return redirect('/dashboard');
         }
 
-        try {
-            switch (\request('product_type')) {
-                case "discord":
-                    $product = new DiscordRoleProduct(\request('guild_id'), \request('role_id'), \request('billing_cycle'));
-                break;
-                case "express":
-                    $product = new ExpressProduct(\request('plan_id'));
-                break;
-                default:
-                    throw new ProductMsgException('Could not find product by that type.');
-                break;
-            }
-        } catch(ProductMsgException $e) {
-            AlertHelper::alertWarning($e->getMessage());
-        } catch(\Stripe\Exception\ApiErrorException $e) {
-            if(env('APP_DEBUG')) Log::error($e);
-            AlertHelper::alertWarning($e->getError()->message);
-        }
+       
 
         return $success ? $product->checkoutSuccess() : $product->checkoutCancel();
     }
