@@ -82,10 +82,10 @@
                                             <div class="panel-heading p-20 d-flex flex-row flex-wrap align-items-center justify-content-between" id="heading_{{ $guild_id }}" role="tab">
                                                 <div class="w-100 hidden-sm-down">
                                
-                                                @if(count($descriptions) > 0 && $descriptions->where('role_id', $role->id)->first()->exists())
+                                              {{--  @if(count($descriptions) > 0 && $descriptions->where('role_id', $role->id)->first()->exists()) --}}
                                                     <a class="panel-title" data-toggle="collapse" href="#tab_{{ $role->id }}" data-parent="#accordian_main" aria-expanded="false" aria-controls="tab_{{ $role->id }}">
                                                     </a>
-                                                @endif
+                                                {{-- @endif --}}
                                        
                                                 </div>
                                                 <div class="text-center">
@@ -104,7 +104,7 @@
                                                     </button>
                                                 </div>
                                             </div>
-                                            @if(count($descriptions) > 0 && $descriptions->where('role_id', $role->id)->first()->exists())
+                                         {{-- @if(count($descriptions) > 0 && $descriptions->where('role_id', $role->id)->first()->exists())
                                             <div class="panel-collapse collapse" id="tab_{{ $role->id }}" aria-labelledby="heading_{{ $guild_id }}" role="tabpanel">
                                                 <div class="panel-body">
                                                 
@@ -112,7 +112,7 @@
                                                
                                                 </div>
                                             </div>
-                                            @endif
+                                            @endif  --}}
                                         </div>
                                         @endif
                                     @endif
