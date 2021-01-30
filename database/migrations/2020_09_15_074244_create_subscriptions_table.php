@@ -39,7 +39,7 @@ class CreateSubscriptionsTable extends Migration
 
             $table->integer('status')->default(0); // 0 not paid, maybe 1 good, 2 overdue, 3 cancelled, 4 disputed
             $table->integer('visible')->default(1); // can use to hide on site if not paid or premium plan etc
-            $table->json('metadata');
+            $table->json('metadata')->nullable();
 
             $table->timestamps();
         });

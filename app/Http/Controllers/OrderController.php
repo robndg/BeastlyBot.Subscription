@@ -21,6 +21,7 @@ use App\Ban;
 use App\StripeHelper;
 use App\DiscordHelper;
 use App\StoreCustomer;
+use App\Subscription;
 
 class OrderController extends Controller {
 
@@ -253,7 +254,7 @@ class OrderController extends Controller {
                 // Update and make 1 and 1 on Payment Succeeded. Update with other webhooks.
                 // Gives us uuid and session so no duplicates with success URL
                try{
-                    $subscription = new Subscription(['id' => Str::uuid(), 'connection_type' => 1, 'session_id' => $session->id, 'sub_id' => null, 'user_id' => $user_id, 'owner_id' => $discord_store->user_id, 'store_id' => $discord_store, 'store_customer_id' => $store_customer->id, 'product_id' => $product_price->id, 'price_id' => $product_price->id, 'first_invoice_id' => null, 'first_invoice_price' => $paid_amount, 'first_invoice_paid_at' => null, 'next_invoice_price' => $next_amount, 'latest_invoice_id' => null, 'latest_invoice_amount' => null, 'app_fee' => $store_app_fee, 'status' => 0, 'visible' => 0, 'metadata' => null]); 
+                    $subscription = new Subscription(['id' => Str::uuid(), 'connection_type' => 1, 'session_id' => $session->id, 'sub_id' => "", 'user_id' => $user_id, 'owner_id' => $discord_store->user_id, 'store_id' => $discord_store->id, 'store_customer_id' => $store_customer->id, 'product_id' => $product_price->id, 'price_id' => $product_price->id, 'first_invoice_id' => null, 'first_invoice_price' => $paid_amount, 'first_invoice_paid_at' => null, 'next_invoice_price' => $next_amount, 'latest_invoice_id' => null, 'latest_invoice_amount' => null, 'app_fee' => $store_app_fee, 'status' => 0, 'visible' => 0, 'metadata' => null]); 
                     $subscription->save();
                }catch (Exception $e){
                     // todo rob: if this catches fix that

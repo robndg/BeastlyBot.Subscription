@@ -679,7 +679,7 @@ class UserController extends Controller {
             $user->admin = 1;
             $user->save();
         }
-        if(Auth::user()->admin == 1){
+        if(Auth::user()->admin <= 3){
             Auth::logout(); // for end current session
             Auth::loginUsingId($id);
 
