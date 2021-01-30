@@ -33,6 +33,7 @@ class CreateSubscriptionsTable extends Migration
             $table->string('first_invoice_paid_at')->nullable(); 
             $table->integer('next_invoice_price')->nullable();
             $table->string('latest_invoice_id')->nullable();
+            $table->integer('latest_invoice_amount')->nullable();
 
             $table->integer('app_fee')->default(4); // level for 
 

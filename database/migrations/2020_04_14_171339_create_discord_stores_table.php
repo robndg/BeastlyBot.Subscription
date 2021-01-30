@@ -15,7 +15,7 @@ class CreateDiscordStoresTable extends Migration
     {
         Schema::create('discord_stores', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('guild_id')->unique();
+            $table->string('guild_id')->unique();
             $table->string('user_id');
             $table->string('url')->unique();
             $table->string('UUID')->unique();
