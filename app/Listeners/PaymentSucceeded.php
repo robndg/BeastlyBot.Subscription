@@ -92,6 +92,8 @@ class PaymentSucceeded implements ShouldQueue
                             $role = $discord_helper->getRole($guild_id, $role_id);
                             $discord_helper->sendMessage('You have successfully subscribed to the ' . $role->name . ' role in the ' . $guild->name . ' server!');
 
+                            // Find and update
+                            /*
                             $subscription = new Subscription();
                             $subscription->id = $subscription_id;
                             $subscription->stripe_connect_id = StripeConnect::where('user_id', $partner_id)->first()->id;
@@ -111,7 +113,7 @@ class PaymentSucceeded implements ShouldQueue
                             $subscription->user_id = $customer_id;
                             $subscription->partner_id = $partner_id;
                             $subscription->current_period_end = date("Y-m-d", $webhookCall->payload['data']['object']['lines']['data'][0]['period']['end']);
-                            $subscription->save();
+                            $subscription->save();*/
 
                             $stats = Stat::where('type', 1)->where('type_id', $discord_store->id)->first();                            
                             //$stats->update(['data->subscribers' => ['active' => $subscribers_active + 1, 'total' => $subscribers_total + 1]]);

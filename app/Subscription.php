@@ -6,14 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Subscription extends Model
 {
-    public $incrementing = false;
+    protected $fillable = ['id', 'connection_type', 'session_id', 'sub_id', 'user_id', 'owner_id', 'store_id', 'store_customer_id', 'product_id', 'price_id', 'first_invoice_id', 'first_invoice_price', 'first_invoice_paid_at', 'next_invoice_price', 'latest_invoice_id', 'app_fee', 'status', 'visible', 'metadata'];
+    //public $incrementing = false;
     public $primaryKey = 'id';
-    public $timestamps = true;
+    //public $timestamps = true;
 
     protected $casts = [
+        'id' => 'string',
         'metadata' => 'array',
-        'latest_invoice_paid_at'=>'datetime:Y-m-d H:i:s',
-        'current_period_end'=>'datetime:Y-m-d'
+        'first_invoice_paid_at'=>'datetime:Y-m-d H:i:s',
     ];
 
 }

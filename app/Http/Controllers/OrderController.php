@@ -84,8 +84,8 @@ class OrderController extends Controller {
         $role_id = $request['role_id']; // todo remove
         $interval = $request['billing_cycle']; // todo remove
         Log::info($request['billing_cycle']); // todo remove for uuid
+        
         $product_role = \App\ProductRole::where('role_id', 'LIKE', '%' . $role_id . '%')/*->where('active', 1)*/->first();
-        Log::info($product_role);
         // Find Product not assigned
         $product_price = \App\Price::where('product_id', $product_role->id)->where('interval', $interval)->where('status', 1)->where('assigned_to', null)->first();
         // Check if can order (total, - 1 after order)
@@ -164,10 +164,10 @@ class OrderController extends Controller {
         $store_customer = StoreCustomer::where('discord_store_id', $discord_store->id)->where('user_id', $user_id)->first();
 
         // Either copy master Product or Create/Archive New
-        $copiedProduct_name = $product_role->id . '_' . $store_customer->id; // UUIDS
+       /* $copiedProduct_name = $product_role->id . '_' . $store_customer->id; // UUIDS
         $copiedProduct = \Stripe\Product::create([
             'name' => $copiedProduct_name,
-        ]);
+        ]);*/
 
         // Keep for future idea
         //$product_price = new Price(['id' => Str::uuid(), 'product_id' => $product_id, 'stripe_price_id' => $stripe_price_id, 'paypal_price_id' => $paypal_price_id, 'price' => $price, 'cur' => $cur, 'interval' => $interval, 'assigned_to' => $assigned_to, 'start_date' => $start_date, 'end_date' => $end_date, 'max_sales' => $max_sales, 'discount' => $discount, 'discount_end' => $discount_end, 'discount_max' => $discount_max, 'status' => $status, 'metadata' => null]);
@@ -182,6 +182,10 @@ class OrderController extends Controller {
         $stripe = StripeHelper::getStripeClient();
 
         StripeHelper::setApiKey();
+
+        $paid_amount = $product_price->price; // minus discounts
+        $store_app_fee = 4;
+        $next_amount = $product_price->price; // to show stats front
     
         try {
             $checkout_data = [
@@ -194,17 +198,17 @@ class OrderController extends Controller {
                 "line_items" => [
                     [
                     "quantity" => "1",
-                    "description" => "Subscription to BeastlyBot",
+                    "description" => "Subscription to " . $guild->name,
                     "price_data" => [
                         "currency" => "usd",
                         "product_data" => [
                         "name" => $guild->name . " Subscription",
                         "description" => "Subscription to " . $role_name, // TODO: change to discord_helper role name
                             "metadata" => [
-                                "productId" => $copiedProduct->id,
+                                "productId" => $product_role->id,
                             ]
                         ],
-                        "unit_amount" => intval($product_price->price),
+                        "unit_amount" => intval($paid_amount),
                         "recurring" => [
                         "interval" => $product_price->interval,
                         "interval_count" => "1"
@@ -221,7 +225,8 @@ class OrderController extends Controller {
                             "discordUserId" => "******************",
                             "type" => "*******",
                             "ipAddress" => "*************",*/
-                            'product_name' => $copiedProduct_name, // For if referal can find easier to refund
+                            //'product_name' => $copiedProduct_name, // For if referal can find easier to refund
+                            'store_customer' => $store_customer->id, // uuid
                             'product_id' => $product_role->id, // uuid
                             'price_id' => $product_price->id, // uuid
                             'type' => 'discord_subscription', // for future 
@@ -229,21 +234,34 @@ class OrderController extends Controller {
                     ]
                 ]
             ];
+                // TODO colby: add before or not sure where
 
-            /*if(!empty($request['coupon_code'])) {
-                if(DiscordStore::where('guild_id', $request['guild_id'])->exists()) {
-                    $store = DiscordStore::where('guild_id', $request['guild_id'])->first();
-                    $checkout_data['subscription_data']['coupon'] = $store->user_id . $request['coupon_code'];
+                /*if(!empty($request['coupon_code'])) {
+                    if(DiscordStore::where('guild_id', $request['guild_id'])->exists()) {
+                        $store = DiscordStore::where('guild_id', $request['guild_id'])->first();
+                        $checkout_data['subscription_data']['coupon'] = $store->user_id . $request['coupon_code'];
+                    }
                 }
-            }
-            if($express_promo != NULL){
-                $checkout_data['subscription_data']['coupon'] = $express_promo;
-            }*/
+                if($express_promo != NULL){
+                    $checkout_data['subscription_data']['coupon'] = $express_promo;
+                }*/
            
-            $session = $stripe->checkout->sessions->create($checkout_data, array("stripe_account" => $owner_stripe->express_id));
-                Log::info($session);
-                return response()->json(['success' => true, 'msg' => $session->id]);
-        //Log::info($session);
+                $session = $stripe->checkout->sessions->create($checkout_data, array("stripe_account" => $owner_stripe->express_id));
+
+                //// START SUBSCRIPTION ENTRY ////
+                // Create subscription: status 0, visible 0
+                // Update and make 1 and 1 on Payment Succeeded. Update with other webhooks.
+                // Gives us uuid and session so no duplicates with success URL
+               try{
+                    $subscription = new Subscription(['id' => Str::uuid(), 'connection_type' => 1, 'session_id' => $session->id, 'sub_id' => null, 'user_id' => $user_id, 'owner_id' => $discord_store->user_id, 'store_id' => $discord_store, 'store_customer_id' => $store_customer->id, 'product_id' => $product_price->id, 'price_id' => $product_price->id, 'first_invoice_id' => null, 'first_invoice_price' => $paid_amount, 'first_invoice_paid_at' => null, 'next_invoice_price' => $next_amount, 'latest_invoice_id' => null, 'app_fee' => $store_app_fee, 'status' => 0, 'visible' => 0, 'metadata' => null]); 
+                    $subscription->save();
+               }catch (Exception $e){
+                    // todo rob: if this catches fix that
+                    Log::info($e);
+               }
+
+            return response()->json(['success' => true, 'msg' => $session->id]);
+
         }catch (\Stripe\Exception\InvalidRequestException $e) {
             Log::info($e);
         }catch (Exception $e){
