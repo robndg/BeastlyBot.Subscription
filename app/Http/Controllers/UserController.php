@@ -11,6 +11,7 @@ use App\Refund;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 use Auth;
 use App\User;
 use App\Subscription;

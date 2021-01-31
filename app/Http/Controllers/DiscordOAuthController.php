@@ -112,6 +112,7 @@ class DiscordOAuthController extends Controller {
          * if the CheckoutSession has a destination the user is manually going to go to it, otherwise they are just logging
          * in and we will direct them to the dashboard
          **/
+        
     
         if($user->url_next){
             $next_url = $user->url_next;
@@ -134,7 +135,7 @@ class DiscordOAuthController extends Controller {
                 else{
                     return redirect('dashboard');
                 }
-            }else if ((strpos($next_url, 'bknd00') !== false) || (strpos($next_url, 'connect_stripe') !== false)){
+            }else if ((strpos($next_url, 'bknd00') == true) || (strpos($next_url, 'connect_stripe') == true)){
                 return redirect('dashboard');
             }else{
                 return redirect($user->url_next);

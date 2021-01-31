@@ -187,11 +187,14 @@ class OrderController extends Controller {
         $paid_amount = $product_price->price; // minus discounts
         $store_app_fee = 4;
         $next_amount = $product_price->price; // to show stats front
+
+        $new_sub_uuid = (string) Str::uuid(); // todo make this permenant Uuid::generate(4)->string
+        Log::info($new_sub_uuid);
     
         try {
             $checkout_data = [
-                'cancel_url' => 'http://localhost:8080/shop/799348185586991155',//$product->getCallbackCancelURL(), // product_role id, interval
-                'success_url' => 'http://localhost:8080/success/randomsubscriptionid',/* . $copiedProduct->id . '/' . $product_price->id . '/' . $store_customer->id . '/' . $role_name,*///$product->getCallbackSuccessURL(),
+                'cancel_url' => 'http://localhost:8080/shop/' . $discord_store->url,//$product->getCallbackCancelURL(), // product_role id, interval
+                'success_url' => 'http://localhost:8080/checkout-subscription-success/' . $new_sub_uuid,/* . $copiedProduct->id . '/' . $product_price->id . '/' . $store_customer->id . '/' . $role_name,*///$product->getCallbackSuccessURL(),
                 'payment_method_types' => ['card'],
                 "mode" => "subscription",
                 "client_reference_id" => $store_customer->id,
@@ -207,6 +210,7 @@ class OrderController extends Controller {
                         "description" => "Subscription to " . $role_name, // TODO: change to discord_helper role name
                             "metadata" => [
                                 "productId" => $product_role->id,
+                                "subscriptionId" => $new_sub_uuid,
                             ]
                         ],
                         "unit_amount" => intval($paid_amount),
@@ -227,6 +231,7 @@ class OrderController extends Controller {
                             "type" => "*******",
                             "ipAddress" => "*************",*/
                             //'product_name' => $copiedProduct_name, // For if referal can find easier to refund
+                            "subscriptionId" => $new_sub_uuid,
                             'store_customer' => $store_customer->id, // uuid
                             'product_id' => $product_role->id, // uuid
                             'price_id' => $product_price->id, // uuid
@@ -253,8 +258,9 @@ class OrderController extends Controller {
                 // Create subscription: status 0, visible 0
                 // Update and make 1 and 1 on Payment Succeeded. Update with other webhooks.
                 // Gives us uuid and session so no duplicates with success URL
+                $new_sub_uuid = Str::uuid();
                try{
-                    $subscription = new Subscription(['id' => Str::uuid(), 'connection_type' => 1, 'session_id' => $session->id, 'sub_id' => "", 'user_id' => $user_id, 'owner_id' => $discord_store->user_id, 'store_id' => $discord_store->id, 'store_customer_id' => $store_customer->id, 'product_id' => $product_role->id, 'price_id' => $product_price->id, 'first_invoice_id' => null, 'first_invoice_price' => $paid_amount, 'first_invoice_paid_at' => null, 'next_invoice_price' => $next_amount, 'latest_invoice_id' => null, 'latest_invoice_amount' => null, 'app_fee' => $store_app_fee, 'status' => 0, 'visible' => 0, 'metadata' => null]); 
+                    $subscription = new Subscription(['id' => $new_sub_uuid, 'connection_type' => 1, 'session_id' => $session->id, 'sub_id' => "", 'user_id' => $user_id, 'owner_id' => $discord_store->user_id, 'store_id' => $discord_store->id, 'store_customer_id' => $store_customer->id, 'product_id' => $product_role->id, 'price_id' => $product_price->id, 'first_invoice_id' => null, 'first_invoice_price' => $paid_amount, 'first_invoice_paid_at' => null, 'next_invoice_price' => $next_amount, 'latest_invoice_id' => null, 'latest_invoice_amount' => null, 'app_fee' => $store_app_fee, 'status' => 0, 'visible' => 0, 'metadata' => null]); 
                     $subscription->save();
                }catch (Exception $e){
                     // todo rob: if this catches fix that
@@ -275,34 +281,35 @@ class OrderController extends Controller {
     }
     
 
-    public function checkoutSuccessRole(Request $request) {
-
-        Log::info($request->all());
-        $success = \request('success');
-        //\request('product_type')
-        //$copied_product_id, $product_price_id, $customer_id, $role_name
-        // If the customer does not exist we have to cancel the order as we won't have a stripe account to charge
-        if (! auth()->user()->hasStripeAccount())  {
-            AlertHelper::alertError('You do not have a linked stripe account.');
+    public function checkoutSubscriptionSuccessRole($subscriptionId) {
+        Log::info($subscriptionId);
+        $subscription = Subscription::where('id', $subscriptionId)->first();
+        if($subscription->user_id != auth()->user()->id){
+            AlertHelper::alertError('This is not your subscription.');
             return redirect('/dashboard');
         }
-        $role_name = "blahhhh";
-        $role_name = \request('role_name');
-        AlertHelper::alertSuccess('Congratulations. ' . $role_name . ' is yours!');
-
-       /* $store_customer = StoreCustomer::where('id', $customer_id)->first();
-        $store_customer->enabled = 1;
-        $store_customer->save();
-
-        $product_price = \App\Price::where('id', $product_price_id)->first();
-        if($product_price->max_sales){
-            if($product_price->max_sales > 0){
-                $product_price = $product_price->max_sales - 1;
-                $product_price->save();
+        if($subscription->connection_type == 1){
+            if (! auth()->user()->hasStripeAccount())  {
+                AlertHelper::alertError('You do not have a linked stripe account.');
+                return redirect('/dashboard');
             }
-        }*/
-        $product = new DiscordRoleProduct(\request('guild_id'), \request('role_id'), \request('billing_cycle'), null); // TODO Rob: remove this
-        return $success ? $product->checkoutSuccess() : $product->checkoutCancel();
+        }
+        if($subscription->status <= 2){ // 0 payment processing // 1 payment success // 2 role added to discord
+            if($subscription->status == 0){
+                AlertHelper::alertSuccess('Just a second...');
+                // waiting on Stripe webhook, show product processing
+            }else{
+                AlertHelper::alertSuccess('Congratulations. Subscription Success!');
+            }
+            $subscription->visible = 1;
+            $subscription->save();
+            return redirect('/account/subscriptions'); // Todo Rob: make store sub manager page
+        }else{
+            AlertHelper::alertInfo('Subscription already added or cancelled.');
+            return redirect('/account/subscriptions'); // Todo Rob: make store sub manager page
+        }
+
+        //return $success ? $product->checkoutSuccess() : $product->checkoutCancel();
     }
 
 

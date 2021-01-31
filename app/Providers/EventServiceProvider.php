@@ -21,6 +21,12 @@ class EventServiceProvider extends ServiceProvider
     // ];
 
     protected $listen = [
+        'stripe-webhooks::payment_intent.succeeded' => [
+            \App\Webhooks\Stripe\PaymentIntentSucceeded::class,
+        ],
+        'stripe-webhooks::checkout.session.completed' => [
+            \App\Webhooks\Stripe\CheckoutSessionCompleted::class,
+        ],
         'stripe-webhooks::invoice.payment_succeeded' => [
             \App\Webhooks\Stripe\PaymentSucceeded::class,
         ],
