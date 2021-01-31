@@ -8,7 +8,6 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 
-Log::info("received webook");
 
 class EventServiceProvider extends ServiceProvider
 {

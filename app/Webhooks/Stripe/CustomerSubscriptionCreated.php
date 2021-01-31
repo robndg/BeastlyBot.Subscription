@@ -22,6 +22,7 @@ class CustomerSubscriptionCreated implements ShouldQueue
     public function handle(WebhookCall $webhookCall) // get sub here and put in subscription DB (or created sub DB here)
     {
 
+      Log::info("Customer Subscription Created Webhook");
         Log::info($webhookCall->payload);
         
     }

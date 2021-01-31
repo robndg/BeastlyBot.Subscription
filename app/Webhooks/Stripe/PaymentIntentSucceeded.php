@@ -21,9 +21,8 @@ class PaymentIntentSucceeded implements ShouldQueue
 {
     public function handle(WebhookCall $webhookCall) // Set DB status to 1, then fire role and set to 2
     {
-
+        Log::info("PaymentIntentSucceeded Webhook Call");
         Log::info($webhookCall->payload);
-        
     }
 
 /*
