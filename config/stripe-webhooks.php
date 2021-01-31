@@ -25,4 +25,8 @@ return [
      * Spatie\StripeWebhooks\ProcessStripeWebhookJob.
      */
     'model' => \Spatie\StripeWebhooks\ProcessStripeWebhookJob::class,
+
+
+    'verify_signature' => false,
+    
 ];

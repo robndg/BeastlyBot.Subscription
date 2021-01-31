@@ -6,6 +6,9 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
+use Illuminate\Support\Facades\Log;
+
+Log::info("received webook");
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -55,7 +58,6 @@ class EventServiceProvider extends ServiceProvider
             \App\Webhooks\Stripe\DisputeFundsWithdrawn::class,
         ],
     ];
-
     /**
      * Register any events for your application.
      *
