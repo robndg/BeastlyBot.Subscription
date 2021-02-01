@@ -138,6 +138,18 @@ class PaymentIntentSucceeded implements ShouldQueue
                 $customer_discord_id = DiscordOAuth::where('user_id', $user_id)->first()->discord_id;
 
                 $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
+                
+                $isMember = $discord_helper->isMember($guild->id, $discord_helper->getID());
+
+                Log::info("Checking Member and adding if not");
+
+                if (!$isMember) {
+                  $discord_client->guild->addGuildMember([
+                    'guild.id' => intval($guild_id),
+                    'user.id' => intval($customer_discord_id)
+                  ]);
+                }
+
                 $discord_client->guild->addGuildMemberRole([
                     'guild.id' => intval($guild_id),
                     'role.id' => intval($role_id),

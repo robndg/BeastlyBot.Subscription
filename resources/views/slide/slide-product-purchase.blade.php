@@ -260,18 +260,6 @@
     }
 
     function beginCheckout() {
-        if(is_member) { // TODO Rob: add back !
-            Swal.fire({
-                title: 'Not a member!',
-                text: 'Please join the server before purchasing any roles.',
-                type: 'warning',
-                showCancelButton: false,
-                showConfirmButton: true,
-                allowOutsideClick: () => false,
-                target: document.getElementById('slider-div')
-            });
-            return;
-        }
         Swal.fire({
             title: 'Processing...',
             text: '',
