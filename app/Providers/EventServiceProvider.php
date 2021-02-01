@@ -23,13 +23,16 @@ class EventServiceProvider extends ServiceProvider
     // ];
 
     protected $listen = [
+        'stripe-webhooks::customer.subscription.created' => [
+            \App\Webhooks\Stripe\CustomerSubscriptionCreated::class,
+        ],
         'stripe-webhooks::payment_intent.succeeded' => [
             \App\Webhooks\Stripe\PaymentIntentSucceeded::class,
         ],
         'stripe-webhooks::checkout.session.completed' => [
             \App\Webhooks\Stripe\CheckoutSessionCompleted::class,
         ],
-        'stripe-webhooks::invoice.payment_succeeded' => [
+       /* 'stripe-webhooks::invoice.payment_succeeded' => [
             \App\Webhooks\Stripe\PaymentSucceeded::class,
         ],
         'stripe-webhooks::invoice.payment_failed' => [
@@ -55,7 +58,7 @@ class EventServiceProvider extends ServiceProvider
         ],
         'stripe-webhooks::charge.dispute.funds_withdrawn' => [
             \App\Webhooks\Stripe\DisputeFundsWithdrawn::class,
-        ],
+        ],*/
     ];
     /**
      * Register any events for your application.

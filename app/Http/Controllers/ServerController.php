@@ -48,7 +48,7 @@ class ServerController extends Controller {
         // Also need to fix the servers list subscribers count because if I subscribed to premium and new role it says the subscribers, really 1 subscriber and 2 susbcriptions for that 1 subscriber
         $users_roles = [];
 
-        foreach($subscriptions as $subscription) {
+        /*foreach($subscriptions as $subscription) {
             $roles1 = array();
             foreach(Subscription::select('metadata')->where('store_id', $store_id)->where('user_id', $subscription->user_id)->where('status', '<=', 3)->get() as $metadata) {
                 if(!in_array($metadata->metadata['role_id'], $roles1)) {
@@ -59,7 +59,7 @@ class ServerController extends Controller {
             if(!in_array($subscription->user_id, $users_roles)) {
                 $users_roles[$subscription->user_id] = $roles1;
             }
-        }
+        }*/
 
         return $users_roles;
     }
@@ -144,14 +144,14 @@ class ServerController extends Controller {
         StripeHelper::setApiKey();
         $invoices = [];
     
-        foreach(\App\Subscription::where('store_id', $discord_store->id)->get() as $subscription) {
+       /* foreach(\App\Subscription::where('store_id', $discord_store->id)->get() as $subscription) {
             if(Cache::has('invoices_' . $subscription->id)) {
                 $invoices[$subscription->id] = Cache::get('invoices_' . $subscription->id);
             } else {
                 Cache::put('invoices_' . $subscription->id, \Stripe\Invoice::all(['subscription' => $subscription->id]), 60 * 30);
                 $invoices[$subscription->id] = Cache::get('invoices_' . $subscription->id);
             }
-        }
+        }*/
 
         // TODO: Sort data in ASC order
         // usort($invoices_array, function($a, $b) {

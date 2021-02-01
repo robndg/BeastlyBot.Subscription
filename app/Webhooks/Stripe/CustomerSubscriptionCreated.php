@@ -19,15 +19,202 @@ use \App\StripeHelper;
 
 class CustomerSubscriptionCreated implements ShouldQueue
 {
-    public function handle(WebhookCall $webhookCall) // get sub here and put in subscription DB (or created sub DB here)
+    public function handle(WebhookCall $webhookCall) // get sub here and put in subscription DB (or created sub DB here) then payment intent confirms
     {
 
       Log::info("Customer Subscription Created Webhook");
-        Log::info($webhookCall->payload);
+      Log::info($webhookCall->payload);
+
+      $subscriptionId = $webhookCall->payload['data']['object']['metadata']['subscriptionId'];
+      Log::info($subscriptionId);
+      $sub_id = $webhookCall->payload['data']['object']['id'];
+      Log::info($sub_id);
+      //$latest_invoice = $webhookCall->payload['data']['object']['items']['latest_invoice'];
+      $latest_invoice_amount = $webhookCall->payload['data']['object']['items']['data'][0]['price']['unit_amount'];
+      Log::info($latest_invoice_amount);
+      $first_invoice_id = $webhookCall->payload['data']['object']['latest_invoice'];
+      Log::info($first_invoice_id);
+      $plan_amount = $webhookCall->payload['data']['object']['plan']['amount'];
+      Log::info($plan_amount);
+
+      $subscription = Subscription::where('id', $subscriptionId)->first();
+      $subscription->sub_id = $sub_id;
+      $subscription->first_invoice_id = $first_invoice_id;
+      $subscription->latest_invoice_id = $first_invoice_id;
+      $subscription->save();
         
     }
 
 /*
+
+array (
+  'id' => 'evt_1IFopYJJYsXa4u2SqzpLIjav',
+  'object' => 'event',
+  'account' => 'acct_1FmxdMJJYsXa4u2S',
+  'api_version' => '2020-08-27',
+  'created' => 1612133741,
+  'data' => 
+  array (
+    'object' => 
+    array (
+      'id' => 'sub_IrXvtXxYmOQKGR',
+      'object' => 'subscription',
+      'application_fee_percent' => 4,
+      'billing_cycle_anchor' => 1612133741,
+      'billing_thresholds' => NULL,
+      'cancel_at' => NULL,
+      'cancel_at_period_end' => false,
+      'canceled_at' => NULL,
+      'collection_method' => 'charge_automatically',
+      'created' => 1612133741,
+      'current_period_end' => 1612220141,
+      'current_period_start' => 1612133741,
+      'customer' => 'cus_Ir9o6ATvKpAr65',
+      'days_until_due' => NULL,
+      'default_payment_method' => 'pm_1IFopUJJYsXa4u2SX6n2I0n5',
+      'default_source' => NULL,
+      'default_tax_rates' => 
+      array (
+      ),
+      'discount' => NULL,
+      'ended_at' => NULL,
+      'items' => 
+      array (
+        'object' => 'list',
+        'data' => 
+        array (
+          0 => 
+          array (
+            'id' => 'si_IrXvy7POqnyoLG',
+            'object' => 'subscription_item',
+            'billing_thresholds' => NULL,
+            'created' => 1612133742,
+            'metadata' => 
+            array (
+            ),
+            'plan' => 
+            array (
+              'id' => 'price_1IFooLJJYsXa4u2SQV11mMMT',
+              'object' => 'plan',
+              'active' => false,
+              'aggregate_usage' => NULL,
+              'amount' => 2500,
+              'amount_decimal' => '2500',
+              'billing_scheme' => 'per_unit',
+              'created' => 1612133669,
+              'currency' => 'usd',
+              'interval' => 'day',
+              'interval_count' => 1,
+              'livemode' => false,
+              'metadata' => 
+              array (
+              ),
+              'nickname' => NULL,
+              'product' => 'prod_IrXujtb5iiR1i6',
+              'tiers_mode' => NULL,
+              'transform_usage' => NULL,
+              'trial_period_days' => NULL,
+              'usage_type' => 'licensed',
+            ),
+            'price' => 
+            array (
+              'id' => 'price_1IFooLJJYsXa4u2SQV11mMMT',
+              'object' => 'price',
+              'active' => false,
+              'billing_scheme' => 'per_unit',
+              'created' => 1612133669,
+              'currency' => 'usd',
+              'livemode' => false,
+              'lookup_key' => NULL,
+              'metadata' => 
+              array (
+              ),
+              'nickname' => NULL,
+              'product' => 'prod_IrXujtb5iiR1i6',
+              'recurring' => 
+              array (
+                'aggregate_usage' => NULL,
+                'interval' => 'day',
+                'interval_count' => 1,
+                'trial_period_days' => NULL,
+                'usage_type' => 'licensed',
+              ),
+              'tiers_mode' => NULL,
+              'transform_quantity' => NULL,
+              'type' => 'recurring',
+              'unit_amount' => 2500,
+              'unit_amount_decimal' => '2500',
+            ),
+            'quantity' => 1,
+            'subscription' => 'sub_IrXvtXxYmOQKGR',
+            'tax_rates' => 
+            array (
+            ),
+          ),
+        ),
+        'has_more' => false,
+        'total_count' => 1,
+        'url' => '/v1/subscription_items?subscription=sub_IrXvtXxYmOQKGR',
+      ),
+      'latest_invoice' => 'in_1IFopVJJYsXa4u2SATrYIPS3',
+      'livemode' => false,
+      'metadata' => 
+      array (
+        'subscriptionId' => '834975e5-0b5f-4796-839e-c551f5934035',
+        'store_customer' => '788b6065-f815-420f-9d15-8fa2aad94d86',
+        'product_id' => '0eb66af6-458d-4f39-a675-d0632bbe745a',
+        'price_id' => 'dfba55b2-30d1-4a6a-8688-b92499229444',
+        'type' => 'discord_subscription',
+      ),
+      'next_pending_invoice_item_invoice' => NULL,
+      'pause_collection' => NULL,
+      'pending_invoice_item_interval' => NULL,
+      'pending_setup_intent' => NULL,
+      'pending_update' => NULL,
+      'plan' => 
+      array (
+        'id' => 'price_1IFooLJJYsXa4u2SQV11mMMT',
+        'object' => 'plan',
+        'active' => false,
+        'aggregate_usage' => NULL,
+        'amount' => 2500,
+        'amount_decimal' => '2500',
+        'billing_scheme' => 'per_unit',
+        'created' => 1612133669,
+        'currency' => 'usd',
+        'interval' => 'day',
+        'interval_count' => 1,
+        'livemode' => false,
+        'metadata' => 
+        array (
+        ),
+        'nickname' => NULL,
+        'product' => 'prod_IrXujtb5iiR1i6',
+        'tiers_mode' => NULL,
+        'transform_usage' => NULL,
+        'trial_period_days' => NULL,
+        'usage_type' => 'licensed',
+      ),
+      'quantity' => 1,
+      'schedule' => NULL,
+      'start_date' => 1612133741,
+      'status' => 'incomplete',
+      'transfer_data' => NULL,
+      'trial_end' => NULL,
+      'trial_start' => NULL,
+    ),
+  ),
+  'livemode' => false,
+  'pending_webhooks' => 1,
+  'request' => 
+  array (
+    'id' => 'req_RXHDClQbxmbztL',
+    'idempotency_key' => NULL,
+  ),
+  'type' => 'customer.subscription.created',
+)  
+
+
 {
   "id": "evt_1IFUAHJJYsXa4u2SOcuJXcNd",
   "object": "event",
