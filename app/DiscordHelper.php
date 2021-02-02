@@ -93,7 +93,7 @@ class DiscordHelper
     }
 
     public function guildHasBot(int $guild_id) {
-        return $this->isMember($guild_id, 590725202489638913);
+        return $this->isMember($guild_id, 798659745883357214);
     }
 
     public function isUserBanned(int $guild_id, int $user_id) {
@@ -199,7 +199,7 @@ class DiscordHelper
     public function isBotPositioned(int $guild_id) {
         $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
 
-        foreach($discord_client->guild->getGuildMember(['guild.id' => intval($guild_id), 'user.id' => 590725202489638913])->roles as $role_id) {
+        foreach($discord_client->guild->getGuildMember(['guild.id' => intval($guild_id), 'user.id' => 798659745883357214])->roles as $role_id) {
             foreach($this->getRoles($guild_id) as $role) {
                 if($role->managed && $role->id == $role_id) {
                     $result = $discord_client->guild->modifyGuildRolePositions(

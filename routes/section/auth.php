@@ -15,7 +15,7 @@ Route::get('/logout', function () {
     return redirect()->to('https://beastly.app');
 })->name('logout');
 
-Route::get('/dashboard', function() {
+/*Route::get('/dashboard', function() {
     if(Auth::check()){
         $stripe_helper = auth()->user()->getStripeHelper();
         $discord_helper = new \App\DiscordHelper(auth()->user());
@@ -24,7 +24,7 @@ Route::get('/dashboard', function() {
     }else{
         return view('discord_login');
     }
-});
+});*/
 
 // Route::get('/', function() {
 //     return redirect()->to('https://beastly.app');

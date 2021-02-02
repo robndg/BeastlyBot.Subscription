@@ -37,7 +37,7 @@ class ServerController extends Controller {
         if(\request('slide') == 'true') {
             return view('slide.slide-servers')->with('guilds', $discord_helper->getOwnedGuilds());
         } else {
-            return view('servers')->with('guilds', $discord_helper->getOwnedGuilds());
+            return view('servers')->with('guilds', $discord_helper->getOwnedGuilds())->with('discord_helper', $discord_helper);
         }
     }
 

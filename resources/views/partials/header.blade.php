@@ -3,7 +3,7 @@
     your browser</a> to improve your experience.</p>
 <![endif]-->
 <!-- start bar-->
-<nav class="site-navbar navbar navbar-default navbar-fixed-top navbar-mega site-menubar-fold"
+<nav class="site-navbar navbar navbar-default navbar-fixed-top navbar-mega navbar-expand-md"
      role="navigation">
 
     <div class="navbar-header">

@@ -1,53 +1,46 @@
-<!-- Core  -->
-<script src="{{ asset('global/vendor/babel-external-helpers/babel-external-helpers.js') }}"></script>
-<script src="{{ asset('global/vendor/jquery/jquery.js') }}"></script>
-<script src="{{ asset('global/vendor/popper-js/umd/popper.min.js') }}"></script>
-<script src="{{ asset('global/vendor/bootstrap/bootstrap.js') }}"></script>
-<script src="{{ asset('global/vendor/bootstrap-tagsinput/bootstrap-tagsinput.min.js') }}"></script>
-<script src="{{ asset('global/vendor/bootstrap-select/bootstrap-select.js') }}"></script>
-<script src="{{ asset('global/vendor/animsition/animsition.js') }}"></script>
-<script src="{{ asset('global/vendor/mousewheel/jquery.mousewheel.js') }}"></script>
-<script src="{{ asset('global/vendor/asscrollbar/jquery-asScrollbar.js') }}"></script>
-<script src="{{ asset('global/vendor/asscrollable/jquery-asScrollable.js') }}"></script>
-<script src="{{ asset('global/vendor/ashoverscroll/jquery-asHoverScroll.js') }}"></script>
-<!-- Plugins -->
-<script src="{{ asset('global/vendor/switchery/switchery.js') }}"></script>
-<script src="{{ asset('global/vendor/intro-js/intro.js') }}"></script>
-<script src="{{ asset('global/vendor/screenfull/screenfull.js') }}"></script>
-<script src="{{ asset('global/vendor/slidepanel/jquery-slidePanel.js') }}"></script>
-<script src="{{ asset('global/vendor/select2/select2.min.js') }}"></script>
-<script src="{{ asset('global/vendor/slidepanel/jquery-slidePanel.js') }}"></script>
-<script src="{{ asset('global/vendor/bootstrap-markdown/bootstrap-markdown.js') }}"></script>
-<script src="{{ asset('global/vendor/marked/marked.js') }}"></script>
-<script src="{{ asset('global/vendor/to-markdown/to-markdown.js') }}"></script>
-<script src="{{ asset('global/vendor/bootbox/bootbox.js') }}"></script>
-<script src="{{ asset('global/vendor/ladda/spin.min.js') }}"></script>
-<script src="{{ asset('global/vendor/ladda/ladda.min.js') }}"></script>
-<script src="{{ asset('global/vendor/jquery-selective/jquery-selective.min.js') }}"></script>
-<script src="{{ asset('global/vendor/matchheight/jquery.matchHeight-min.js') }}"></script>
-<script src="{{ asset('global/vendor/dropify/dropify.min.js') }}"></script>
-<script src="{{ asset('global/vendor/jquery-labelauty/jquery-labelauty.js') }}"></script>
-<script src="{{ asset('global/vendor/webui-popover/jquery.webui-popover.min.js') }}"></script>
-<script src="{{ asset('global/vendor/slick-carousel/slick.js') }}"></script>
-<script src="{{ asset('global/vendor/chartist/chartist.min.js') }}"></script>
-<script src="{{ asset('global/vendor/chartist-plugin-tooltip/chartist-plugin-tooltip.min.js') }}"></script>
-<!-- Scripts -->
-<script src="{{ asset('global/js/Component.js') }}"></script>
-<script src="{{ asset('global/js/Plugin.js') }}"></script>
-<script src="{{ asset('global/js/Base.js') }}"></script>
-<script src="{{ asset('global/js/Config.js') }}"></script>
+<!-- Backend Bundle JavaScript -->
+<script src="{{ asset('dash/assets/js/backend-bundle.min.js') }}"></script>
 
-<script src="{{ asset('js-base/Section/Menubar.js') }}"></script>
-<script src="{{ asset('js-base/Section/Sidebar.js') }}"></script>
-<script src="{{ asset('js-base/Section/PageAside.js') }}"></script>
-<script src="{{ asset('js-base/Plugin/menu.js') }}"></script>
-<script src="{{ asset('js-base/config/tour.js') }}"></script>
-<!-- Page -->
-<script src="{{ asset('js/Site.js') }}"></script>
-<script src="{{ asset('js/plugin.min.js') }}"></script>
-<script src="{{ asset('global/js/Plugin/panel.js') }}"></script>
-<script src="{{ asset('js-base/BaseApp.js') }}"></script>
-<script src="{{ asset('js/App/Beast.js') }}"></script>
+<!-- Flextree Javascript-->
+<script src="{{ asset('dash/assets/js/flex-tree.min.js') }}"></script>
+<script src="{{ asset('dash/assets/js/tree.js') }}"></script>
+
+<!-- Table Treeview JavaScript -->
+<script src="{{ asset('dash/assets/js/table-treeview.js') }}"></script>
+
+<!-- Masonary Gallery Javascript -->
+<script src="{{ asset('dash/assets/js/masonry.pkgd.min.js') }}"></script>
+<script src="{{ asset('dash/assets/js/imagesloaded.pkgd.min.js') }}"></script>
+
+<!-- Mapbox Javascript -->
+<script src="{{ asset('dash/assets/js/mapbox-gl.js') }}"></script>
+<script src="{{ asset('dash/assets/js/mapbox.js') }}"></script>
+
+<!-- Fullcalender Javascript -->
+<script src="{{ asset('dash/assets/vendor/fullcalendar/core/main.js') }}"></script>
+<script src="{{ asset('dash/assets/vendor/fullcalendar/daygrid/main.js') }}"></script>
+<script src="{{ asset('dash/assets/vendor/fullcalendar/timegrid/main.js') }}"></script>
+<script src="{{ asset('dash/assets/vendor/fullcalendar/list/main.js') }}"></script>
+
+<!-- SweetAlert JavaScript -->
+<script src="{{ asset('dash/assets/js/sweetalert.js') }}"></script>
+
+<!-- Vectoe Map JavaScript -->
+<script src="{{ asset('dash/assets/js/vector-map-custom.js') }}"></script>
+
+<!-- Chart Custom JavaScript -->
+<script src="{{ asset('dash/assets/js/customizer.js') }}"></script>
+
+<!-- Chart Custom JavaScript -->
+<script src="{{ asset('dash/assets/js/chart-custom.js') }}"></script>
+
+<!-- slider JavaScript -->
+<script src="{{ asset('dash/assets/js/slider.js') }}"></script>
+
+<!-- app JavaScript -->
+<script src="{{ asset('dash/assets/js/app.js') }}"></script>
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script src="{{ asset('examples/js/apps/beast.js') }}"></script>

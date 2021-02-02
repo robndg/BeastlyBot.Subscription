@@ -1,18 +1,15 @@
-    <!-- Footer -->
-    <footer class="site-footer">
-      <div class="site-footer-legal">© {{ date('Y') }} <a href="https://beastly.app">BeastlyBot</a></div>
-     <!-- <div class="site-footer-right">
-        Crafted with <i class="red-600 wb wb-heart"></i> by <a href="https://robs.studio" target="_blank">Robs Studio</a>
-      </div>-->
+<footer class="iq-footer">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-lg-6">
+                    <ul class="list-inline mb-0">
+                        <li class="list-inline-item"><a href="../backend/privacy-policy.html">Privacy Policy</a></li>
+                        <li class="list-inline-item"><a href="../backend/terms-of-service.html">Terms of Use</a></li>
+                    </ul>
+                </div>
+                <div class="col-lg-6 text-right">
+                    <span class="text-secondary mr-1"><script>document.write(new Date().getFullYear())</script>©</span> <a href="#" class="">BeastlyBot</a>.
+                </div>
+            </div>
+        </div>
     </footer>
-@section('help-button')
-  <div class="site-helptools" data-step="1" data-position="left" data-intro="If you need help check here!">
-      <div class="site-helptools-inner">
-          <div class="site-helptools-toggle" data-toggle="site-sidebar" title="Help" data-url="/slide-help-titles">
-            <i class="icon wb-help-circle"></i>
-          </div>
-      </div>
-  </div>
-  <button class="btn d-none slide-button-ultimate" style="visiblity:hidden" data-toggle="site-sidebar" data-url="/slide-help-ultimate-shop-guide">slide
-  </button>
-@endsection

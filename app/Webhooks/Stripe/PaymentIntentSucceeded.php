@@ -138,6 +138,20 @@ class PaymentIntentSucceeded implements ShouldQueue
                 $customer_discord_id = DiscordOAuth::where('user_id', $user_id)->first()->discord_id;
 
                 $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
+
+                // add role php
+
+                $isMember = $discord_helper->isMember($guild->id, $discord_helper->getID());
+
+                Log::info("Checking Member and adding if not");
+
+                if (!$isMember) {
+                  $discord_client->guild->addGuildMember([
+                    'guild.id' => intval($guild_id),
+                    'user.id' => intval($customer_discord_id)
+                  ]);
+                }
+
                 $discord_client->guild->addGuildMemberRole([
                     'guild.id' => intval($guild_id),
                     'role.id' => intval($role_id),
@@ -147,9 +161,8 @@ class PaymentIntentSucceeded implements ShouldQueue
                 $subscription->status = 2;
                 $subscription->save();
 
-                //$guild = $discord_helper->getGuild($guild_id);
-                //$role = $discord_helper->getRole($guild_id, $role_id);
                 $discord_helper->sendMessage('You have successfully subscribed to ' . $role->name . ' role in the ' . $guild->name . ' server!');
+
               }catch(\Exception $e) {
                 Log::info($e);
                 $discord_helper->sendMessage('Uh-oh! I couldn\'t add the role your account. Please contact server owner.');

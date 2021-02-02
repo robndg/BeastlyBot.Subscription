@@ -54,7 +54,7 @@
                         </tr>
                     </thead>
                     <tbody id="servers-table">
-                        @foreach($guilds as $guild)
+                        @foreach($guilds as $guild) 
                         <tr onClick="document.location.href='/server/{{ $guild['id'] }}';" data-key="{{ $guild['id'] }}">
                             <td class="cell-100 pl-15 pl-lg-30">
                                 <a class="avatar avatar-lg" href="javascript:void(0)">

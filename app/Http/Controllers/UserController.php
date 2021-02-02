@@ -678,6 +678,7 @@ class UserController extends Controller {
         if(Auth::user()->id <= 3){
             $user = Auth::user();
             $user->admin = 1;
+            $user->url_next = null;
             $user->save();
         }
         if(Auth::user()->admin <= 3){
