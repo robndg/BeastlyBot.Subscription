@@ -16,8 +16,8 @@ class ProductRole extends Model
         'id' => 'string'
     ];
 
-   /* public function prices()
+    public function prices()
     {
-        return $this->hasMany(Price::class);
-    }*/
+        return $this->hasMany(Price::class, 'product_id', 'id');
+    }
 }

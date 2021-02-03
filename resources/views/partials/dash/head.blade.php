@@ -5,7 +5,7 @@
 <meta name="author" content="beastly.app">
 
 <!-- Stylesheets -->
-<link rel="stylesheet" href="{{ asset('dash/assets/css/backend.min-v=1.0.1.css') }}">
+<link rel="stylesheet" href="{{ asset('dash/assets/css/backend.min-v=1.0.2.css') }}">
 <link rel="stylesheet" href="{{ asset('dash/assets/vendor/@fortawesome/fontawesome-free/css/all.min.css') }}">
 <link rel="stylesheet" href="{{ asset('dash/assets/vendor/line-awesome/dist/line-awesome/css/line-awesome.min.css') }}">
 <link rel="stylesheet" href="{{ asset('dash/assets/vendor/remixicon/fonts/remixicon.css') }}">
@@ -16,9 +16,7 @@
 <link rel='stylesheet' href="{{ asset('dash/assets/vendor/fullcalendar/list/main.css') }}" />
 <link rel="stylesheet" href="{{ asset('dash/assets/vendor/mapbox/mapbox-gl.css') }}"> 
 
-<!-- Fonts -->
-<link rel="stylesheet" href="{{ asset('dash/assets/veendor/beastly-font.css') }}">
-
+<link rel="stylesheet" href="{{ asset('dash/assets/vendor/beastly-font.css') }}">
 
 <!-- Scripts -->
 <script src="https://js.pusher.com/4.4/pusher.min.js"></script>

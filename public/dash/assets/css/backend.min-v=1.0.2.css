@@ -37,14 +37,14 @@
 :root {
     --blue: #1f1c2f;
     --indigo: #6610f2;
-    --purple: #AA87F5;
+    --purple: #9992fc;
     --pink: #ffd3e2;
     --red: #f674ad;
     --orange: #f0864a;
     --yellow: #f0864a;
     --green: #8ac3a3;
     --teal: #20c997;
-    --cyan: #87baf5;
+    --cyan: #554efb;
     --white: #fff;
     --gray: #6c757d;
     --gray-dark: #01041b;
@@ -52,12 +52,12 @@
     --primary: #1f1c2f;
     --secondary: #6c757d;
     --success: #8ac3a3;
-    --info: #87baf5;
+    --info: #554efb;
     --warning: #f0864a;
     --danger: #f674ad;
     --light: #848486;
     --dark: #01041b;
-    --purple: #AA87F5;
+    --purple: #9992fc;
     --breakpoint-xs: 0;
     --breakpoint-sm: 576px;
     --breakpoint-md: 768px;
@@ -4549,7 +4549,7 @@ a.badge-success.focus {
 
 .badge-info {
     color: #fff;
-    background-color: #87baf5
+    background-color: #554efb
 }
 
 a.badge-info:hover,
@@ -4634,7 +4634,7 @@ a.badge-dark.focus {
 
 .badge-purple {
     color: #fff;
-    background-color: #AA87F5
+    background-color: #9992fc
 }
 
 a.badge-purple:hover,
@@ -6032,7 +6032,7 @@ button.bg-success:focus {
 
 .bg-info {
     color: #0a3b73;
-    background-color: #87baf5
+    background-color: #554efb
 }
 
 a.bg-info:hover,
@@ -6097,7 +6097,7 @@ button.bg-dark:focus {
 
 .bg-purple {
     color: #2b0a73;
-    background-color: #AA87F5
+    background-color: #9992fc
 }
 
 a.bg-purple:hover,
@@ -6169,7 +6169,7 @@ button.bg-purple:focus {
 }
 
 .border-info {
-    border-color: #87baf5 !important
+    border-color: #554efb !important
 }
 
 .border-warning {
@@ -6189,7 +6189,7 @@ button.bg-purple:focus {
 }
 
 .border-purple {
-    border-color: #AA87F5 !important
+    border-color: #9992fc !important
 }
 
 .border-white {
@@ -9231,7 +9231,7 @@ a.text-success:focus {
 }
 
 .text-info {
-    color: #87baf5 !important
+    color: #554efb !important
 }
 
 a.text-info:hover,
@@ -9276,7 +9276,7 @@ a.text-dark:focus {
 }
 
 .text-purple {
-    color: #AA87F5 !important
+    color: #9992fc !important
 }
 
 a.text-purple:hover,
@@ -10052,7 +10052,7 @@ a.text-purple:focus {
     vertical-align: bottom
 }
 
-.sidebar-btn .note-add-btn {
+.sidebar-btn .beast-add-btn {
     padding: 7px 5px 3px 10px;
     text-align: center;
     position: absolute;
@@ -11469,7 +11469,7 @@ body.right-sidebar-close footer {
 }
 
 .badge-info:hover {
-    background-color: #87baf5
+    background-color: #554efb
 }
 
 .badge-warning.active {
@@ -11509,7 +11509,7 @@ body.right-sidebar-close footer {
 }
 
 .badge-purple:hover {
-    background-color: #aa87f5
+    background-color: #9992fc
 }
 
 .alert {
@@ -11624,7 +11624,7 @@ body.right-sidebar-close footer {
 }
 
 .dark .alert-info {
-    color: #87baf5;
+    color: #554efb;
     background-color: rgba(135, 186, 245, 0.2);
     border-color: #ddecfc
 }
@@ -11719,7 +11719,7 @@ body.right-sidebar-close footer {
 }
 
 .dark .alert-purple {
-    color: #aa87f5;
+    color: #9992fc;
     background-color: rgba(170, 135, 245, 0.2);
     border-color: #e7ddfc
 }
@@ -11828,8 +11828,8 @@ body.right-sidebar-close footer {
 }
 
 .custom-checkbox.custom-checkbox-color input.bg-info~label::before {
-    background-color: #87baf5 !important;
-    border-color: #87baf5 !important
+    background-color: #554efb !important;
+    border-color: #554efb !important
 }
 
 .custom-checkbox.custom-checkbox-color-check input:checked.bg-primary~label::before {
@@ -11858,8 +11858,8 @@ body.right-sidebar-close footer {
 }
 
 .custom-checkbox.custom-checkbox-color-check input:checked.bg-info~label::before {
-    background-color: #87baf5 !important;
-    border-color: #87baf5 !important
+    background-color: #554efb !important;
+    border-color: #554efb !important
 }
 
 .custom-radio.custom-radio-color input.bg-primary~label::before {
@@ -11888,8 +11888,8 @@ body.right-sidebar-close footer {
 }
 
 .custom-radio.custom-radio-color input.bg-info~label::before {
-    background-color: #87baf5 !important;
-    border-color: #87baf5 !important
+    background-color: #554efb !important;
+    border-color: #554efb !important
 }
 
 .custom-radio.custom-radio-color-checked input:checked.bg-primary~label::before {
@@ -11918,8 +11918,8 @@ body.right-sidebar-close footer {
 }
 
 .custom-radio.custom-radio-color-checked input:checked.bg-info~label::before {
-    background-color: #87baf5 !important;
-    border-color: #87baf5 !important
+    background-color: #554efb !important;
+    border-color: #554efb !important
 }
 
 .custom-switch.custom-switch-color input:checked.bg-primary~label::before {
@@ -11948,8 +11948,8 @@ body.right-sidebar-close footer {
 }
 
 .custom-switch.custom-switch-color input:checked.bg-info~label::before {
-    background-color: #87baf5 !important;
-    border-color: #87baf5 !important
+    background-color: #554efb !important;
+    border-color: #554efb !important
 }
 
 .custom-checkbox.checkbox-icon label i {
@@ -12446,8 +12446,8 @@ fieldset:disabled a.btn {
 
 .btn-info {
     color: #fff;
-    background-color: #87baf5;
-    border-color: #87baf5;
+    background-color: #554efb;
+    border-color: #554efb;
     box-shadow: unset
 }
 
@@ -12468,8 +12468,8 @@ fieldset:disabled a.btn {
 .btn-info.disabled,
 .btn-info:disabled {
     color: #fff;
-    background-color: #87baf5;
-    border-color: #87baf5
+    background-color: #554efb;
+    border-color: #554efb
 }
 
 .btn-info:not(:disabled):not(.disabled):active,
@@ -12656,8 +12656,8 @@ fieldset:disabled a.btn {
 
 .btn-purple {
     color: #fff;
-    background-color: #AA87F5;
-    border-color: #AA87F5;
+    background-color: #9992fc;
+    border-color: #9992fc;
     box-shadow: unset
 }
 
@@ -12678,8 +12678,8 @@ fieldset:disabled a.btn {
 .btn-purple.disabled,
 .btn-purple:disabled {
     color: #fff;
-    background-color: #AA87F5;
-    border-color: #AA87F5
+    background-color: #9992fc;
+    border-color: #9992fc
 }
 
 .btn-purple:not(:disabled):not(.disabled):active,
@@ -12805,14 +12805,14 @@ fieldset:disabled a.btn {
 }
 
 .btn-outline-info {
-    color: #87baf5;
-    border-color: #87baf5
+    color: #554efb;
+    border-color: #554efb
 }
 
 .btn-outline-info:hover {
     color: #fff;
-    background-color: #87baf5;
-    border-color: #87baf5
+    background-color: #554efb;
+    border-color: #554efb
 }
 
 .btn-outline-info:focus,
@@ -12822,7 +12822,7 @@ fieldset:disabled a.btn {
 
 .btn-outline-info.disabled,
 .btn-outline-info:disabled {
-    color: #87baf5;
+    color: #554efb;
     background-color: transparent
 }
 
@@ -12830,8 +12830,8 @@ fieldset:disabled a.btn {
 .btn-outline-info:not(:disabled):not(.disabled).active,
 .show>.btn-outline-info.dropdown-toggle {
     color: #fff;
-    background-color: #87baf5;
-    border-color: #87baf5
+    background-color: #554efb;
+    border-color: #554efb
 }
 
 .btn-outline-info:not(:disabled):not(.disabled):active:focus,
@@ -12985,14 +12985,14 @@ fieldset:disabled a.btn {
 }
 
 .btn-outline-purple {
-    color: #AA87F5;
-    border-color: #AA87F5
+    color: #9992fc;
+    border-color: #9992fc
 }
 
 .btn-outline-purple:hover {
     color: #fff;
-    background-color: #AA87F5;
-    border-color: #AA87F5
+    background-color: #9992fc;
+    border-color: #9992fc
 }
 
 .btn-outline-purple:focus,
@@ -13002,7 +13002,7 @@ fieldset:disabled a.btn {
 
 .btn-outline-purple.disabled,
 .btn-outline-purple:disabled {
-    color: #AA87F5;
+    color: #9992fc;
     background-color: transparent
 }
 
@@ -13010,8 +13010,8 @@ fieldset:disabled a.btn {
 .btn-outline-purple:not(:disabled):not(.disabled).active,
 .show>.btn-outline-purple.dropdown-toggle {
     color: #fff;
-    background-color: #AA87F5;
-    border-color: #AA87F5
+    background-color: #9992fc;
+    border-color: #9992fc
 }
 
 .btn-outline-purple:not(:disabled):not(.disabled):active:focus,
@@ -13141,7 +13141,7 @@ input[type="button"].btn-block {
 }
 
 .iq-progress-bar.iq-progress-bar-icon>span.bg-info:after {
-    border-color: #87baf5
+    border-color: #554efb
 }
 
 .iq-progress-bar.iq-progress-bar-icon>span.bg-dark:after {
@@ -13208,7 +13208,7 @@ input[type="button"].btn-block {
 }
 
 .iq-progress-bar>span.bg-info .progress-text-one:after {
-    border-color: #87baf5 transparent transparent transparent
+    border-color: #554efb transparent transparent transparent
 }
 
 .iq-progress-bar>span.bg-skyblue .progress-text-one:after {
@@ -13462,7 +13462,7 @@ input[type="button"].btn-block {
 }
 
 .progress.info .progress-bar {
-    border-color: #87baf5
+    border-color: #554efb
 }
 
 .progress.primary .progress-bar {
@@ -14880,7 +14880,7 @@ body.tab-horizontal .iq-footer {
     transition: all 0.3s ease-in-out
 }
 
-.card.card-bottom-border-primary .note-text-primary i {
+.card.card-bottom-border-primary .beast-text-primary i {
     color: #1f1c2f
 }
 
@@ -14911,7 +14911,7 @@ body.tab-horizontal .iq-footer {
     color: #fff
 }
 
-.card.card-bottom-border-primary:hover .note-text i {
+.card.card-bottom-border-primary:hover .beast-text i {
     color: #fff
 }
 
@@ -14986,7 +14986,7 @@ body.tab-horizontal .iq-footer {
     transition: all 0.3s ease-in-out
 }
 
-.card.card-bottom-border-secondary .note-text-secondary i {
+.card.card-bottom-border-secondary .beast-text-secondary i {
     color: #6c757d
 }
 
@@ -15017,7 +15017,7 @@ body.tab-horizontal .iq-footer {
     color: #fff
 }
 
-.card.card-bottom-border-secondary:hover .note-text i {
+.card.card-bottom-border-secondary:hover .beast-text i {
     color: #fff
 }
 
@@ -15092,7 +15092,7 @@ body.tab-horizontal .iq-footer {
     transition: all 0.3s ease-in-out
 }
 
-.card.card-bottom-border-success .note-text-success i {
+.card.card-bottom-border-success .beast-text-success i {
     color: #8ac3a3
 }
 
@@ -15123,7 +15123,7 @@ body.tab-horizontal .iq-footer {
     color: #fff
 }
 
-.card.card-bottom-border-success:hover .note-text i {
+.card.card-bottom-border-success:hover .beast-text i {
     color: #fff
 }
 
@@ -15143,8 +15143,8 @@ body.tab-horizontal .iq-footer {
     height: 0%;
     bottom: 0px;
     border: 2px solid;
-    border-color: #87baf5;
-    background-color: #87baf5;
+    border-color: #554efb;
+    background-color: #554efb;
     border-radius: 8px;
     overflow: hidden;
     -webkit-transition: all 0.3s ease-in-out;
@@ -15160,7 +15160,7 @@ body.tab-horizontal .iq-footer {
 
 .card.card-bottom-border-info .icon {
     border: 1px solid transparent;
-    color: #87baf5;
+    color: #554efb;
     -webkit-transition: all 0.3s ease-in-out;
     -moz-transition: all 0.3s ease-in-out;
     -ms-transition: all 0.3s ease-in-out;
@@ -15175,7 +15175,7 @@ body.tab-horizontal .iq-footer {
 
 .card.card-bottom-border-info .icon.icon-border-info {
     border: 1px solid;
-    border-color: #87baf5;
+    border-color: #554efb;
     position: relative;
     -webkit-transition: all 0.3s ease-in-out;
     -moz-transition: all 0.3s ease-in-out;
@@ -15188,22 +15188,23 @@ body.tab-horizontal .iq-footer {
     width: 100%
 }
 
-.card.card-bottom-border-info .card-text-info {
+
+.card .card-text-info {
     margin-bottom: 10px;
     color: #87baf5;
     -webkit-transition: all 0.3s ease-in-out;
     -moz-transition: all 0.3s ease-in-out;
     -ms-transition: all 0.3s ease-in-out;
     -o-transition: all 0.3s ease-in-out;
-    transition: all 0.3s ease-in-out
+    transition: all 0.3s ease-in-out;
 }
 
-.card.card-bottom-border-info .note-text-info i {
-    color: #87baf5
+.card.card-bottom-border-info .beast-text-info i {
+    color: #554efb
 }
 
 .card.card-bottom-border-info:hover {
-    background: #87baf5
+    background: #554efb
 }
 
 .card.card-bottom-border-info:hover .card-title,
@@ -15229,7 +15230,7 @@ body.tab-horizontal .iq-footer {
     color: #fff
 }
 
-.card.card-bottom-border-info:hover .note-text i {
+.card.card-bottom-border-info:hover .beast-text i {
     color: #fff
 }
 
@@ -15304,7 +15305,7 @@ body.tab-horizontal .iq-footer {
     transition: all 0.3s ease-in-out
 }
 
-.card.card-bottom-border-warning .note-text-warning i {
+.card.card-bottom-border-warning .beast-text-warning i {
     color: #f0864a
 }
 
@@ -15335,7 +15336,7 @@ body.tab-horizontal .iq-footer {
     color: #fff
 }
 
-.card.card-bottom-border-warning:hover .note-text i {
+.card.card-bottom-border-warning:hover .beast-text i {
     color: #fff
 }
 
@@ -15410,7 +15411,7 @@ body.tab-horizontal .iq-footer {
     transition: all 0.3s ease-in-out
 }
 
-.card.card-bottom-border-danger .note-text-danger i {
+.card.card-bottom-border-danger .beast-text-danger i {
     color: #f674ad
 }
 
@@ -15441,7 +15442,7 @@ body.tab-horizontal .iq-footer {
     color: #fff
 }
 
-.card.card-bottom-border-danger:hover .note-text i {
+.card.card-bottom-border-danger:hover .beast-text i {
     color: #fff
 }
 
@@ -15516,7 +15517,7 @@ body.tab-horizontal .iq-footer {
     transition: all 0.3s ease-in-out
 }
 
-.card.card-bottom-border-light .note-text-light i {
+.card.card-bottom-border-light .beast-text-light i {
     color: #848486
 }
 
@@ -15547,7 +15548,7 @@ body.tab-horizontal .iq-footer {
     color: #fff
 }
 
-.card.card-bottom-border-light:hover .note-text i {
+.card.card-bottom-border-light:hover .beast-text i {
     color: #fff
 }
 
@@ -15622,7 +15623,7 @@ body.tab-horizontal .iq-footer {
     transition: all 0.3s ease-in-out
 }
 
-.card.card-bottom-border-dark .note-text-dark i {
+.card.card-bottom-border-dark .beast-text-dark i {
     color: #01041b
 }
 
@@ -15653,7 +15654,7 @@ body.tab-horizontal .iq-footer {
     color: #fff
 }
 
-.card.card-bottom-border-dark:hover .note-text i {
+.card.card-bottom-border-dark:hover .beast-text i {
     color: #fff
 }
 
@@ -15673,8 +15674,8 @@ body.tab-horizontal .iq-footer {
     height: 0%;
     bottom: 0px;
     border: 2px solid;
-    border-color: #aa87f5;
-    background-color: #aa87f5;
+    border-color: #9992fc;
+    background-color: #9992fc;
     border-radius: 8px;
     overflow: hidden;
     -webkit-transition: all 0.3s ease-in-out;
@@ -15690,7 +15691,7 @@ body.tab-horizontal .iq-footer {
 
 .card.card-bottom-border-purple .icon {
     border: 1px solid transparent;
-    color: #aa87f5;
+    color: #9992fc;
     -webkit-transition: all 0.3s ease-in-out;
     -moz-transition: all 0.3s ease-in-out;
     -ms-transition: all 0.3s ease-in-out;
@@ -15705,7 +15706,7 @@ body.tab-horizontal .iq-footer {
 
 .card.card-bottom-border-purple .icon.icon-border-purple {
     border: 1px solid;
-    border-color: #aa87f5;
+    border-color: #9992fc;
     position: relative;
     -webkit-transition: all 0.3s ease-in-out;
     -moz-transition: all 0.3s ease-in-out;
@@ -15720,7 +15721,7 @@ body.tab-horizontal .iq-footer {
 
 .card.card-bottom-border-purple .card-text-purple {
     margin-bottom: 10px;
-    color: #aa87f5;
+    color: #9992fc;
     -webkit-transition: all 0.3s ease-in-out;
     -moz-transition: all 0.3s ease-in-out;
     -ms-transition: all 0.3s ease-in-out;
@@ -15728,12 +15729,12 @@ body.tab-horizontal .iq-footer {
     transition: all 0.3s ease-in-out
 }
 
-.card.card-bottom-border-purple .note-text-purple i {
-    color: #aa87f5
+.card.card-bottom-border-purple .beast-text-purple i {
+    color: #9992fc
 }
 
 .card.card-bottom-border-purple:hover {
-    background: #aa87f5
+    background: #9992fc
 }
 
 .card.card-bottom-border-purple:hover .card-title,
@@ -15759,29 +15760,29 @@ body.tab-horizontal .iq-footer {
     color: #fff
 }
 
-.card.card-bottom-border-purple:hover .note-text i {
+.card.card-bottom-border-purple:hover .beast-text i {
     color: #fff
 }
 
-.note-detail .card-footer {
+.beast-detail .card-footer {
     background: unset;
     border: 0;
     padding-top: 0;
     padding-bottom: 20px
 }
 
-.note-detail .note-text {
+.beast-detail .beast-text {
     font-weight: 700;
     font-size: 14px;
     letter-spacing: 1px;
     text-transform: capitalize
 }
 
-.note-detail .note-text i {
+.beast-detail .beast-text i {
     vertical-align: text-top
 }
 
-.note-details .form-control {
+.beast-details .form-control {
     font-size: 16px;
     line-height: 31px;
     border: 0;
@@ -15793,7 +15794,7 @@ body.tab-horizontal .iq-footer {
     color: #768492
 }
 
-.note-details .bootstrap-select .dropdown-toggle {
+.beast-details .bootstrap-select .dropdown-toggle {
     padding: .25rem .5rem;
     font-size: 16px;
     line-height: 38px;
@@ -15802,11 +15803,11 @@ body.tab-horizontal .iq-footer {
     border-bottom: 2px solid #DCDDDF
 }
 
-.note-details .bootstrap-select .dropdown-toggle:focus {
+.beast-details .bootstrap-select .dropdown-toggle:focus {
     outline: unset !important
 }
 
-.note-details .dropdown-item:active {
+.beast-details .dropdown-item:active {
     background-color: #f3f6fd
 }
 
@@ -15867,7 +15868,7 @@ button.bg-indigo:focus {
 
 .bg-purple {
     color: #fff;
-    background-color: #AA87F5
+    background-color: #9992fc
 }
 
 a.bg-purple:hover,
@@ -15958,7 +15959,7 @@ button.bg-teal:focus {
 
 .bg-cyan {
     color: #fff;
-    background-color: #87baf5
+    background-color: #554efb
 }
 
 a.bg-cyan:hover,
@@ -16030,7 +16031,7 @@ button.bg-skyblue:focus {
 }
 
 .bg-gradient-purple {
-    background: #AA87F5 linear-gradient(180deg, #b598f6, #AA87F5) repeat-x
+    background: #9992fc linear-gradient(180deg, #b598f6, #9992fc) repeat-x
 }
 
 .bg-gradient-pink {
@@ -16058,7 +16059,7 @@ button.bg-skyblue:focus {
 }
 
 .bg-gradient-cyan {
-    background: #87baf5 linear-gradient(180deg, #97c3f6, #87baf5) repeat-x
+    background: #554efb linear-gradient(180deg, #97c3f6, #554efb) repeat-x
 }
 
 .bg-gradient-white {
@@ -16090,7 +16091,7 @@ button.bg-skyblue:focus {
 }
 
 .bg-gradient-info {
-    background: #87baf5 linear-gradient(180deg, #97c3f6, #87baf5) repeat-x
+    background: #554efb linear-gradient(180deg, #97c3f6, #554efb) repeat-x
 }
 
 .bg-gradient-warning {
@@ -16110,7 +16111,7 @@ button.bg-skyblue:focus {
 }
 
 .bg-gradient-purple {
-    background: #AA87F5 linear-gradient(180deg, #b598f6, #AA87F5) repeat-x
+    background: #9992fc linear-gradient(180deg, #b598f6, #9992fc) repeat-x
 }
 
 .bg-primary {
@@ -16193,7 +16194,7 @@ button.badge-success:focus {
 
 .bg-info {
     color: #fff;
-    background-color: #87baf5
+    background-color: #554efb
 }
 
 a.bg-info:hover,
@@ -16206,7 +16207,7 @@ button.bg-info:focus {
 
 .badge-info {
     color: #fff;
-    background-color: #87baf5
+    background-color: #554efb
 }
 
 a.badge-info:hover,
@@ -16323,7 +16324,7 @@ button.badge-dark:focus {
 
 .bg-purple {
     color: #fff;
-    background-color: #AA87F5
+    background-color: #9992fc
 }
 
 a.bg-purple:hover,
@@ -16336,7 +16337,7 @@ button.bg-purple:focus {
 
 .badge-purple {
     color: #fff;
-    background-color: #AA87F5
+    background-color: #9992fc
 }
 
 a.badge-purple:hover,
@@ -16757,7 +16758,7 @@ a.text-indigo:focus {
 }
 
 .text-purple {
-    color: #AA87F5 !important
+    color: #9992fc !important
 }
 
 a.text-purple:hover,
@@ -16820,7 +16821,7 @@ a.text-teal:focus {
 }
 
 .text-cyan {
-    color: #87baf5 !important
+    color: #554efb !important
 }
 
 a.text-cyan:hover,
@@ -20955,69 +20956,69 @@ body.swal2-toast-column .swal2-toast .swal2-validation-message {
     border-radius: 50%
 }
 
-.note-grid {
+.beast-grid {
     position: relative;
     width: 100%
 }
 
-.note-grid .note-item {
+.beast-grid .beast-item {
     display: block;
     position: absolute;
     height: auto
 }
 
-.note-grid .note-item .note-detail {
+.beast-grid .beast-item .beast-detail {
     position: relative;
     width: 100%;
     height: 100%
 }
 
-.shared-note-grid {
+.shared-beast-grid {
     position: relative;
     width: 100%
 }
 
-.shared-note-grid .shared-note-item {
+.shared-beast-grid .shared-beast-item {
     display: block;
     position: absolute;
     height: auto
 }
 
-.shared-note-grid .shared-note-item .note-detail {
+.shared-beast-grid .shared-beast-item .beast-detail {
     position: relative;
     width: 100%;
     height: 100%
 }
 
-.pin-note-grid {
+.pin-beast-grid {
     position: relative;
     width: 100%
 }
 
-.pin-note-grid .pin-note-item {
+.pin-beast-grid .pin-beast-item {
     display: block;
     position: absolute;
     height: auto
 }
 
-.pin-note-grid .pin-note-item .note-detail {
+.pin-beast-grid .pin-beast-item .beast-detail {
     position: relative;
     width: 100%;
     height: 100%
 }
 
-.fav-note-grid {
+.fav-beast-grid {
     position: relative;
     width: 100%
 }
 
-.fav-note-grid .fav-note-item {
+.fav-beast-grid .fav-beast-item {
     display: block;
     position: absolute;
     height: auto
 }
 
-.fav-note-grid .fav-note-item .note-detail {
+.fav-beast-grid .fav-beast-item .beast-detail {
     position: relative;
     width: 100%;
     height: 100%
@@ -30031,7 +30032,7 @@ fieldset[disabled] .btn {
 }
 
 .iq-progress-bar.pro-skill>span.bg3 {
-    background-color: #87baf5
+    background-color: #554efb
 }
 
 .social-ic {
@@ -32013,6 +32014,9 @@ ul.todo-task-lists li.active-task {
     background-color: #27272f;
     transition: all .3s ease-in-out
 }
+.dark .beast-detail .card {
+    background-color:#1f1c2f
+}
 
 .dark .card .card-header {
     border-color: #4b4b55
@@ -32838,7 +32842,7 @@ button.close-popup {
 }
 
 .dark .btn {
-    color: #abaebf
+    color: #ffffff;
 }
 
 .dark .btn span {
@@ -33768,7 +33772,7 @@ button.close-popup {
     }
 }
 
-.iq-note-callapse-btn {
+.iq-beast-callapse-btn {
     line-height: 38px;
     color: #848486
 }
@@ -33783,14 +33787,14 @@ button.close-popup {
     padding-right: 30px !important
 }
 
-.note-right .view-btn.btn-dropdown {
+.beast-right .view-btn.btn-dropdown {
     padding: 0 10px;
     width: 35px;
     height: 38px;
     line-height: 38px
 }
 
-.note-right .dropdown-toggle:after {
+.beast-right .dropdown-toggle:after {
     display: none
 }
 
@@ -33806,7 +33810,7 @@ button.close-popup {
 
 .iq-icon-box-2 .svg-icon {
     text-align: center;
-    margin-top: -5px
+    margin-top: 10px
 }
 
 .iq-grid .view-btn {
@@ -33865,15 +33869,15 @@ button.close-popup {
     display: block
 }
 
-.note-tab .nav-item:first-child .nav-link {
+.beast-tab .nav-item:first-child .nav-link {
     margin-left: 0
 }
 
-.note-tab .nav-item:last-child .nav-link {
+.beast-tab .nav-item:last-child .nav-link {
     margin-right: 0
 }
 
-.note-tab .nav-item .nav-link {
+.beast-tab .nav-item .nav-link {
     margin: 0 1rem;
     padding-left: 0;
     padding-right: 0;
@@ -33883,15 +33887,15 @@ button.close-popup {
     font-weight: 600
 }
 
-.note-tab .nav-item .nav-link.active {
+.beast-tab .nav-item .nav-link.active {
     background-color: transparent;
-    border-bottom-color: #1f1c2f;
-    color: #1f1c2f
+    border-bottom-color: #554efb;
+    color: #ffffff;
 }
 
-.note-tab .nav-item .nav-link:hover {
-    border-bottom-color: #1f1c2f;
-    color: #1f1c2f
+.beast-tab .nav-item .nav-link.active {
+    border-bottom-color: #554efb;
+    color: #ffffff;
 }
 
 .header-title i {
@@ -33902,39 +33906,39 @@ button.close-popup {
     top: -7px
 }
 
-.note-content {
+.beast-content {
     min-height: 370px
 }
 
-.note-content .icon.i-grid {
+.beast-content .icon.i-grid {
     display: none
 }
 
-.note-content .icon.active.i-grid {
+.beast-content .icon.active.i-grid {
     display: block
 }
 
-.note-content .icon.active.i-list {
+.beast-content .icon.active.i-list {
     display: none
 }
 
-.note-content .icon.i-list {
+.beast-content .icon.i-list {
     display: block
 }
 
-.note-detail .checkbox-input {
+.beast-detail .checkbox-input {
     vertical-align: middle
 }
 
-.note-detail .note-checkbox {
+.beast-detail .beast-checkbox {
     color: #768492
 }
 
-.note-detail:hover .note-content .tab-pane .note-list {
+.beast-detail:hover .beast-content .tab-pane .beast-list {
     color: #fff
 }
 
-.note-detail:hover .note-checkbox {
+.beast-detail:hover .beast-checkbox {
     color: #fff
 }
 
@@ -34038,22 +34042,22 @@ i {
     .iq-grid {
         padding-bottom: 15px
     }
-    .note-tab .nav-link {
+    .beast-tab .nav-link {
         margin: 0 0.3rem
     }
 }
 
 @media (max-width: 420px) {
-    .note-tab.nav-pills li {
+    .beast-tab.nav-pills li {
         width: 100%
     }
-    .note-tab.nav-pills li:first-child .nav-link {
+    .beast-tab.nav-pills li:first-child .nav-link {
         margin-right: 0
     }
-    .note-tab.nav-pills li:last-child .nav-link {
+    .beast-tab.nav-pills li:last-child .nav-link {
         margin-left: 0
     }
-    .note-tab.nav-pills li .nav-link {
+    .beast-tab.nav-pills li .nav-link {
         display: inline-block;
         margin: 0;
         padding-top: 0;
@@ -34066,38 +34070,38 @@ i {
     padding: 25px 30px 0 !important
 }
 
-.note-table .table thead th {
+.beast-table .table thead th {
     border: 0;
     border-bottom: 1px solid #DCDDDF;
     font-weight: normal
 }
 
-.note-table .table tbody:before {
+.beast-table .table tbody:before {
     content: "@";
     display: block;
     line-height: 10px;
     text-indent: -99999px
 }
 
-.note-table .table tbody tr {
+.beast-table .table tbody tr {
     background: transparent
 }
 
-.note-table .dropdown-toggle:after {
+.beast-table .dropdown-toggle:after {
     display: none
 }
 
-.note-table .treegrid-expander {
+.beast-table .treegrid-expander {
     height: 18px;
     left: -25px;
     font-size: 26px
 }
 
-.note-table .treegrid-expander:before {
+.beast-table .treegrid-expander:before {
     content: "\EA6D"
 }
 
-.note-table .treegrid-expander.glyphicon-chevron-down:before {
+.beast-table .treegrid-expander.glyphicon-chevron-down:before {
     content: "\EA4D"
 }
 
@@ -34143,22 +34147,22 @@ i {
     padding-left: 10px
 }
 
-.note-detail .note-list {
+.beast-detail .beast-list {
     position: relative
 }
 
-.note-detail a.badge {
+.beast-detail a.badge {
     display: inline-flex;
     padding: 7px 15px;
     font-size: 16px;
     font-weight: normal
 }
 
-.note-detail .card-text i {
+.beast-detail .card-text i {
     vertical-align: bottom
 }
 
-.note-detail:hover .note-list {
+.beast-detail:hover .beast-list {
     color: #fff
 }
 

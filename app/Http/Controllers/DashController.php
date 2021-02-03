@@ -37,17 +37,28 @@ class DashController extends Controller {
             $stripe_helper = auth()->user()->getStripeHelper();
             $discord_helper = new DiscordHelper(auth()->user());
 
-            Log::info(\request());
+            return view('dash.dashboard')->with('stripe_helper', $stripe_helper)->with('discord_helper', $discord_helper);
+
+        }else{
+            return view('discord_login');
+        }
+    }
+
+    public function getDashGuild($guild_id){
+        if(Auth::check()){
+            $stripe_helper = auth()->user()->getStripeHelper();
+            $discord_helper = new DiscordHelper(auth()->user());
     
-            if(\request('guild') == true) {
+            $owner = true; $admin = true;
 
-                $guild_id = \request('guild');
-                $discord_helper = new DiscordHelper(auth()->user());
+            /*if(! $discord_helper->ownsGuild($guild_id)) {
+                AlertHelper::alertError('You are not the owner of that server!');
+                return redirect('/dashboard');
+             }*/
 
-                /*if(! $discord_helper->ownsGuild($guild_id)) {
-                     AlertHelper::alertError('You are not the owner of that server!');
-                     return redirect('/dashboard');
-                 }*/
+            if($owner || $admin) {
+
+                //$guild_id = \request('guild');
          
              
                  $discord_store = null;
@@ -69,6 +80,15 @@ class DashController extends Controller {
                  }
 
                  $product_roles = ProductRole::where('discord_store_id', $discord_store->id)->get();
+                 
+                 /*$guild_products = [];
+
+                 foreach($product_roles as $product_role) { 
+                    $product_prices = Price::where('product_id', $product_role->id)->get();
+
+                 }*/
+
+                 
          
                 /* $roles = $discord_helper->getRoles($guild_id);
          
@@ -100,23 +120,6 @@ class DashController extends Controller {
 
 
                // return view('dash.dash-guild')->with('guilds', $discord_helper->getOwnedGuilds())->with('stripe_helper', $stripe_helper)->with('discord_helper', $discord_helper);
-            } else {
-                return view('dash.dashboard')->with('stripe_helper', $stripe_helper)->with('discord_helper', $discord_helper);
-            }
-        }else{
-            return view('discord_login');
-        }
-    }
-
-    public function getDashGuild(){
-        if(Auth::check()){
-            $stripe_helper = auth()->user()->getStripeHelper();
-            $discord_helper = new DiscordHelper(auth()->user());
-
-            Log::info(\request());
-    
-            if(\request('guild') == 'true') {
-                return view('dash.dash-guild')->with('guilds', $discord_helper->getOwnedGuilds())->with('stripe_helper', $stripe_helper)->with('discord_helper', $discord_helper);
             } else {
                 return view('dash.dashboard')->with('stripe_helper', $stripe_helper)->with('discord_helper', $discord_helper);
             }

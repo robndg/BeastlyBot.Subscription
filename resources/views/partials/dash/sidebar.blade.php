@@ -43,7 +43,7 @@
             <div class="data-scrollbar" data-scroll="1">
                 <div class="sidebar-btn dropdown mb-3">
                     <a href="#" id="dropdownMenuButton01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-primary pr-5 position-relative iq-user-toggle d-flex align-items-center justify-content-between" style="height: 40px;">
-                        <span class="btn-title"><i class="ri-add-line mr-3"></i>Add Bot</span><span class="note-add-btn" style="height: 40px;"><i class="las la-angle-down"></i></span>
+                        <span class="btn-title"><i class="ri-add-line mr-3"></i>Add Bot</span><span class="beast-add-btn" style="height: 40px;"><i class="las la-angle-down"></i></span>
                     </a>
                     <div class="dropdown-menu w-100 border-0 py-3" aria-labelledby="dropdownMenuButton01">
                     @php
@@ -175,7 +175,14 @@
                     <div class="card rounded shadow-none">
                         <div class="card-body">
                             <div class="sidebarbottom-content">
-                                <div class="image"><img src="{{ asset('dash/assets/images/layouts/side-bkg.png') }}" class="img-fluid" alt="side-bkg"></div>
+                               <!-- <div class="image"><img src="{{ asset('dash/assets/images/layouts/side-bkg.png') }}" class="img-fluid" alt="side-bkg"></div>-->
+                               <div class="d-flex justify-content-center">
+                                    <div class="xx banner-image">
+                                        <div class="xx-head"></div>
+                                        <div class="xx-body"></div>
+                                        <div class="xx-hand"></div>
+                                    </div>
+                                </div>
                                 <p class="mb-0">Set Business Account To Explore Premiun Features</p>
                                 <button type="button" class="btn bg-primary mt-3">Upgrade</button>
                             </div>

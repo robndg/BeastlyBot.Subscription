@@ -17,6 +17,6 @@ use App\StripeHelper;
 
 Route::get('/dashboard', 'DashController@getDash'); // * //
 
-Route::get('/dashboard/{id}', 'DashController@getDashGuild'); // * //
+Route::get('/dashboard/{guildid}', 'DashController@getDashGuild'); // * //
 
 //Route::get('/server/{id}', 'ServerController@getServerPage');

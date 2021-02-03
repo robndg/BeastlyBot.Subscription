@@ -739,7 +739,7 @@ Index Of Script
             text: "You won't be able to revert this!",
             icon: 'warning',
             showCancelButton: true,
-            confirmButtonText: 'Yes, delete it!',
+            confirmButtonText: 'Yes, archive it!',
             showClass: {
                 popup: 'animate__animated animate__zoomIn'
             },
@@ -750,8 +750,8 @@ Index Of Script
         .then((willDelete) => {
             if (willDelete.isConfirmed) {
                 swalWithBootstrapButtons.fire({
-                        title: 'Deleted!',
-                        text: "Your note has been deleted.",
+                        title: 'Archived!',
+                        text: "Your product has been archived.",
                         icon: 'success',
                         showClass: {
                             popup: 'animate__animated animate__zoomIn'
@@ -769,7 +769,7 @@ Index Of Script
                   })
             } else {
                 swalWithBootstrapButtons.fire({
-                    title: "Your note is safe!",
+                    title: "Your product is safe!",
                     showClass: {
                         popup: 'animate__animated animate__zoomIn'
                     },

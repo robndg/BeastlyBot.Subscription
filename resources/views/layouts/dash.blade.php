@@ -9,7 +9,7 @@
     <meta name="msapplication-TileColor" content="#3f8ef7">
     <meta name="theme-color" content="#ffffff">
     @yield('metadata')
-    @include('partials/head')
+    @include('partials.dash.head')
     @yield('head')
 </head>
 
@@ -19,21 +19,21 @@
         <div id="loading-center">
         </div>
     </div>
-    @include('partials/rightbar')
+    @include('partials.dash.rightbar')
     <!-- Wrapper Start -->
     <div class="wrapper">
-        @include('partials/navbar')
-        @include('partials/sidebar')
+        @include('partials.dash.navbar')
+        @include('partials.dash.sidebar')
         <div class="content-page">
             @yield('content')
             <!-- Page end  -->
-            @include('partials/modals')
+            @include('partials.modals')
         </div>
     </div>
     <!-- Wrapper End-->
-    @include('partials/footer')
+    @include('partials.dash.footer')
    
-    @include('partials/scripts')
+    @include('partials.dash.scripts')
 
     <script type="text/javascript">
         const Toast = Swal.mixin({
