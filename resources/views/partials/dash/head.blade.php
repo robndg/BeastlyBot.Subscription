@@ -16,9 +16,10 @@
 <link rel='stylesheet' href="{{ asset('dash/assets/vendor/fullcalendar/list/main.css') }}" />
 <link rel="stylesheet" href="{{ asset('dash/assets/vendor/mapbox/mapbox-gl.css') }}"> 
 
-<link rel="stylesheet" href="{{ asset('dash/assets/vendor/beastly-font.css') }}">
+<link rel="stylesheet" href="{{ asset('dash/assets/vendor/beastly/font.css') }}">
 
 <!-- Scripts -->
 <script src="https://js.pusher.com/4.4/pusher.min.js"></script>
 <link rel="stylesheet" href="{{ asset('sceditor/minified/themes/default.min.css') }}" />
 
+@yield('styles')

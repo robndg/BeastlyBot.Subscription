@@ -73,8 +73,8 @@ class DashController extends Controller {
                      
                  } else {
                      $discord_store = DiscordStore::where('guild_id', $guild_id)->first();
-                     $discord_store->live = 1;
-                     $discord_store->save();
+                     //$discord_store->live = 1;
+                     //$discord_store->save();
          
                      $stats = Stat::where('type', 1)->where('type_id', $discord_store->id)->first();
                  }
@@ -126,6 +126,45 @@ class DashController extends Controller {
         }else{
             return view('discord_login');
         }
+    }
+
+    public function getDashGuildProduct($guild_id){
+        $product_uuid = \request('uuid');
+
+        $discord_helper = new DiscordHelper(auth()->user());
+
+        $discord_store = DiscordStore::where('guild_id', $guild_id)->first();
+
+        if($product_uuid != false){
+           
+            // code for editing
+        
+        }else{
+
+            $roles = $discord_helper->getRoles($guild_id);
+
+            return view('dash.dash-guild-product')->with('discord_helper', $discord_helper)->with('guild_id', $guild_id)->with('guild', $discord_helper->getGuild($guild_id))->with('shop', $discord_store)->with('roles', $roles);
+            
+        }
+    }
+
+
+    public function saveDashGuildProduct(Request $request){
+
+        $product_uuid = \request('uuid');
+
+        if($product_uuid != false){
+           
+            // code for editing
+        
+        }else{
+
+            $roles = $discord_helper->getRoles($guild_id);
+
+            return view('dash.dash-guild-product')->with('discord_helper', $discord_helper)->with('guild_id', $guild_id)->with('guild', $discord_helper->getGuild($guild_id))->with('shop', $discord_store)->with('roles', $roles);
+            
+        }
+
     }
 
 }

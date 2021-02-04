@@ -808,10 +808,13 @@ Index Of Script
 
         $(document).on('change', '[data-change="radio"]', function (e) {
             const value = $(this).val()
+            const color = value.data('product-role-color');
             if($(this).attr('data-custom-target') == 'color') {
                 $('#note-icon').attr('class',' ')
                 $('#update-note').attr('class', ' ')
-                $('#note-icon').addClass(`icon iq-icon-box-2 icon-border-${value} rounded`)
+
+                $('#note-icon').addClass(`icon iq-icon-box-2 icon-border-${value} rounded`)/*.css(`border-color: #${color}`)*/
+
                 $('#update-note').addClass(`card card-block card-stretch card-height card-bottom-border-${value} note-detail`)
             }
         })

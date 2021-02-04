@@ -42,18 +42,18 @@
                                     <div class="d-flex flex-wrap align-items-top justify-content-between">
                                         <ul class="d-flex nav nav-pills text-center beast-tab mb-3" id="beast-pills-tab" role="tablist">
                                             <li class="nav-item">
-                                                <a class="nav-link home active show" data-toggle="pill" data-init="note" href="index.html#note1" role="tab" aria-selected="false">Products Active</a>
+                                                <a class="nav-link home active show" data-toggle="pill" data-init="note" href="#active" role="tab" aria-selected="false">Products Active</a>
                                             </li>
                                             <li class="nav-item">
-                                                <a class="nav-link home" data-toggle="pill" data-init="shared-note" href="index.html#note2" role="tab" aria-selected="true">Inactive</a>
+                                                <a class="nav-link home" data-toggle="pill" data-init="shared-note" href="#archived" role="tab" aria-selected="true">Inactive</a>
                                             </li>
                                         </ul>
                                         <div class="media align-items-top iq-grid">
                                             <div class="view-btn rounded body-bg btn-dropdown filter-btn mr-3">
                                                 <div class="dropdown">
-                                                    <span class="dropdown-toggle cursor-pointer" id="dropdownMenuButton003" data-toggle="dropdown">
-                                                <i class="las la-filter font-size-20"></i>
-                                            </span>
+                                                    <a class="cursor-pointer" id="dropdownMenuButton003" href="/dashboard/{{ $guild_id . '/product' ?? '' }}">
+                                                        <i class="ri ri-add-fill font-size-20"></i>
+                                                    </a>
                                                     <div class="dropdown-menu dropdown-menu-right border-none" aria-labelledby="dropdownMenuButton003">
                                                         <div class="dropdown-item mb-3">
                                                             <div class="d-flex align-items-center justify-content-between">

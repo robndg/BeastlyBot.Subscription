@@ -19,4 +19,6 @@ Route::get('/dashboard', 'DashController@getDash'); // * //
 
 Route::get('/dashboard/{guildid}', 'DashController@getDashGuild'); // * //
 
+Route::get('/dashboard/{guildid}/product', 'DashController@getDashGuildProduct'); // * //
+
 //Route::get('/server/{id}', 'ServerController@getServerPage');

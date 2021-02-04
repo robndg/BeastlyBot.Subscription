@@ -38,7 +38,7 @@
 <script src="{{ asset('dash/assets/js/slider.js') }}"></script>
 
 <!-- app JavaScript -->
-<script src="{{ asset('dash/assets/js/app.js') }}"></script>
+<script src="{{ asset('dash/assets/js/app-v1.js') }}"></script>
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>

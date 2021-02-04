@@ -17,7 +17,7 @@
                     <i class="las la-angle-down"></i>
                 </a>
                 <div class="dropdown-menu w-100 border-0 my-2" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item mb-2" href="../app/user-profile.html">
+                    <a class="dropdown-item mb-2" href="/app/user-profile.html">
                         <i class="lar la-user-circle font-size-20 mr-1"></i>
                         <span class="mt-2">My Profile</span>
                     </a>
@@ -51,7 +51,7 @@
                     @endphp
                     @if($guilds)
                         @foreach($guilds as $guild) 
-                        <a class="dropdown-item mb-2" href="?guild={{ $guild['id'] }}">
+                        <a class="dropdown-item mb-2" href="/dashboard/{{ $guild['id'] }}">
                             <span>@if($guild['icon'] == NULL)
                                 <img src="https://i.imgur.com/qbVxZbJ.png" class="mr-1" style="width:25px;" alt="...">
                                 @else
@@ -70,7 +70,7 @@
                 <nav class="iq-sidebar-menu">
                     <ul id="iq-sidebar-toggle" class="iq-menu">
                         <li class="active">
-                            <a href="index.html" class="svg-icon">
+                            <a href="/dashboard/{{ $guild_id ?? '' }}" class="svg-icon">
                                 <i>
                                     <svg class="svg-icon" id="iq-ui-1-5" width="20" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" style="stroke-dasharray: 90, 110; stroke-dashoffset: 0;"></path>
