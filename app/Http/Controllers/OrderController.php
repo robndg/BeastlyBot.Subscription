@@ -22,6 +22,7 @@ use App\StripeHelper;
 use App\DiscordHelper;
 use App\StoreCustomer;
 use App\Subscription;
+use App\DiscordOAuth;
 
 class OrderController extends Controller {
 
@@ -115,7 +116,7 @@ class OrderController extends Controller {
         }
 
         $discord_store = DiscordStore::where('id', $product_role->discord_store_id)->first();
-        $discord_helper = new \App\DiscordHelper(User::find($discord_store->user_id));
+        $discord_helper = new \App\DiscordHelper(User::find(DiscordOAuth::where('discord_id', $discord_store->user_id)->first()->user_id));
 
         $guild = $discord_helper->getGuild($discord_store->guild_id);
 

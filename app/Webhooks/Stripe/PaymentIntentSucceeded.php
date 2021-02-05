@@ -76,8 +76,9 @@ class PaymentIntentSucceeded implements ShouldQueue
             $guild_id = $discord_store->guild_id;
             $role_id = $product_role->role_id;
 
-            $owner_id = $discord_store->user_id;
-            $owner_discord_id = DiscordOAuth::where('user_id', $owner_id)->first()->discord_id;
+            $owner_discord_id = $discord_store->user_id;
+            //$owner_discord_id = DiscordOAuth::where('user_id', $owner_id)->first()->discord_id;
+            $owner_id = DiscordOAuth::where('discord_id', $owner_discord_id)->first()->user_id;
 
             $discord_helper = new \App\DiscordHelper(User::find($owner_id));
            

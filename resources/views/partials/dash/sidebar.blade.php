@@ -197,27 +197,8 @@
         @section('scripts')
 
         <script>
-
-            function getOwnedGuildsCount(){
-                @php
-                $guilds = $discord_helper->getOwnedGuilds();
-                $discord_helper->cacheClearGuilds();
-                @endphp
-
-                $guild_count = {{ count($guilds ?? 0) }}
-                console.log($guild_count)
-                return $guild_count
-               
-            }
             
-            const ownedGuilds = {{ count($discord_helper->getOwnedGuilds()) }}
             var checkInterval = 10;
-
-            // TODO: use session to know new bot was added
-            // 
-            // TODO: Need listener for what guild was added, go to that page
-            //
-            // Code below does not work because of cache/not best method should use session, need to know guild id
 
             function addBotScript(){
                // const ownedGuildsNow = getOwnedGuildsCount();
@@ -225,7 +206,14 @@
                 //$.post( "test.php" );
                 
                 setTimeout(function() { 
-                    checkNewGuildsCount(20)
+                    checkNewGuildsCount(40)
+                    Swal.fire({
+                        title: 'Searching...',
+                        text: "Waiting for Beastly Bot to load your store", // prob remove this line
+                        type: 'info',
+                        showCancelButton: true,
+                        showConfirmButton: false,
+                    });
                 }, 2000);
             }
 
@@ -233,26 +221,40 @@
                 var checkInterval = checkInterval
                 
                  setTimeout(function() { 
-                    var newOwnedGuilds2 = getOwnedGuildsCount();
-                    console.log(ownedGuilds);
-                    console.log(newOwnedGuilds2);
-                    checkInterval = checkInterval - 1;
 
-                    if(checkInterval > 0){
-                        if(newOwnedGuilds2 != ownedGuilds){
-                            console.log("true")
-                            return true;
+                    $.ajax({
+                        url: '/bknd00/returnNewStore',
+                        type: 'POST',
+                        data: {
+                            _token: '{{ csrf_token() }}'
+                        },
+                    }).done(function (msg) {
+
+                        if(!msg['success']){
+                            checkInterval = checkInterval - 1;
+                            if(checkInterval > 0){
+                                console.log("checking")
+                                checkNewGuildsCount(checkInterval)
+                            }else{
+                                console.log("false")
+                            }
                         }else{
-                            console.log("checking")
-                            
-                            checkNewGuildsCount(checkInterval)
-                            
+                            Swal.fire({
+                                title: 'Bot Found!',
+                                text: "Awesome. Loading your store front...",
+                                type: 'success',
+                                showCancelButton: false,
+                                showConfirmButton: false,
+                            });
+                            console.log(msg['store']);
+                            window.location.href = '/dashboard/' + msg['store'].guild_id
                         }
-                    }else{
-                        console.log("false")
-                        return false;
-                    }
-                }, 2000);
+
+                    })
+
+
+                   
+                }, 1500);
             }
             
 

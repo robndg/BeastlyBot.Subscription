@@ -51,10 +51,7 @@ class DashController extends Controller {
     
             $owner = true; $admin = true;
 
-            /*if(! $discord_helper->ownsGuild($guild_id)) {
-                AlertHelper::alertError('You are not the owner of that server!');
-                return redirect('/dashboard');
-             }*/
+           
 
             if($owner || $admin) {
 
@@ -64,20 +61,29 @@ class DashController extends Controller {
                  $discord_store = null;
          
                  if(! DiscordStore::where('guild_id', $guild_id)->exists()) {
-                     $discord_store = new DiscordStore(['guild_id' => $guild_id, 'url' => $guild_id, 'user_id' => auth()->user()->id, 'UUID' => Str::uuid()]);
-                     $discord_store->save();
-         
-                     $stats = new Stat(['type' => 1, 'type_id' => $discord_store->id]);
-                     $stats->data = ['subscribers' => ['active' => 0, 'total' => 0], 'disputes' => ['active' => 0, 'total' => 0]];
-                     $stats->save();
+                   
+                    AlertHelper::alertError('Please retry adding the bot.');
+                    return redirect('/dashboard');
+                    
                      
                  } else {
                      $discord_store = DiscordStore::where('guild_id', $guild_id)->first();
                      //$discord_store->live = 1;
                      //$discord_store->save();
-         
-                     $stats = Stat::where('type', 1)->where('type_id', $discord_store->id)->first();
+                    if(!Stat::where('type', 1)->where('type_id', $discord_store->id)->exists()){
+                        $stats = new Stat(['type' => 1, 'type_id' => $discord_store->id]);
+                        $stats->data = ['subscribers' => ['active' => 0, 'total' => 0], 'disputes' => ['active' => 0, 'total' => 0]];
+                        $stats->save();
+                    }else{
+                        $stats = Stat::where('type', 1)->where('type_id', $discord_store->id)->first();
+                    }
+                     
                  }
+
+                 if(! $discord_helper->ownsGuild($guild_id)) {
+                    AlertHelper::alertError('You are not the owner of that server.');
+                    return redirect('/dashboard');
+                }
 
                  $product_roles = ProductRole::where('discord_store_id', $discord_store->id)->get();
                  
@@ -156,7 +162,7 @@ class DashController extends Controller {
         if($product_uuid != false){
 
 
-            
+
            
             // send to prices ProductPlanController for now
         
@@ -167,6 +173,22 @@ class DashController extends Controller {
               
         }
 
+    }
+
+    public function returnNewStore(){
+
+        $discord_helper = new DiscordHelper(auth()->user());
+        $guild_user_id = $discord_helper->getID();
+        if(DiscordStore::where('user_id', $guild_user_id, 'created_at', NULL)->exists()){
+            $lastNewStore = DiscordStore::where('user_id', $guild_user_id, 'created_at', NULL)->first();
+            AlertHelper::alertSuccess('Your store dashboard!');
+            return response()->json(['success' => true, 'store' => $lastNewStore]);
+        }else{
+            return response()->json(['success' => false]);
+        }
+        
+
+        
     }
     
 
