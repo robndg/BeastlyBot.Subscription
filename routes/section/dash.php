@@ -2,7 +2,7 @@
 
 use App\DiscordStore;
 use App\ProductPlanController;
-
+use Auth;
 use App\Shop;
 use App\User;
 use Illuminate\Support\Facades\Route;

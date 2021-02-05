@@ -42,25 +42,26 @@
             </div>
             <div class="data-scrollbar" data-scroll="1">
                 <div class="sidebar-btn dropdown mb-3">
-                    <a href="#" id="dropdownMenuButton01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-primary pr-5 position-relative iq-user-toggle d-flex align-items-center justify-content-between" style="height: 40px;">
-                        <span class="btn-title"><i class="ri-add-line mr-3"></i>Add Bot</span><span class="beast-add-btn" style="height: 40px;"><i class="las la-angle-down"></i></span>
-                    </a>
-                    <div class="dropdown-menu w-100 border-0 py-3" aria-labelledby="dropdownMenuButton01">
                     @php
                         $guilds = $discord_helper->getOwnedGuilds();
                     @endphp
+                    <a href="#" id="dropdownMenuButton01" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" class="btn btn-primary pr-5 position-relative iq-user-toggle d-flex align-items-center justify-content-between" style="height: 40px;">
+                        <span class="btn-title text-truncate">@if(isset($guild_id)) {!! '<img src="https://cdn.discordapp.com/icons/' . $guild_id . '/' . $guild->icon . '.png?size=256" class="rounded-circle mr-1" style="width:25px" alt="...">' !!} @else {!! '<i class="ri-add-line mr-3"></i>' !!} @endif {{ $guild->name ?? 'Select Guild' }}</span><span class="beast-add-btn" style="height: 40px;"><i class="las la-angle-down mt-1"></i></span>
+                    </a>
+                    <div class="dropdown-menu w-100 border-0 py-3" aria-labelledby="dropdownMenuButton01">
+                    
                     @if($guilds)
                         @foreach($guilds as $guild) 
                         <a class="dropdown-item mb-2" href="/dashboard/{{ $guild['id'] }}">
                             <span>@if($guild['icon'] == NULL)
-                                <img src="https://i.imgur.com/qbVxZbJ.png" class="mr-1" style="width:25px;" alt="...">
+                                <img src="https://i.imgur.com/qbVxZbJ.png" class="rounded-circle mr-1" style="width:25px;" alt="...">
                                 @else
-                                <img src="https://cdn.discordapp.com/icons/{{ $guild['id'] }}/{{ $guild['icon'] }}.png?size=256" class="mr-1" style="width:25px;" alt="...">
+                                <img src="https://cdn.discordapp.com/icons/{{ $guild['id'] }}/{{ $guild['icon'] }}.png?size=256" class="rounded-circle mr-1" style="width:25px;" alt="...">
                                 @endif
                                 {{ $guild['name'] }}</span>
                         </a>
                         @endforeach
-                        <a class="dropdown-item" href="{{ 'https://discordapp.com/oauth2/authorize?client_id=' . env('DISCORD_CLIENT_ID') . '&scope=bot&permissions=' . env('DISCORD_BOT_PERMISSIONS') }}" target="_blank">
+                        <a class="dropdown-item add-bot-button" onclick="addBotScript()" href="{{ 'https://discordapp.com/oauth2/authorize?client_id=' . env('DISCORD_CLIENT_ID') . '&scope=bot&permissions=' . env('DISCORD_BOT_PERMISSIONS') }}" target="_blank">
                             <span><i class="ri-add-line mr-3"></i>Add Bot</span>
                         </a>
                     @endif
@@ -192,3 +193,69 @@
                 <div class="p-3"></div>
             </div>
         </div>
+        
+        @section('scripts')
+
+        <script>
+
+            function getOwnedGuildsCount(){
+                @php
+                $guilds = $discord_helper->getOwnedGuilds();
+                $discord_helper->cacheClearGuilds();
+                @endphp
+
+                $guild_count = {{ count($guilds ?? 0) }}
+                console.log($guild_count)
+                return $guild_count
+               
+            }
+            
+            const ownedGuilds = {{ count($discord_helper->getOwnedGuilds()) }}
+            var checkInterval = 10;
+
+            // TODO: use session to know new bot was added
+            // 
+            // TODO: Need listener for what guild was added, go to that page
+            //
+            // Code below does not work because of cache/not best method should use session, need to know guild id
+
+            function addBotScript(){
+               // const ownedGuildsNow = getOwnedGuildsCount();
+                var refreshFoundNew = false
+                //$.post( "test.php" );
+                
+                setTimeout(function() { 
+                    checkNewGuildsCount(20)
+                }, 2000);
+            }
+
+            function checkNewGuildsCount(checkInterval){
+                var checkInterval = checkInterval
+                
+                 setTimeout(function() { 
+                    var newOwnedGuilds2 = getOwnedGuildsCount();
+                    console.log(ownedGuilds);
+                    console.log(newOwnedGuilds2);
+                    checkInterval = checkInterval - 1;
+
+                    if(checkInterval > 0){
+                        if(newOwnedGuilds2 != ownedGuilds){
+                            console.log("true")
+                            return true;
+                        }else{
+                            console.log("checking")
+                            
+                            checkNewGuildsCount(checkInterval)
+                            
+                        }
+                    }else{
+                        console.log("false")
+                        return false;
+                    }
+                }, 2000);
+            }
+            
+
+        </script>
+
+        @endsection

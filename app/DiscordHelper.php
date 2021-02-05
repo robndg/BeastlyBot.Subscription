@@ -81,6 +81,12 @@ class DiscordHelper
         Cache::put('guilds_' . $this->user->id, $guilds_array, 60 * 5);
         return Cache::get('guilds_' . $this->user->id);
     }
+
+    public function cacheClearGuilds() {
+        if(Cache::has('guilds_' . $this->user->id)) {
+            return Cache::forget('guilds_' . $this->user->id);
+        }
+    }
     
     public function getOwnedGuilds() {
         $guilds = array();
