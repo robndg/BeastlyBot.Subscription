@@ -154,17 +154,20 @@ class DashController extends Controller {
         $product_uuid = \request('uuid');
 
         if($product_uuid != false){
+
+
+            
            
-            // code for editing
+            // send to prices ProductPlanController for now
         
         }else{
 
-            $roles = $discord_helper->getRoles($guild_id);
+            // send to prices ProductPlanController for now
 
-            return view('dash.dash-guild-product')->with('discord_helper', $discord_helper)->with('guild_id', $guild_id)->with('guild', $discord_helper->getGuild($guild_id))->with('shop', $discord_store)->with('roles', $roles);
-            
+              
         }
 
     }
+    
 
 }
