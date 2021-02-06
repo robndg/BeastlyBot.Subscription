@@ -20,6 +20,8 @@ Route::get('/dashboard/{guildid}', 'DashController@getDashGuild'); // * //
 
 Route::get('/dashboard/{guildid}/product', 'DashController@getDashGuildProduct'); // * //
 
+Route::post('/bknd00/saveGuildProductRole', 'DashController@saveGuildProductRole'); // * //
+
 Route::post('/bknd00/returnNewStore', 'DashController@returnNewStore'); // * //
 
 //Route::get('/server/{id}', 'ServerController@getServerPage');

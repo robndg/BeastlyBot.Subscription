@@ -155,20 +155,43 @@ class DashController extends Controller {
     }
 
 
-    public function saveDashGuildProduct(Request $request){
+    public function saveGuildProductRole(Request $request){
 
-        $product_uuid = \request('uuid');
+        $product_uuid = $request->uuid;
 
-        if($product_uuid != false){
+        $discord_store_id = $request['discord_store_id'];
+        $role_id = $request['role_id'];
+
+        $description = $request['description'];
+        $active = $request('active');
+        $start_date = $request('start_date');
+        $end_date = $request('end_date');
+        $max_sales = $request('start_date');
 
 
+        if($product_uuid == 0){
 
-           
-            // send to prices ProductPlanController for now
+        // create product   
+            $product_role = new \App\ProductPlan([
+                'id' => Str::uuid(),
+                'discord_store_id' => $discord_store_id,
+                'role_id' => $role_id,//$product_id,
+                'description' => $description,
+                'active' => $active,
+                'start_date' => $start_date,
+                'end_date' => $end_date,
+                'max_sales' => $max_sales,
+                ]);
+                $product_role->save();
+
+                return response()->json(['success', true], 'product_uuid', $product_role->id);
+            
+            // then allow prices with uuid
+
         
         }else{
 
-            // send to prices ProductPlanController for now
+            
 
               
         }

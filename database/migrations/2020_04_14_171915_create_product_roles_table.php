@@ -19,6 +19,9 @@ class CreateProductRolesTable extends Migration
             $table->bigInteger('role_id');
             $table->string('description')->nullable();
             $table->integer('active')->default(0);
+            $table->string('start_date')->nullable(); // date time
+            $table->string('end_date')->nullable(); // date time
+            $table->integer('max_sales')->nullable();
             //$table->string('UUID')->unique();
             $table->timestamps();
         });

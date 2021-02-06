@@ -61,7 +61,7 @@
                                     </div>
                                     <div class="form-group">
                                         <label class="label-control">Description</label>
-                                        <textarea type="text" class="form-control" name="description" rows="2" data-change="input" data-custom-target="#note-description" placeholder="This role gives you instant access to incredible chat rooms"></textarea>
+                                        <textarea type="text" class="form-control" id="input-description" name="description" rows="2" data-change="input" data-custom-target="#note-description" placeholder="This role gives you instant access to incredible chat rooms"></textarea>
                                     </div>
                                    
                                     <div class="form-group">
@@ -81,7 +81,7 @@
                                     <div class="form-row d-flex align-items-center justify-content-between">
                                         <div class="form-group col">
                                             <label class="label-control">Start Date</label>
-                                            <input type="date" class="form-control" name="reminder_date" value="{{ date('Y-m-d') }}" data-change="input" data-custom-target="#note-reminder-date">
+                                            <input type="date" class="form-control" name="reminder_date" value="{{ date('Y-m-d') }}" data-change="input" data-custom-target="#note-reminder-date"> <!-- TODO make for hours too -->
                                         </div>
                                         <div class="form-group col d-none">
                                             <label class="label-control">End Date</label>
@@ -91,7 +91,7 @@
                                     <div class="form-group">
                                         <label class="label-control">Availability</label>
                                         <div>
-                                            <select name="priority" id="" class="form-control" data-change="select" data-custom-target="color">
+                                            <select name="priority" id="input-access" class="form-control" data-change="select" data-custom-target="color">
                                                 <!--<option value="danger">Archived</option>-->
                                                 <option value="success">Guild Access</option>
                                                 <option value="info" selected>Everyone</option>
@@ -419,3 +419,52 @@ function changeMax(number) {
         })*/
         </script>
 @endsection
+
+
+@section('scripts')
+<script>
+
+var product_uuid = {{ $product_role->uuid ?? 0 }}
+
+function saveProduct()
+
+    $.ajax({
+        url: '/bknd00/saveGuildProductRole',
+        type: 'POST',
+        data: {
+            'id' => {{ $product_role->uuid ?? 0 }},
+            'discord_store_id': '{{ $guild_id }}',
+            'role_id': $role_id,//$product_id,
+            'description': $('#input-description').val(),
+            'active': $('#input-active').val(),
+            'start_date': $start_date,
+            'end_date': $end_date,
+            'max_sales': $max_sales,
+            _token: '{{ csrf_token() }}'
+        },
+    }).done(function (msg) {
+        if(!msg['success']){
+            Swal.fire({
+                title: 'Count not save, try again',
+                //text: "Awesome. Loading your store front...",
+                type: 'info',
+                showCancelButton: false,
+                showConfirmButton: true,
+            });
+        }else{
+            Swal.fire({
+                title: 'Bot Found!',
+                text: "Awesome. Loading your store front...",
+                type: 'success',
+                showCancelButton: false,
+                showConfirmButton: true,
+            });
+
+            product_uuid = msg['product_uuid'];
+           
+            //window.location.href = '/dashboard/' + msg['store'].guild_id
+        }
+    })
+</script>
+
+                    @endsection

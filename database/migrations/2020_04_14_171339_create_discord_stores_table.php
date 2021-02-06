@@ -22,9 +22,7 @@ class CreateDiscordStoresTable extends Migration
             $table->string('payment_processor')->default(1);
             $table->boolean('live')->default(false);
             $table->longText('description')->nullable();
-            $table->boolean('refunds_enabled')->default(true);
-            $table->integer('refunds_days')->default(7);
-            $table->integer('refunds_terms')->default(1);
+            $table->boolean('bot_active')->default(true);
             $table->integer('level')->default(1);
             $table->timestamps();
         });
