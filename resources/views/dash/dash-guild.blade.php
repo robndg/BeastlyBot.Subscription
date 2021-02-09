@@ -106,6 +106,7 @@
                                         <div id="note1" class="tab-pane fade active show">
                                             <div class="icon active animate__animated animate__fadeIn i-grid">
                                                 <div class="row">
+                                               
                                                     @foreach($product_roles as $product)
 
                                                     <div class="col-lg-4 col-md-6">

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProductRole extends Model
 {
-    protected $fillable = ['id', 'discord_store_id', 'role_id', 'description', 'active', 'start_date', 'end_date', 'max_sales'];
+    protected $fillable = ['id', 'discord_store_id', 'role_id', 'title', 'description', 'access', 'start_date', 'end_date', 'max_sales', 'active'];
 
     public function store()
     {
@@ -14,6 +14,7 @@ class ProductRole extends Model
     }
     protected $casts = [
         'id' => 'string',
+        'discord_store_id' => 'string',
         'start_date' =>  'datetime',
         'end_start' => 'datetime',
     ];

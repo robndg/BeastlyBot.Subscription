@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Cache;
 use App\StripeHelper;
 use Illuminate\Support\Str;
 use App\ProductPlanController;
+use App\Exception;
 
 class DashController extends Controller {
 
@@ -85,7 +86,7 @@ class DashController extends Controller {
                     return redirect('/dashboard');
                 }
 
-                 $product_roles = ProductRole::where('discord_store_id', $discord_store->id)->get();
+                 $product_roles = ProductRole::where('discord_store_id', $discord_store->UUID)->get();
                  
                  /*$guild_products = [];
 
@@ -144,6 +145,14 @@ class DashController extends Controller {
         if($product_uuid != false){
            
             // code for editing
+            $roles = $discord_helper->getRoles($guild_id);
+            $product_role = ProductRole::where('id', $product_uuid)->first();
+            if(!$product_role){
+                AlertHelper::alertError('This product does not exist.');
+                return redirect('/dashboard');
+            }
+
+            return view('dash.dash-guild-product')->with('discord_helper', $discord_helper)->with('guild_id', $guild_id)->with('guild', $discord_helper->getGuild($guild_id))->with('shop', $discord_store)->with('roles', $roles)->with('product_role', $product_role);
         
         }else{
 
@@ -157,40 +166,81 @@ class DashController extends Controller {
 
     public function saveGuildProductRole(Request $request){
 
-        $product_uuid = $request->uuid;
+        $product_uuid = $request->id;
+        
+        Log::info($product_uuid);
 
-        $discord_store_id = $request['discord_store_id'];
-        $role_id = $request['role_id'];
+        $discord_store_id = $request->discord_store_id;
+        $role_id = $request->role_id;
 
-        $description = $request['description'];
-        $active = $request('active');
-        $start_date = $request('start_date');
-        $end_date = $request('end_date');
-        $max_sales = $request('start_date');
+        $description = $request->description;
+        $title = $request->title;
+        $access = $request->access;
+        $start_date = $request->start_date;
+        $start_time = $request->start_time;
+        $end_date = $request->end_date;
+        $max_sales = $request->max_sales;
+        
+        //Log::info($start_time);
 
-
+       // $start_date_time = new DateTime().format($start_date . ' ' . $end_date);
+        //$start_date_time = Carbon::createFromString($start_date . ' '. $end_date);
+        //$start_date_time = Carbon::createFromFormat('Y-m-d H:i:s', $start_date)->format('Y-m-d H:i:s e+');
+        $start_date_time = Carbon::createFromFormat('Y-m-d H:i:s', $start_date . ' '. $start_time);
+       // $start_date_time_laravel = new DateTime($start_date_time);
+        //Log::info($start_date_time_laravel);
         if($product_uuid == 0){
-
+            
+        //try{
         // create product   
-            $product_role = new \App\ProductPlan([
+            $product_role = new ProductRole([
                 'id' => Str::uuid(),
                 'discord_store_id' => $discord_store_id,
                 'role_id' => $role_id,//$product_id,
+                'title' => $title,
                 'description' => $description,
-                'active' => $active,
-                'start_date' => $start_date,
+                'access' => $access,
+                'start_date' => $start_date_time,
                 'end_date' => $end_date,
                 'max_sales' => $max_sales,
+                'active' => 0,
                 ]);
                 $product_role->save();
 
-                return response()->json(['success', true], 'product_uuid', $product_role->id);
-            
+                $product_role = ProductRole::where('discord_store_id', $discord_store_id)->where('role_id', $role_id)->first(); // TODO dash: change to latest or get string uuid
+                AlertHelper::alertSuccess('Great now add some prices!');
+                return response()->json(['success' => true, 'product_uuid' => $product_role->id]);
+           /* } catch (\Exception $e){
+               $message = $e->getMessage();
+                return response()->json(['success'=> false, 'message' => $message]);
+                
+                
+            }*/
             // then allow prices with uuid
 
         
         }else{
 
+           // try{
+                $product_role = ProductRole::where('id', $product_uuid)->first();
+                //$product_role->discord_store_id = $discord_store_id;
+                $product_role->role_id = $role_id;
+                $product_role->description = $description;
+                $product_role->access = $access;
+                $product_role->start_date = $start_date_time;
+                $product_role->end_date = $end_date;
+                $product_role->max_sales = $max_sales;
+                // if prices then active 1
+                //$product_role->active = 1;
+                $product_role->save();
+
+                return response()->json(['success' => true, 'product_uuid'=> $product_uuid]);
+
+           /* } catch (\Exception $e){
+                $message = $e->getMessage();
+                return response()->json(['success'=> false, 'product_uuid'=> $product_role->id, 'message' => $message]);
+            }*/
+            
             
 
               

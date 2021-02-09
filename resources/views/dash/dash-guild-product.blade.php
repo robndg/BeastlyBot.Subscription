@@ -37,14 +37,14 @@
                     <div class="card-body write-card pb-4">
                         <div class="row">
                             <div class="col-md-8">
-                                <form action="">
+                                
                                     
                                     <div class="form-group">
                                         <label class="label-control">Role</label>
                                         <div id="icon-button">
                                         @foreach($roles as $role) 
                                             @if($role->name !== '@everyone' && !$role->managed)
-                                            <button class="btn btn-outline-primary ml-1 btn-product-role" type="button" data-product-role-id="{{ $role->id }}" data-product-role-name="{{ $role->name }}" data-product-role-color="{{ dechex($role->color) }}" data-change="click" data-custom-target="#product-role" style="border-color: #{{ dechex($role->color) }}; color: #{{ dechex($role->color) }}">
+                                            <button class="btn btn-outline-primary ml-1 btn-product-role @if(isset($product_role)) {{ $product_role->role_id == $role->id ? 'active' : '' }} @endif" type="button" data-change="product-role" data-product-role-id="{{ $role->id }}" data-product-role-name="{{ $role->name }}" data-product-role-color="{{ dechex($role->color) }}" data-custom-target="#product-role-id" style="border-color: #{{ dechex($role->color) }}; color: #{{ dechex($role->color) }}">
                                                 <svg width="23" class="svg-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
                                                 </svg>
@@ -53,26 +53,27 @@
                                             </button>
                                             @endif
                                         @endforeach
+                                        <input type="hidden" id="product-role-id" value="{{ $product_role->id ?? '' }}">
                                         </div>
                                     </div>
                                     <div class="form-group">
                                         <label class="label-control">Title</label>
-                                        <input type="text" class="form-control" name="title" id="product-role" placeholder="Example Role" value="" data-change="input" data-custom-target="#note-title">
+                                        <input type="text" class="form-control" name="title" id="product-title" placeholder="@if(isset($product_role)){{ $product_role->title }}@else{{'Example Role'}}@endif" value="@if(isset($product_role)){{ $product_role->title }}@endif" data-change="input" data-custom-target="#note-title">
                                     </div>
                                     <div class="form-group">
                                         <label class="label-control">Description</label>
-                                        <textarea type="text" class="form-control" id="input-description" name="description" rows="2" data-change="input" data-custom-target="#note-description" placeholder="This role gives you instant access to incredible chat rooms"></textarea>
+                                        <textarea type="text" class="form-control" id="input-description" name="description" rows="2" data-change="input" data-custom-target="#note-description" placeholder="@if(isset($product_role)){{ $product_role->description }}@else{{ 'Example description... this role gives you instant access to incredible chat rooms' }}@endif">@if(isset($product_role)){!! $product_role->description ?? '' !!}@endif</textarea>{{-- {!! nl2br(e($product_role->description), false) ?? '' !!} --}}
                                     </div>
                                    
                                     <div class="form-group">
                                         <label class="label-control d-block">Max Subscribers</label>
                                         <div class="btn-group btn-group-toggle"> 
-                                            <button type="button" class="button btn button-icon btn-primary btn-max-off active" onclick="turnOffMax()">Off</button>
-                                            <button type="button" class="button btn button-icon btn-primary btn-max-on" onclick="turnOnMax()">On</button>
+                                            <button type="button" class="button btn button-icon btn-primary btn-max-off {{ $product_role ?? 'active' }} @if(isset($product_role)) @if($product_role->max_sales == NULL) {{'active'}} @endif @endif" onclick="turnOffMax()">Off</button>
+                                            <button type="button" class="button btn button-icon btn-primary btn-max-on @if(isset($product_role)) @if($product_role->max_sales >= 0)active @endif @endif" onclick="turnOnMax()">On</button>
                                         </div>
-                                        <div class="btn-group btn-group-toggle" id="max-toggler" style="display:none"> 
+                                        <div class="btn-group btn-group-toggle" id="max-toggler" @if(isset($product_role)) @if($product_role->max_sales == NULL) style="display:none" @endif @else style="display:none" @endif> 
                                             <button type="button" class="button btn button-icon btn-info input-number-decrement">-</button>
-                                            <input class="form-control btn button bg-primary input-number" type="text" value="" min="0" max="100000" data-change="input" data-custom-target="#max-members">
+                                            <input class="form-control btn button bg-primary input-number" type="text" value="@if(isset($product_role)) {{ $product_role->max_sales ?? '' }}@endif" min="0" max="100000" data-change="input" data-custom-target="#max-members" id="max_sales">
                                             <button type="button" class="button btn button-icon btn-info input-number-increment">+</button>
                                         </div>
                                     </div>
@@ -81,11 +82,15 @@
                                     <div class="form-row d-flex align-items-center justify-content-between">
                                         <div class="form-group col">
                                             <label class="label-control">Start Date</label>
-                                            <input type="date" class="form-control" name="reminder_date" value="{{ date('Y-m-d') }}" data-change="input" data-custom-target="#note-reminder-date"> <!-- TODO make for hours too -->
+                                            <input type="date" class="form-control" id="start_date" name="reminder_date" value="@if(isset($product_role)){{ (explode(' ',trim($product_role->start_date))[0]) ?? date('Y-m-d') }}@else{{ date('Y-m-d') }}@endif" data-change="input" data-custom-target="#note-reminder-date"> 
+                                        </div>
+                                        <div class="form-group col">
+                                            <label class="label-control">Start Time</label>
+                                            <input type="time" class="form-control" id="start_time" name="reminder_time" value="@if(isset($product_role)){{ (explode(' ',trim($product_role->start_date))[1]) ?? date('H:i:s')}}@else{{ date('H:i:s') }}@endif" data-change="input" data-custom-target="#note-reminder-time">
                                         </div>
                                         <div class="form-group col d-none">
                                             <label class="label-control">End Date</label>
-                                            <input type="date" class="form-control" name="end_date" value="2021-05-01" data-change="input" data-custom-target="#note-reminder-date">
+                                            <input type="date" class="form-control" id="end_date" name="end_date" value="" data-change="input" data-custom-target="#note-reminder-date">
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -93,11 +98,11 @@
                                         <div>
                                             <select name="priority" id="input-access" class="form-control" data-change="select" data-custom-target="color">
                                                 <!--<option value="danger">Archived</option>-->
-                                                <option value="success">Guild Access</option>
-                                                <option value="info" selected>Everyone</option>
-                                                <option value="purple">Members Only</option>
+                                                <option value="1" data-color-value="success" @if(isset($product_role)) {{ $product_role->access == 1 ? 'selected' : '' }} @endif>Guild Access</option>
+                                                <option value="2" data-color-value="info"  @if(isset($product_role)) {{ $product_role->access == 2 ? 'selected' : '' }} @else selected @endif>Everyone</option>
+                                                <option value="3" data-color-value="purple" @if(isset($product_role)) {{ $product_role->access == 3 ? 'selected' : '' }} @endif>Members Only</option>
                                                 <!--<option value="warning">Specific Member</option>-->
-                                                <option value="primary">Archived Product</option>
+                                                <option value="0" data-color-value="primary" @if(isset($product_role)) {{ $product_role->access == 0 ? 'selected' : '' }} @endif>Archived Product</option>
                                                 
                                             </select>
                                         </div>
@@ -110,14 +115,14 @@
                                         </svg>
                                         Reset
                                     </button>
-                                    <button type="submit" class="btn btn-primary ml-1">
+                                    <button type="button" class="btn btn-primary ml-1" onclick="saveGuildProductRole()">
                                         <svg width="20" class="svg-icon" id="new-note-save" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                                         </svg>
                                         Save
                                     </button>
                                     
-                                </form>
+                             
                             </div>
 
                             <!-- example card -->
@@ -145,7 +150,7 @@
                                     </div>
                                     <div class="card-body rounded">
                                         <h4 class="card-title text-ellipsis short-1" id="note-title">Example Role</h4>
-                                        <p class="mb-3 text-ellipsis short-6" id="note-description">This role gives you instant access to incredible chat rooms</p>
+                                        <p class="mb-3 text-ellipsis short-6" id="note-description">Create a product first then set prices</p>
 
                                        
                                     
@@ -156,23 +161,23 @@
                                                 <div class="form-row">
                                                     <div class="form-group col-sm-12 col-lg-5">
                                                         <div>
-                                                            <select name="select-interval" id="" class="form-control" data-change="select-change-interval" data-custom-target="select-interval">
+                                                            <select name="select-interval" id="" class="form-control" data-change="select-change-interval" data-custom-target="select-interval" @if(!isset($product_role)){{'disabled'}}@endif>
                                                                 <!--<option value="danger">Archived</option>-->
-                                                                <option value="select-1-day">Daily</option>
-                                                                <option value="select-1-week">Weekly</option>
-                                                                <option value="select-1-month" selected>Monthly</option>
+                                                                <option value="day">Daily</option>
+                                                                <option value="week">Weekly</option>
+                                                                <option value="month" selected>Monthly</option>
                                                                 <!--<option value="warning">Specific Member</option>-->
-                                                                <option value="select-1-year">Yearly</option>
+                                                                <option value="year">Yearly</option>
                                                                 
                                                             </select>
                                                         </div>
                                                     </div>
-                                                    <div class="form-group col-sm-12 col-lg-7 select-interval-blocks" id="select-1-day" style="display:none">
+                                                    <div class="form-group col-sm-12 col-lg-7 select-interval-blocks" id="input-money-1-day" style="display:none">
                                                         <div class="input-group mb-3">
                                                             <div class="input-group-prepend">
                                                                 <span class="input-group-text">$</span>
                                                             </div>
-                                                            <input type="text" class="form-control input-money" id="input-money-1-day" data-change="input" data-custom-target="#enable-money-1-day" value="" min="1" max="100000" aria-label="(leave 0 to disable)">
+                                                            <input type="text" class="form-control input-money" id="day" data-change="input" data-custom-target="#enable-money-1-day" value="" min="1" max="100000" aria-label="(leave 0 to disable)" @if(!isset($product_role)){{'disabled'}}@endif>
                                                             <div class="input-group-append">
                                                                 <span class="input-group-text">USD</span>
                                                             </div>
@@ -181,12 +186,12 @@
                                                             <span class="badge badge-primary">1 Day</span> <button type="button" class="btn-sm btn btn-primary d-none">Dates</button>
                                                         </div>
                                                     </div>
-                                                    <div class="form-group col-sm-12 col-lg-7 select-interval-blocks" id="select-1-week" style="display:none">
+                                                    <div class="form-group col-sm-12 col-lg-7 select-interval-blocks" id="input-money-1-week" style="display:none">
                                                         <div class="input-group mb-3">
                                                             <div class="input-group-prepend">
                                                                 <span class="input-group-text">$</span>
                                                             </div>
-                                                            <input type="text" class="form-control input-money" id="input-money-1-week" data-change="input" data-custom-target="#enable-money-1-week" value="" min="1" max="100000" aria-label="(leave 0 to disable)">
+                                                            <input type="text" class="form-control input-money" id="week" data-change="input" data-custom-target="#enable-money-1-week" value="" min="1" max="100000" aria-label="(leave 0 to disable)" @if(!isset($product_role)){{'disabled'}}@endif>
                                                             <div class="input-group-append">
                                                                 <span class="input-group-text">USD</span>
                                                             </div>
@@ -195,12 +200,12 @@
                                                             <span class="badge badge-primary">1 Week</span> <button type="button" class="btn-sm btn btn-primary d-none">Dates</button>
                                                         </div>
                                                     </div>
-                                                    <div class="form-group col-sm-12 col-lg-7 select-interval-blocks" id="select-1-month">
+                                                    <div class="form-group col-sm-12 col-lg-7 select-interval-blocks" id="input-money-1-month">
                                                         <div class="input-group mb-3">
                                                             <div class="input-group-prepend">
                                                                 <span class="input-group-text">$</span>
                                                             </div>
-                                                            <input type="text" class="form-control input-money" id="input-money-1-month" data-change="input" data-custom-target="#enable-money-1-month" value="" min="1" max="100000" aria-label="(leave 0 to disable)">
+                                                            <input type="text" class="form-control input-money" id="month" data-change="input" data-custom-target="#enable-money-1-month" value="" min="1" max="100000" aria-label="(leave 0 to disable)" @if(!isset($product_role)){{'disabled'}}@endif>
                                                             <div class="input-group-append">
                                                                 <span class="input-group-text">USD</span>
                                                             </div>
@@ -209,12 +214,12 @@
                                                             <span class="badge badge-primary">1 Month</span> <button type="button" class="btn-sm btn btn-primary d-none">Dates</button>
                                                         </div>
                                                     </div>
-                                                    <div class="form-group col-sm-12 col-lg-7 select-interval-blocks" id="select-1-year" style="display:none">
+                                                    <div class="form-group col-sm-12 col-lg-7 select-interval-blocks" id="input-money-1-year" style="display:none">
                                                         <div class="input-group mb-3">
                                                             <div class="input-group-prepend">
                                                                 <span class="input-group-text">$</span>
                                                             </div>
-                                                            <input type="text" class="form-control input-money" id="input-money-1-year" data-change="input" data-custom-target="#enable-money-1-year" value="" min="1" max="100000" aria-label="(leave 0 to disable)">
+                                                            <input type="text" class="form-control input-money" id="year" data-change="input" data-custom-target="#enable-money-1-year" value="" min="1" max="100000" aria-label="(leave 0 to disable)" @if(!isset($product_role)){{'disabled'}}@endif>
                                                             <div class="input-group-append">
                                                                 <span class="input-group-text">USD</span>
                                                             </div>
@@ -229,7 +234,7 @@
                                                         </div>
                                                         <div class="input-group mb-3">
 
-                                                            <button type="submit" class="btn btn-primary btn-block">
+                                                            <button type="submit" class="btn btn-primary btn-block" @if(!isset($product_role)){{'disabled'}}@else onclick="updatePrices('{{ $product_role->id }}')" @endif>
                                                                 <svg width="20" class="svg-icon" id="new-note-save" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
                                                                 </svg>
@@ -288,7 +293,7 @@
                 </div>
                 <div class="card-body rounded">
                     <h4 class="card-title text-ellipsis short-1" id="note-title">Example Role</h4>
-                    <p class="mb-3 text-ellipsis short-6" id="note-description">Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.</p>
+                    <p class="mb-3 text-ellipsis short-6" id="note-description">Create a product first then set prices</p>
                 </div>
                 <div class="card-footer">
                     <div class="d-flex align-items-center justify-content-between note-text note-text-info"> 
@@ -312,6 +317,183 @@
 @endsection('content')
 
 @section('scripts')
+
+
+<script>
+
+
+$(document).on('click', '[data-change="product-role"]', function (e) {
+    $('.btn-product-role').removeClass('active');
+    const value = $(this).val()
+    if($(this).attr('data-custom-target') == '#product-role-id') {
+        const roleid = $(this).attr('data-product-role-id')
+        $('#product-role-id').val(roleid)
+        const rolename = $(this).attr('data-product-role-name')
+        $('#product-title').val(rolename)
+        $('#note-title').val(rolename)
+        $(this).addClass('active');
+        console.log(roleid)
+    }
+})
+$(document).on('change', '[data-change="select-change-interval"]', function (e) {
+    const value = $(this).val()
+    if($(this).attr('data-custom-target') == 'select-interval') {
+        $('.select-interval-blocks').hide();
+        console.log(value);
+        $(`#input-money-1-${value}`).show();
+    }
+})
+
+$(document).on('change', '[data-change="radio"]', function (e) {
+    const value = $(this).val()
+    const color = value.data('product-role-color');
+    if($(this).attr('data-custom-target') == 'color') {
+        $('#note-icon').attr('class',' ')
+        $('#update-note').attr('class', ' ')
+
+        $('#note-icon').addClass(`icon iq-icon-box-2 icon-border-${value} rounded`)/*.css(`border-color: #${color}`)*/
+
+        $('#update-note').addClass(`card card-block card-stretch card-height card-bottom-border-${value} note-detail`)
+    }
+})
+
+$(document).on('change', '[data-change="select"]', function (e) {
+    const value = $(this).val()
+    console.log('ts')
+    const color = value.attr("data-color-value");
+    console.log(color)
+    if($(this).attr('data-custom-target') == 'color') {
+        
+        $('#note-icon').attr('class',' ')
+        $('#update-note').attr('class', ' ')
+        $('#note-icon').addClass(`icon iq-icon-box-2 icon-border-${color} rounded`)
+        $('#update-note').addClass(`card card-block card-stretch card-height card-bottom-border-${color} note-detail`)
+    }
+})
+ 
+/* $(document).on('change', '[data-change="select"]', function (e) {
+     const value = $(this).val()
+     console.log('ts')
+     if($(this).attr('data-custom-target') == 'color') {
+         $('#note-icon').attr('class',' ')
+         $('#update-note').attr('class', ' ')
+         $('#note-icon').addClass(`icon iq-icon-box-2 icon-border-${value} rounded`)
+         $('#update-note').addClass(`card card-block card-stretch card-height card-bottom-border-${value} note-detail`)
+     }
+})*/
+
+console.log(new Date($('#start_date').val() + "T" + $('#start_time').val()));
+
+var product_uuid = '{{ $product_role->id ?? 0 }}'
+
+function saveGuildProductRole(product_uuid) {
+
+    $.ajax({
+        url: '/bknd00/saveGuildProductRole',
+        type: 'POST',
+        data: {
+            'id': '{{ $product_role->id ?? 0 }}',
+            'discord_store_id': '{{ $shop->UUID }}',
+            'role_id': $('#product-role-id').val(),//$product_id,
+            'title': $('#product-title').val(),
+            'description': $('#input-description').val(),
+            'access': $('#input-access').val(),
+            'start_date': $('#start_date').val(),//new Date($('#start_date').val() + "T" + $('#start_time').val()).toLocaleDateString(),//$('#start_date').val(),
+            'start_time': $('#start_time').val(),
+            'end_date': $('#end_date').val(),
+            'max_sales': $('#max_sales').val(),
+            _token: '{{ csrf_token() }}'
+        },
+    }).done(function (msg) {
+        console.log(msg);
+        if(!msg['success']){
+            Swal.fire({
+                title: 'Product not Saved',
+                text: msg['message'],
+                type: 'info',
+                showCancelButton: false,
+                showConfirmButton: true,
+            });
+        }else{
+            if(product_uuid == 0){
+            product_uuid = msg['product_uuid'];
+                var url = document.location.href+"?uuid=" + product_uuid;
+                document.location = url;
+            }
+            Swal.fire({
+                title: 'Product Saved!',
+               // text: "Awesome... add some prices",
+                type: 'success',
+                showCancelButton: false,
+                showConfirmButton: true,
+            });
+           
+
+           
+
+        
+           
+            //window.location.href = '/dashboard/' + msg['store'].guild_id
+        }
+    })
+}
+</script>
+
+<script>
+
+
+var product_uuid = '{{ $product_role->id ?? 0 }}'
+
+    // TODO: For now we close the slide but we need to turn off the switcheries
+    function updatePrices(product_role_id) {
+        Toast.fire({
+            title: 'Processing....',
+            text: '',
+            showCancelButton: false,
+            showConfirmButton: false,
+            allowOutsideClick: () => !Toast.isLoading(),
+            //target: document.getElementById('slider-div')
+        });
+        Toast.showLoading();
+        @if(isset($product_role))
+        $.ajax({
+            url: '/bknd00/saveGuildProductRolePrices',
+            type: 'POST',
+            data: {
+                'price_interval_day': $('#day').val(),
+                'price_interval_week': $('#week').val(),
+                'price_interval_month': $('#month').val(),
+                'price_interval_year': $('#year').val(),
+                'product_id': product_role_id,
+                //'role_id': role_id,
+                //'role_name': Global.role_name,
+                //'guild_id': guild_id,
+                _token: '{{ csrf_token() }}'
+            },
+        }).done(function (msg) {
+            if (msg['success']) {
+                Toast.fire({
+                    title: 'Success!',
+                    text: msg['msg'],
+                    type: 'success',
+                    showCancelButton: false,
+                    //target: document.getElementById('slider-div')
+                });
+            } else {
+                Swal.fire({
+                    title: 'Oops!',
+                    text: msg['msg'],
+                    type: 'warning',
+                    showCancelButton: false,
+                    target: document.getElementById('slider-div')
+                });
+            }
+        });
+        @endif
+    }
+
+</script>
+
 <script>
 (function() {
  
@@ -384,87 +566,5 @@ function changeMax(number) {
 }
 </script>
 
-<script>
 
-        $(document).on('change', '[data-change="radio"]', function (e) {
-            const value = $(this).val()
-            if($(this).attr('data-custom-target') == 'product-role') {
-                console.log($(this));
-                const rolename = $(this).attr('data-product-role-name')
-                $('#product-title').val(rolename)
-                console.log(rolename)
-            }
-        })
-
-
-        $(document).on('change', '[data-change="select-change-interval"]', function (e) {
-            const value = $(this).val()
-            if($(this).attr('data-custom-target') == 'select-interval') {
-                $('.select-interval-blocks').hide();
-                console.log(value);
-                $(`#${value}`).show();
-            }
-        })
-        
-
-       /* $(document).on('change', '[data-change="select"]', function (e) {
-            const value = $(this).val()
-            console.log('ts')
-            if($(this).attr('data-custom-target') == 'color') {
-                $('#note-icon').attr('class',' ')
-                $('#update-note').attr('class', ' ')
-                $('#note-icon').addClass(`icon iq-icon-box-2 icon-border-${value} rounded`)
-                $('#update-note').addClass(`card card-block card-stretch card-height card-bottom-border-${value} note-detail`)
-            }
-        })*/
-        </script>
 @endsection
-
-
-@section('scripts')
-<script>
-
-var product_uuid = {{ $product_role->uuid ?? 0 }}
-
-function saveProduct()
-
-    $.ajax({
-        url: '/bknd00/saveGuildProductRole',
-        type: 'POST',
-        data: {
-            'id' => {{ $product_role->uuid ?? 0 }},
-            'discord_store_id': '{{ $guild_id }}',
-            'role_id': $role_id,//$product_id,
-            'description': $('#input-description').val(),
-            'active': $('#input-active').val(),
-            'start_date': $start_date,
-            'end_date': $end_date,
-            'max_sales': $max_sales,
-            _token: '{{ csrf_token() }}'
-        },
-    }).done(function (msg) {
-        if(!msg['success']){
-            Swal.fire({
-                title: 'Count not save, try again',
-                //text: "Awesome. Loading your store front...",
-                type: 'info',
-                showCancelButton: false,
-                showConfirmButton: true,
-            });
-        }else{
-            Swal.fire({
-                title: 'Bot Found!',
-                text: "Awesome. Loading your store front...",
-                type: 'success',
-                showCancelButton: false,
-                showConfirmButton: true,
-            });
-
-            product_uuid = msg['product_uuid'];
-           
-            //window.location.href = '/dashboard/' + msg['store'].guild_id
-        }
-    })
-</script>
-
-                    @endsection

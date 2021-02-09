@@ -76,7 +76,7 @@ class ProductPlanController extends Controller
             return response()->json(['success' => false, 'msg' => 'Please refresh the page and try again.']);
         }
        
-
+ 
         // foreach interval
         foreach (["day", "week", "month", "year"] as $price_interval) {
            

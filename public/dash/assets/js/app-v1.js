@@ -806,18 +806,18 @@ Index Of Script
             $(target).html(value)
         })
 
-        $(document).on('change', '[data-change="radio"]', function (e) {
+        /*$(document).on('change', '[data-change="radio"]', function (e) {
             const value = $(this).val()
             const color = value.data('product-role-color');
             if($(this).attr('data-custom-target') == 'color') {
                 $('#note-icon').attr('class',' ')
                 $('#update-note').attr('class', ' ')
 
-                $('#note-icon').addClass(`icon iq-icon-box-2 icon-border-${value} rounded`)/*.css(`border-color: #${color}`)*/
+                $('#note-icon').addClass(`icon iq-icon-box-2 icon-border-${value} rounded`)
 
                 $('#update-note').addClass(`card card-block card-stretch card-height card-bottom-border-${value} note-detail`)
             }
-        })
+        })*/
 
         $(document).on('keyup','[data-change="input"]',function(){
             const target = $(this).attr('data-custom-target')
@@ -841,7 +841,7 @@ Index Of Script
             }
         })
 
-        $(document).on('change', '[data-change="select"]', function (e) {
+      /*  $(document).on('change', '[data-change="select"]', function (e) {
             const value = $(this).val()
             console.log('ts')
             if($(this).attr('data-custom-target') == 'color') {
@@ -850,7 +850,7 @@ Index Of Script
                 $('#note-icon').addClass(`icon iq-icon-box-2 icon-border-${value} rounded`)
                 $('#update-note').addClass(`card card-block card-stretch card-height card-bottom-border-${value} note-detail`)
             }
-        })
+        })*/
 
         function changeDateString(date) {
             const newDate = new Date(date)
