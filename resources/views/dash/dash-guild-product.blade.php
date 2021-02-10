@@ -177,13 +177,13 @@
                                                             <div class="input-group-prepend">
                                                                 <span class="input-group-text">$</span>
                                                             </div>
-                                                            <input type="text" class="form-control input-money" id="day" data-change="input" data-custom-target="#enable-money-1-day" value="" min="1" max="100000" aria-label="(leave 0 to disable)" @if(!isset($product_role)){{'disabled'}}@endif>
+                                                            <input type="text" class="form-control input-money" id="day" data-change="input" data-custom-target="#input-money-1-day" data-price-target="#enable-money" data-price-interval="day" data-price-interval-str="Day" value="{{ isset($product_role->prices()->where('interval', 'day')->first()->price) }}" min="1" max="100000" aria-label="(leave 0 to disable)" @if(!isset($product_role)){{'disabled'}}@endif>
                                                             <div class="input-group-append">
                                                                 <span class="input-group-text">USD</span>
                                                             </div>
                                                         </div>
                                                         <div class="d-flex align-items-center justify-content-between">
-                                                            <span class="badge badge-primary">1 Day</span> <button type="button" class="btn-sm btn btn-primary d-none">Dates</button>
+                                                            <span class="badge badge-primary">Day</span> <button type="button" class="btn-sm btn btn-primary d-none">Dates</button>
                                                         </div>
                                                     </div>
                                                     <div class="form-group col-sm-12 col-lg-7 select-interval-blocks" id="input-money-1-week" style="display:none">
@@ -191,13 +191,13 @@
                                                             <div class="input-group-prepend">
                                                                 <span class="input-group-text">$</span>
                                                             </div>
-                                                            <input type="text" class="form-control input-money" id="week" data-change="input" data-custom-target="#enable-money-1-week" value="" min="1" max="100000" aria-label="(leave 0 to disable)" @if(!isset($product_role)){{'disabled'}}@endif>
+                                                            <input type="text" class="form-control input-money" id="week" data-change="input" data-custom-target="#input-money-1-week" data-price-target="#enable-money" data-price-interval="week" data-price-interval-str="Week" value="{{ isset($product_role->prices()->where('interval', 'week')->first()->price) }}" min="1" max="100000" aria-label="(leave 0 to disable)" @if(!isset($product_role)){{'disabled'}}@endif>
                                                             <div class="input-group-append">
                                                                 <span class="input-group-text">USD</span>
                                                             </div>
                                                         </div>
                                                         <div class="d-flex align-items-center justify-content-between">
-                                                            <span class="badge badge-primary">1 Week</span> <button type="button" class="btn-sm btn btn-primary d-none">Dates</button>
+                                                            <span class="badge badge-primary">Week</span> <button type="button" class="btn-sm btn btn-primary d-none">Dates</button>
                                                         </div>
                                                     </div>
                                                     <div class="form-group col-sm-12 col-lg-7 select-interval-blocks" id="input-money-1-month">
@@ -205,13 +205,13 @@
                                                             <div class="input-group-prepend">
                                                                 <span class="input-group-text">$</span>
                                                             </div>
-                                                            <input type="text" class="form-control input-money" id="month" data-change="input" data-custom-target="#enable-money-1-month" value="" min="1" max="100000" aria-label="(leave 0 to disable)" @if(!isset($product_role)){{'disabled'}}@endif>
+                                                            <input type="text" class="form-control input-money" id="month" data-change="input" data-custom-target="#input-money-1-month" data-price-target="#enable-money" data-price-interval="month" data-price-interval-str="Month" value="{{ isset($product_role->prices()->where('interval', 'month')->first()->price) }}" min="1" max="100000" aria-label="(leave 0 to disable)" @if(!isset($product_role)){{'disabled'}}@endif>
                                                             <div class="input-group-append">
                                                                 <span class="input-group-text">USD</span>
                                                             </div>
                                                         </div>
                                                         <div class="d-flex align-items-center justify-content-between">
-                                                            <span class="badge badge-primary">1 Month</span> <button type="button" class="btn-sm btn btn-primary d-none">Dates</button>
+                                                            <span class="badge badge-primary">Month</span> <button type="button" class="btn-sm btn btn-primary d-none">Dates</button>
                                                         </div>
                                                     </div>
                                                     <div class="form-group col-sm-12 col-lg-7 select-interval-blocks" id="input-money-1-year" style="display:none">
@@ -219,18 +219,30 @@
                                                             <div class="input-group-prepend">
                                                                 <span class="input-group-text">$</span>
                                                             </div>
-                                                            <input type="text" class="form-control input-money" id="year" data-change="input" data-custom-target="#enable-money-1-year" value="" min="1" max="100000" aria-label="(leave 0 to disable)" @if(!isset($product_role)){{'disabled'}}@endif>
+                                                            <input type="text" class="form-control input-money" id="year" data-change="input" data-custom-target="#input-money-1-year" data-price-target="#enable-money" data-price-interval="year" data-price-interval-str="Year" value="{{ isset($product_role->prices()->where('interval', 'year')->first()->price) }}" min="1" max="100000" aria-label="(leave 0 to disable)" @if(!isset($product_role)){{'disabled'}}@endif>
                                                             <div class="input-group-append">
                                                                 <span class="input-group-text">USD</span>
                                                             </div>
                                                         </div>
                                                         <div class="d-flex align-items-center justify-content-between">
-                                                            <span class="badge badge-primary">1 Year</span> <button type="button" class="btn-sm btn btn-primary d-none">Dates</button>
+                                                            <span class="badge badge-primary">Year</span> <button type="button" class="btn-sm btn btn-primary d-none">Dates</button>
                                                         </div>
                                                     </div>
                                                     <div class="form-group col-sm-12">
-                                                        <div class="d-flex align-items-center justify-content-between mb-3">
-                                                            <span class="badge badge-info">1 Day</span><span class="badge badge-info">1 Week</span><span class="badge badge-info">1 Month</span><span class="badge badge-info">1 Year</span>
+                                                        <div class="d-flex align-items-center justify-content-between mb-3 group-button-prices">
+                                                       
+                                                            {{-- @foreach($product_role->prices()->get() as $price) <!-- TODO Rob: going to move prices to ajax popup with edit fields, checking relationship -->
+                                                                <button type="button" class="button btn btn-sm badge badge-info button-prices button-price-{{ $price->interval }}" data-button-price-interval="{{ $price->interval }}" data-button-price-price="{{ number_format(($price->price/100),2) }}">{{ $price->interval }}</button>
+                                                            @endforeach --}}
+                                                            @foreach (["Day", "Week", "Month", "Year"] as $price_interval)
+                                                                @if($product_role->prices()->where('interval', $price_interval)->exists())
+                                                                <button type="button" class="button btn btn-sm badge @if($product_role->prices()->where('interval', $price_interval)->first()->status == 0) {{'badge-info'}} @else {{ 'badge-primary' }} @endif button-prices button-price-{{ $price_interval }}" data-button-price-interval="{{ $price_interval }}">{{ $price_interval }}</button>
+                                                                @else
+                                                                <button type="button" class="button btn btn-sm badge badge-info button-prices button-price-{{ $price_interval }} d-none" data-button-price-interval="{{ $price_interval }}">{{ $price_interval }}</button>
+
+                                                                @endif
+                                                            @endforeach
+                                                            <!--<span class="badge badge-info">1 Day</span><span class="badge badge-info">1 Week</span><span class="badge badge-info">1 Month</span><span class="badge badge-info">1 Year</span>-->
                                                         </div>
                                                         <div class="input-group mb-3">
 
@@ -321,6 +333,25 @@
 
 <script>
 
+$(document).on('change', '[data-change="input"]', function (e) {
+    const value = $(this).val()
+    if($(this).attr('data-price-target') == '#enable-money') {
+        const price_interval = $(this).attr('data-price-interval')
+        const price = $(this).val();
+        if(price >= 1){
+            $(`.button-price-${price_interval}`).removeClass('d-none');
+        }else{
+            $(`.button-price-${price_interval}`).addClass('d-none');
+        }
+        
+        /*const price_interval_str = $(this).attr('data-price-interval-str')
+        
+        //$('.select-interval-blocks').hide();
+        console.log(value);
+        add_button = `<button type="button" class="button btn btn-sm badge badge-info button-prices button-price-${price_interval}" data-button-price-interval="${price_interval}" data-button-price-price="${price}">${price_interval_str}</button>`
+       $('.group-button-prices').append(add_button)*/
+    }
+})
 
 $(document).on('click', '[data-change="product-role"]', function (e) {
     $('.btn-product-role').removeClass('active');
