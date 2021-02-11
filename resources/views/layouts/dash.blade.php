@@ -28,6 +28,7 @@
             @yield('content')
             <!-- Page end  -->
             @include('partials.modals')
+            @include('partials.dash.modals')
         </div>
     </div>
     <!-- Wrapper End-->

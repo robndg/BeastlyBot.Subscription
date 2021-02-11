@@ -67,7 +67,7 @@ Route::group(['middleware' => ['auth', 'web']], function () {
         return view('slide/help/slide-help-creating-a-promotion');
     });
     require_once __DIR__ . "/section/dash.php"; // * //
-
+    require_once __DIR__ . "/section/store.php"; // move to no auth
 
     require_once __DIR__ . "/section/account.php";
     require_once __DIR__ . "/section/server.php";

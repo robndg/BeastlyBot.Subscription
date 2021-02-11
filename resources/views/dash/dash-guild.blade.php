@@ -155,7 +155,7 @@
                                                                     </li>
                                                                     <li>
                                                                         <div class="btn-group btn-group-toggle btn-group-flat">
-                                                                            <a href="product?uuid={{ $product->id }}" class="btn btn-success mt-2"><i class="ri-settings-4-fill"></i>Manage</a>
+                                                                            <a href="/dashboard/{{ $guild_id }}/product?uuid={{ $product->id }}" class="btn btn-success mt-2"><i class="ri-settings-4-fill"></i>Manage</a>
                                                                             <button type="button" class="btn btn-success mt-2"><i class="ri-bill-fill"></i></button>
                                                                         </div>
                                                                     </li>

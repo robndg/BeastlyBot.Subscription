@@ -153,10 +153,55 @@
                                         <p class="mb-3 text-ellipsis short-6" id="note-description">Create a product first then set prices</p>
 
                                        
-                                    
-
+                                        @if(isset($product_role) && auth()->user()->payment_processor == 0)
+                                        <div class="alert  bg-success" role="alert">
+                                            <div class="iq-alert-icon">
+                                                <i class="ri-alert-line"></i>
+                                            </div>
+                                            <div class="iq-alert-text"><b>Add payout</b> with your <a href="{{ \App\StripeHelper::getConnectURL() }}">Stripe Account</a></div>
+                                        </div>
+                                        @endif
                                         <div class="form-group">
                                         <label class="label-control">Subscription Price</label>
+                                    
+
+                                      {{--  @foreach (["Day", "Week", "Month", "Year"] as $price_interval)
+                                            @if($product_role->prices()->where('status', 1)->where('interval', $price_interval)->exists())
+                                                @foreach($product_role->prices()->where('status', 1)->where('interval', $price_interval)->get() as $price)
+                                                    
+                                                    
+                                                    <div class="form-group col-sm-12 col-lg-7 select-interval-blocks" id="input-money-1-day">
+                                                        <div class="input-group mb-3">
+                                                            <div class="input-group-prepend">
+                                                                <span class="input-group-text">$</span>
+                                                            </div>
+                                                            <input type="text" class="form-control input-money" id="{{$price->interval}}" data-change="input-money" data-custom-target="#input-money-1-{{$price->interval}}" data-price-target="#enable-money" data-price-interval="{{$price->interval}}" data-price-interval-str="{{$price_interval}}" value="{{$price->price}}" min="1" max="100000" aria-label="(leave 0 to disable)">
+                                                            <div class="input-group-append">
+                                                                <span class="input-group-text">USD</span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="d-flex align-items-center justify-content-between">
+                                                            <span class="badge badge-primary">{{$price_interval}}</span> <button type="button" class="btn-sm btn btn-primary d-none">Dates</button>
+                                                        </div>
+                                                    </div>
+                                                @endforeach
+                                            @else
+                                                <div class="form-group col-sm-12 col-lg-7 select-interval-blocks" id="input-money-1-{{ strtolower($price_interval) }}" @if($price_interval != "Month") style="display:none" @endif>
+                                                    <div class="input-group mb-3">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text">$</span>
+                                                        </div>
+                                                        <input type="text" class="form-control input-money" id="{{ strtolower($price_interval) }}" data-change="input-money" data-custom-target="#input-money-1-{{ strtolower($price_interval) }}" data-price-target="#enable-money" data-price-interval="{{ strtolower($price_interval) }}" data-price-interval-str="{{ $price_interval }}" value="" min="1" max="100000" aria-label="(leave 0 to disable)" @if(!isset($product_role)){{'disabled'}}@endif>
+                                                        <div class="input-group-append">
+                                                            <span class="input-group-text">USD</span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex align-items-center justify-content-between">
+                                                        <span class="badge badge-primary">{{ $price_interval }}</span> <button type="button" class="btn-sm btn btn-primary d-none">Dates</button>
+                                                    </div>
+                                                </div>
+                                            @endif
+                                        @endforeach--}}
                                             <div>
                                                 <div class="form-row">
                                                     <div class="form-group col-sm-12 col-lg-5">
@@ -177,7 +222,7 @@
                                                             <div class="input-group-prepend">
                                                                 <span class="input-group-text">$</span>
                                                             </div>
-                                                            <input type="text" class="form-control input-money" id="day" data-change="input" data-custom-target="#input-money-1-day" data-price-target="#enable-money" data-price-interval="day" data-price-interval-str="Day" value="{{ isset($product_role->prices()->where('interval', 'day')->first()->price) }}" min="1" max="100000" aria-label="(leave 0 to disable)" @if(!isset($product_role)){{'disabled'}}@endif>
+                                                            <input type="text" class="form-control input-money" id="day" data-change="input-money" data-custom-target="#input-money-1-day" data-price-target="#enable-money" data-price-interval="day" data-price-interval-str="Day" @if($product_role->prices()->where('status', 1)->where('interval', 'day')->exists()) value="{{ number_format(($product_role->prices()->where('status', 1)->where('interval', 'day')->first()->price/100),2) }}" @else value="" @endif min="1" max="100000" aria-label="(leave 0 to disable)" @if(!isset($product_role)){{'disabled'}}@endif>
                                                             <div class="input-group-append">
                                                                 <span class="input-group-text">USD</span>
                                                             </div>
@@ -191,7 +236,7 @@
                                                             <div class="input-group-prepend">
                                                                 <span class="input-group-text">$</span>
                                                             </div>
-                                                            <input type="text" class="form-control input-money" id="week" data-change="input" data-custom-target="#input-money-1-week" data-price-target="#enable-money" data-price-interval="week" data-price-interval-str="Week" value="{{ isset($product_role->prices()->where('interval', 'week')->first()->price) }}" min="1" max="100000" aria-label="(leave 0 to disable)" @if(!isset($product_role)){{'disabled'}}@endif>
+                                                            <input type="text" class="form-control input-money" id="week" data-change="input-money" data-custom-target="#input-money-1-week" data-price-target="#enable-money" data-price-interval="week" data-price-interval-str="Week" @if($product_role->prices()->where('status', 1)->where('interval', 'week')->exists()) value="{{ number_format(($product_role->prices()->where('status', 1)->where('interval', 'week')->first()->price/100),2) }}" @else value="" @endif min="1" max="100000" aria-label="(leave 0 to disable)" @if(!isset($product_role)){{'disabled'}}@endif>
                                                             <div class="input-group-append">
                                                                 <span class="input-group-text">USD</span>
                                                             </div>
@@ -205,7 +250,7 @@
                                                             <div class="input-group-prepend">
                                                                 <span class="input-group-text">$</span>
                                                             </div>
-                                                            <input type="text" class="form-control input-money" id="month" data-change="input" data-custom-target="#input-money-1-month" data-price-target="#enable-money" data-price-interval="month" data-price-interval-str="Month" value="{{ isset($product_role->prices()->where('interval', 'month')->first()->price) }}" min="1" max="100000" aria-label="(leave 0 to disable)" @if(!isset($product_role)){{'disabled'}}@endif>
+                                                            <input type="text" class="form-control input-money" id="month" data-change="input-money" data-custom-target="#input-money-1-month" data-price-target="#enable-money" data-price-interval="month" data-price-interval-str="Month" @if($product_role->prices()->where('status', 1)->where('interval', 'month')->exists()) value="{{ number_format(($product_role->prices()->where('status', 1)->where('interval', 'month')->first()->price/100),2) }}" @else value="" @endif min="1" max="100000" aria-label="(leave 0 to disable)" @if(!isset($product_role)){{'disabled'}}@endif>
                                                             <div class="input-group-append">
                                                                 <span class="input-group-text">USD</span>
                                                             </div>
@@ -219,7 +264,7 @@
                                                             <div class="input-group-prepend">
                                                                 <span class="input-group-text">$</span>
                                                             </div>
-                                                            <input type="text" class="form-control input-money" id="year" data-change="input" data-custom-target="#input-money-1-year" data-price-target="#enable-money" data-price-interval="year" data-price-interval-str="Year" value="{{ isset($product_role->prices()->where('interval', 'year')->first()->price) }}" min="1" max="100000" aria-label="(leave 0 to disable)" @if(!isset($product_role)){{'disabled'}}@endif>
+                                                            <input type="text" class="form-control input-money" id="year" data-change="input-money" data-custom-target="#input-money-1-year" data-price-target="#enable-money" data-price-interval="year" data-price-interval-str="Year" @if($product_role->prices()->where('status', 1)->where('interval', 'year')->exists()) value="{{ number_format(($product_role->prices()->where('status', 1)->where('interval', 'year')->first()->price/100),2) }}" @else value="" @endif min="1" max="100000" aria-label="(leave 0 to disable)" @if(!isset($product_role)){{'disabled'}}@endif>
                                                             <div class="input-group-append">
                                                                 <span class="input-group-text">USD</span>
                                                             </div>
@@ -231,12 +276,12 @@
                                                     <div class="form-group col-sm-12">
                                                         <div class="d-flex align-items-center justify-content-between mb-3 group-button-prices">
                                                        
-                                                            {{-- @foreach($product_role->prices()->get() as $price) <!-- TODO Rob: going to move prices to ajax popup with edit fields, checking relationship -->
+                                                            {{-- @foreach($product_role->prices()->get() as $price) 
                                                                 <button type="button" class="button btn btn-sm badge badge-info button-prices button-price-{{ $price->interval }}" data-button-price-interval="{{ $price->interval }}" data-button-price-price="{{ number_format(($price->price/100),2) }}">{{ $price->interval }}</button>
                                                             @endforeach --}}
-                                                            @foreach (["Day", "Week", "Month", "Year"] as $price_interval)
-                                                                @if($product_role->prices()->where('interval', $price_interval)->exists())
-                                                                <button type="button" class="button btn btn-sm badge @if($product_role->prices()->where('interval', $price_interval)->first()->status == 0) {{'badge-info'}} @else {{ 'badge-primary' }} @endif button-prices button-price-{{ $price_interval }}" data-button-price-interval="{{ $price_interval }}">{{ $price_interval }}</button>
+                                                            @foreach (["Day", "Week", "Month", "Year"] as $price_interval) <!-- TODO Rob: make this cleaner and work -->
+                                                                @if($product_role->prices()->where('interval', $price_interval)->where('status', '>=', 1)->exists())
+                                                                <button type="button" class="button btn btn-sm badge @if($product_role->prices()->where('interval', $price_interval)->first()->status == 2) {{ 'badge-primary' }} @else {{'badge-info'}} @endif button-prices button-price-{{ $price_interval }}" data-button-price-interval="{{ $price_interval }}">{{ $price_interval }}</button>
                                                                 @else
                                                                 <button type="button" class="button btn btn-sm badge badge-info button-prices button-price-{{ $price_interval }} d-none" data-button-price-interval="{{ $price_interval }}">{{ $price_interval }}</button>
 
@@ -247,9 +292,6 @@
                                                         <div class="input-group mb-3">
 
                                                             <button type="submit" class="btn btn-primary btn-block" @if(!isset($product_role)){{'disabled'}}@else onclick="updatePrices('{{ $product_role->id }}')" @endif>
-                                                                <svg width="20" class="svg-icon" id="new-note-save" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4" />
-                                                                </svg>
                                                                 Save Prices
                                                             </button>
 
@@ -333,7 +375,8 @@
 
 <script>
 
-$(document).on('change', '[data-change="input"]', function (e) {
+$(document).on('change', '[data-change="input-money"]', function (e) {
+
     const value = $(this).val()
     if($(this).attr('data-price-target') == '#enable-money') {
         const price_interval = $(this).attr('data-price-interval')

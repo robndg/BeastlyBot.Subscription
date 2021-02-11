@@ -66,6 +66,7 @@ class ProductPlanController extends Controller
         $discount_end = null;
         $discount_max = null;
         $status = 1;
+        
 
         $cur = "usd";
 
@@ -74,6 +75,20 @@ class ProductPlanController extends Controller
 
         if($product_id == 0){
             return response()->json(['success' => false, 'msg' => 'Please refresh the page and try again.']);
+        }else{
+            $product = ProductRole::where('id', $product_id)->first();
+            $discord_store_id = $product->discord_store_id;
+            $discord_store = DiscordStore::where('id', $$discord_store_id)->first()->user_id;
+           // $discOAuth = DiscordOAuth::where('discord_id', $discord_store_id)
+            $owner = User::where('id', $discord_store)->first();
+            $payment_processor = $owner->payment_processor;
+            if($payment_processor == 0){ // check price if same as disc owner stripe if new
+                // error new or old owner does not have payment processor for product
+                $prod_price_status = 0;
+            }else{
+                $prod_price_status = 1;
+            }
+
         }
        
  
@@ -106,7 +121,7 @@ class ProductPlanController extends Controller
             }*/
            // Log::info([$price_id, $product_id, $stripe_price_id, $paypal_price_id, $price, $cur, $interval, $assigned_to, $start_date, $end_date, $max_sales, $discount, $discount_end, $discount_max, $status, null]);
             if($price != null && $price > 0 && $price != "NULL" && $price != NULL){
-                $product_price = new Price(['id' => Str::uuid(), 'product_id' => $product_id, 'stripe_price_id' => $stripe_price_id, 'paypal_price_id' => $paypal_price_id, 'price' => $price, 'cur' => $cur, 'interval' => $interval, 'assigned_to' => $assigned_to, 'start_date' => $start_date, 'end_date' => $end_date, 'max_sales' => $max_sales, 'discount' => $discount, 'discount_end' => $discount_end, 'discount_max' => $discount_max, 'status' => $status, 'metadata' => null]);
+                $product_price = new Price(['id' => Str::uuid(), 'product_id' => $product_id, 'stripe_price_id' => $stripe_price_id, 'paypal_price_id' => $paypal_price_id, 'price' => $price, 'cur' => $cur, 'interval' => $interval, 'assigned_to' => $assigned_to, 'start_date' => $start_date, 'end_date' => $end_date, 'max_sales' => $max_sales, 'discount' => $discount, 'discount_end' => $discount_end, 'discount_max' => $discount_max, 'status' => $prod_price_status, 'metadata' => null]);
                 $product_price->save();
             }
             // Create plan on subscribe
