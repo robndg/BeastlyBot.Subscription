@@ -179,7 +179,7 @@ class DashController extends Controller {
         $start_date = $request->start_date;
         $start_time = $request->start_time;
         $end_date = $request->end_date;
-        $max_sales = $request->max_sales;
+        $max_sales = $request->max_sales; 
         
         //Log::info($start_time);
 

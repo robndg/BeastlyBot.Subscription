@@ -1,7 +1,7 @@
 <div class="iq-sidebar  sidebar-default ">
             <div class="iq-sidebar-logo d-flex align-items-center justify-content-between">
-                <a href="../backend/index.html" class="header-logo">
-                    <img src="https://beastlybot.com/android-chrome-512x512.png" class="img-fluid rounded-normal light-logo" alt="logo">
+                <a href="/dashboard" class="header-logo">
+                    <img src="{{ asset('android-chrome-192x192.png') }}" class="img-fluid rounded-normal light-logo" alt="logo">
                     <h4 class="logo-title ml-3">BeastlyBot</h4>
                 </a>
                 <div class="iq-menu-bt-sidebar">

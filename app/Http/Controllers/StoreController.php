@@ -34,13 +34,82 @@ class StoreController extends Controller {
     }
 
 
-    public function getStoreProduct(){
+    public function getStoreProduct($url, $product_role_slug){
+
         if(Auth::check()){
-            $stripe_helper = auth()->user()->getStripeHelper();
+
+            $affiliate_id = null;
+            if(\request('affiliate_id') !== null) {
+                // TODO: add affiliate
+            }
+        
+            $discord_store = null;
+            if(! DiscordStore::where('url', $url)->exists()) {
+                return abort(404);
+            } else {
+                $discord_store = DiscordStore::where('url', $url)->first();
+                Log::info($discord_store->id);
+            }
+            $owner_array = \App\User::where('id', $discord_store->first()->user_id)->first();
             $discord_helper = new DiscordHelper(auth()->user());
+            $guild_id = $discord_store->guild_id;
 
-            return view('store.product-page')->with('stripe_helper', $stripe_helper)->with('discord_helper', $discord_helper);
+            Log::info($guild_id);
 
+            Log::info($product_role_slug);
+            $product_title_unslug = Str::title(str_replace('-', ' ', $product_role_slug));
+            Log::info($product_title_unslug);
+
+        /* if(Ban::where('user_id', auth()->user()->id)->where('active', 1)->where('type', 1)->where('discord_store_id', $discord_store->id)->exists() && auth()->user()->id != $discord_store->user_id){
+                return abort(404);
+            }*/
+    
+        /* if(!$owner_array->getStripeHelper()->hasActiveExpressPlan()){
+                $discord_store->live = false;
+                $discord_store->save();
+            }*/
+
+            /*if(!$discord_store->live && auth()->user()->id != $discord_store->user_id){
+                return view('offline');
+            }*/
+
+            if(! ProductRole::where('discord_store_id', $discord_store->UUID)->where('title', 'LIKE', '%' . $product_title_unslug . '%')->exists()) {
+                // add error
+                Log::info("Product Role not Found");
+            } else {
+                $product_role = ProductRole::where('discord_store_id', $discord_store->UUID)->where('title', 'LIKE', '%' . $product_title_unslug . '%')->first();
+            }
+
+            $product_discord_store_uuid = $product_role->discord_store_id;
+            if($discord_store->UUID != $product_discord_store_uuid){
+                AlertHelper::alertError('This product does not exist for this store.');
+                return abort(404);
+            }
+            $product_uuid = $product_role->id;
+            
+            $role_id = $product_role->role_id;
+        
+            $prices = [];
+        
+            $product_prices = Price::where('product_id', $product_role->id)->where('status', '=', 1)->get();
+                
+            foreach (["day", "week", "month", "year"] as $interval) {
+                if($product_prices->where('interval', $interval)->first()){
+                    $prices[$interval] = $product_prices->where('interval', $interval)->first()->price / 100;
+                }else{
+                    $prices[$interval] = null;
+                }
+                // TODO ROB2: move this to checkout;
+                // Any time accessing Stripe API this snippet of code must be ran above any preceding API calls
+            
+            }
+        
+            $discord_helper = new DiscordHelper(auth()->user());
+            $guild = $discord_helper->getGuild($guild_id);
+            $role = $discord_helper->getRole($guild_id, $role_id, 1, true);
+
+            return view('store.product-page')->with('discord_store', $discord_store)->with('guild', $guild)->with('role', $role)->with('role_id', $role_id)->with('product_role', $product_role)->with('product_prices', $product_prices)->with('affiliate_id', $affiliate_id);
+            
         }else{
             return view('discord_login');
         }

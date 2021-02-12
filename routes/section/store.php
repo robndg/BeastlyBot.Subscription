@@ -18,4 +18,4 @@ use App\Products\DiscordRoleProduct;
 use App\Products\Plans\DiscordPlan;
 
 
-Route::get('/guild/123/product', 'StoreController@getStoreProduct'); // * //
+Route::get('/guild/{guildurl}/{roleslug}', 'StoreController@getStoreProduct'); // * //

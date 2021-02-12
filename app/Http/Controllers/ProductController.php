@@ -225,7 +225,7 @@ class ProductController extends Controller {
                 $subscribers[$role->id] = 0;
             }
         }
-
+ 
 
         $banned = $discord_helper->isUserBanned($discord_store->guild_id, \App\DiscordOAuth::where('user_id', auth()->user()->id)->first()->discord_id);
         

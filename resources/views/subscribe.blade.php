@@ -41,7 +41,7 @@
     </div>
 @endif
 
-    <div class="h-250 draw-grad-up">
+    <div class="h-250 draw-grad-up"> 
         <div class="text-center blue-grey-800 m-0 mt-50">
             <a class="avatar avatar-xxl" href="javascript:void(0)">
                 @if($guild->icon == NULL)
