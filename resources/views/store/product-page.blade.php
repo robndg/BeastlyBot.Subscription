@@ -135,12 +135,16 @@ var x = setInterval(function() {
 @endif
 
 <script>
+
+var selectedPriceId = null; // use this on subscribe to get price id->role_id->owner in StoreCustomerController.php
+
 $(document).on('change', '[data-change="select-interval"]', function (e) {
     const interval = $(this).val()
     console.log(interval)
     if(interval != "") {
         const price_id = $('#target-select-price-' + interval).attr('data-price-id');
         console.log(price_id)
+        selectedPriceId = price_id;
         const price_str = $('#target-select-price-' + interval).attr('data-price-format');
         console.log(price_str)
         console.log($(this))
@@ -149,6 +153,9 @@ $(document).on('change', '[data-change="select-interval"]', function (e) {
     }else{
         $('#selected-price-show').html('');
     }
-})
+});
+
+
+
 </script>
 @endsection
