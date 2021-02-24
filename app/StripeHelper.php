@@ -211,7 +211,7 @@ class StripeHelper
 
     public static function getStripeConnectAccount(): \Stripe\Account {
         StripeHelper::setApiKey();
-        $stripe_user_id = $this->user->StripeConnect->express_id;
+        $stripe_user_id = $this->user->UserProcessor->processor_id;
         return \Stripe\Account::retrieve($stripe_user_id);
     }
 

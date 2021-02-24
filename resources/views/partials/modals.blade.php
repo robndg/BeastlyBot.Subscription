@@ -1,5 +1,5 @@
 
-    <div class="large modal fade" id="partnerPricingModal" tabindex="-1" role="dialog"
+    {{--<div class="large modal fade" id="partnerPricingModal" tabindex="-1" role="dialog"
          aria-labelledby="partnerPricingModal"
          aria-hidden="true">
         <div class="modal-dialog modal-simple" role="document">
@@ -14,10 +14,10 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>--}}
 
 
-    <div class="modal fade" id="addProductModal" tabindex="-1" role="dialog"
+    {{--<div class="modal fade" id="addProductModal" tabindex="-1" role="dialog"
          aria-labelledby="partnerPricingModal"
          aria-hidden="true">
         <div class="modal-dialog modal-simple" role="document">
@@ -32,6 +32,6 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div>--}}
 
 

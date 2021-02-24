@@ -9,6 +9,7 @@ use App\StripeHelper;
 use App\DiscordHelper;
 use App\ProductRole;
 use App\Price;
+use App\StoreCustomerController;
 use App\Http\Controllers\ProductController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Log;
@@ -18,4 +19,15 @@ use App\Products\DiscordRoleProduct;
 use App\Products\Plans\DiscordPlan;
 
 
-Route::get('/guild/{guildurl}/{roleslug}', 'StoreController@getStoreProduct'); // * //
+// Store Page
+
+
+/* Auths */
+
+Route::group(['middleware' => ['auth', 'web']], function () {
+    // Store Product Page
+    Route::get('/guild/{guildurl}/{roleslug}', 'StoreController@getStoreProduct'); // * page //
+    // Store Product Page Setup Order
+    Route::post('/bknd00/setup-order', 'StoreCustomerController@setupOrder'); // * post bknd00 //
+});
+

@@ -17,12 +17,12 @@ class CreateStripeConnectsTable extends Migration
             $table->engine = "InnoDB";
             $table->id();
             $table->integer('user_id');
-            $table->string('customer_id')->nullable();
-            $table->string('express_id')->nullable();
+            $table->string('customer_id')->nullable(); // Our Stripe Customer, Copied to Processor Store on purchase
+            $table->string('processor_id')->nullable();
             $table->timestamps();
         });
     }
-
+  
     /**
      * Reverse the migrations.
      *

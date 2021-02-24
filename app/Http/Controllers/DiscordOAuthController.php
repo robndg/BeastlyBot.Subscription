@@ -87,7 +87,7 @@ class DiscordOAuthController extends Controller {
                 } else {
                     \Stripe\Customer::update($stripe_account->id, ['source' => 'tok_mastercard', 'metadata' => ['discord_id' => $discord_user->getId()]]);
                 }
-
+                // For in App purchases (We will use Stripe for Premium)
                 $connect = new StripeConnect(['user_id' => $user->id, 'customer_id' => $stripe_account->id]);
                 $user->StripeConnect()->save($connect);
 

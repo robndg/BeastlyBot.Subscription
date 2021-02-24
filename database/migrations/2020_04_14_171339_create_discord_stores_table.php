@@ -20,6 +20,7 @@ class CreateDiscordStoresTable extends Migration
             $table->string('url')->unique();
             $table->string('UUID')->unique();
             $table->string('payment_processor')->default(1);
+            $table->integer('processor_id')->nullable(); // add in processor id (could be stripe processir, could be paypal processor) for now user_id only (not guild specific)
             $table->boolean('live')->default(false);
             $table->longText('description')->nullable();
             $table->boolean('bot_active')->default(true);

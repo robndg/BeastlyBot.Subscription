@@ -36,6 +36,11 @@ class User extends Authenticatable
         return $this->hasOne(StripeConnect::class);
     }
 
+    public function UserProcessor()
+    {
+        return $this->hasOne(Processor::class, 'id', 'user_id')->where('type', 1)->where('enabled', 1);
+    }
+
     public function getPlanExpiration() {
         try {
             $subscription = $this->getStripeHelper()->getExpressSubscription();

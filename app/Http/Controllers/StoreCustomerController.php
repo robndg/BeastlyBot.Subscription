@@ -40,10 +40,15 @@ class StoreCustomerController extends Controller
         $role_id = $request['role_id']; // todo remove
         $interval = $request['billing_cycle']; // todo remove
         Log::info($request['billing_cycle']); // todo remove for uuid*/
+
+        $ref_code = null;//$request['ref_code'];
+        $priceId = $request['price_id'];
+
+        $product_price = \App\Price::where('id', $priceId)->first();
         
-        $product_role = \App\ProductRole::where('role_id', 'LIKE', '%' . $role_id . '%')/*->where('active', 1)*/->first(); // TODO: move this below price to get product from price
+        $product_role = \App\ProductRole::where('id', $product_price->product_id)/*->where('active', 1)*/->first(); // TODO: move this below price to get product from price
         // Find Product not assigned
-        $product_price = \App\Price::where('product_id', $product_role->id)->where('interval', $interval)->where('status', 1)->where('assigned_to', null)->first();
+       
         // Check if can order (total, - 1 after order)
         Log::info($product_price);
         if($product_price->max_sales != null){
@@ -84,37 +89,45 @@ class StoreCustomerController extends Controller
         if (! auth()->user()->hasStripeAccount()) 
         return response()->json(['success' => false, 'msg' => 'You do not have a linked stripe account.']);
 
-        StripeHelper::setApiKey();
+      
 
         // 1) Get Customer and Owner Stripe
         $customer_stripe = StripeConnect::where('user_id', $user_id)->first();
         $owner_stripe = StripeConnect::where('user_id', $discord_store->user_id)->first();
 
-        // Update Customer Stripe to have Payment Source (TODO: check if necessary)
-        \Stripe\Customer::update($customer_stripe->customer_id, ['source' => 'tok_mastercard']); 
+        $processor = Processors::where('user_id', $owner_array->id)->where('enabled', 1)->first();
+        $processor_type = $processor->type; //1 stripe
+        $processor_id = $processor->processor_id;
 
-        // Create Stripe Token for Customer vs Stripe
-        $stripe_token = \Stripe\Token::create(array(
-            "customer" => $customer_stripe->customer_id,
-            ), array("stripe_account" => $owner_stripe->express_id, "livemode" => false)); // TODO: remove livemode false
+        if($processor_type == 1){ // STRIPE
+            StripeHelper::setApiKey();
 
-        // Get or Create StoreCustomer in DB (will move to top when adding PayPal so we dont duplicate code)
-        if(StoreCustomer::where('discord_store_id', $discord_store->id)->where('user_id', $user_id)->exists()){ 
-           // $store_customer = StoreCustomer::where('store_stripe', $store_stripe->id, 'customer_stripe', $customer_stripe->id)->update(['token' => $token]);
-            $store_customer = StoreCustomer::where('discord_store_id', $discord_store->id)->where('user_id', $user_id)->first();
-            $store_customer->update(['customer_stripe' => $customer_stripe->id]); // Redundency if store had PayPal entry only
-            $store_customer->update(['stripe_token' => $stripe_token->id]);
-            $store_customer->update(['stripe_metadata' => $stripe_token]);
-            $store_customer->save();
-        }else{
-            // Stripe, Copy from master Stripe to Owner
-            $copiedCustomer = \Stripe\Customer::create(array(
-                "description" => "Customer Created for "/*auth()->user()->getDiscordHelper()->getUsername()*/, // Rob TODO: maybe change or add store name
-                "source" => $stripe_token
-                ), array("stripe_account" => $owner_stripe->express_id, "livemode" => false));
-            // Create new Customer for Store  'customer_stripe_id', 'customer_paypal_id', 'customer_cur', 'stripe_token', 'paypal_token', 'stripe_metadata', 'paypal_metadata', 'enabled', 'metadata'
-            $store_customer = new StoreCustomer(['id' => Str::uuid(), 'user_id' => $user_id, 'discord_store_id' => $discord_store->id, 'customer_stripe_id' => $copiedCustomer->id, 'customer_paypal_id' => null, 'customer_cur' => 'usd', 'stripe_token' => $stripe_token->id, 'paypal_token' => null, 'stripe_metadata' => $stripe_token, 'paypal_metadata' => null, 'referal_code' => Str::random(8), 'enabled' => 0, 'ip_address' => null, 'metadata' => null]);
-            $store_customer->save();
+            // Update Customer Stripe to have Payment Source (TODO: check if necessary)
+            \Stripe\Customer::update($customer_stripe->customer_id, ['source' => 'tok_mastercard']); 
+
+            // Create Stripe Token for Customer vs Stripe
+            $stripe_token = \Stripe\Token::create(array(
+                "customer" => $customer_stripe->customer_id,
+                ), array("stripe_account" => $processor_id, "livemode" => false)); // TODO: remove livemode false
+
+            // Get or Create StoreCustomer in DB (will move to top when adding PayPal so we dont duplicate code)
+            if(StoreCustomer::where('discord_store_id', $discord_store->id)->where('user_id', $user_id)->exists()){ 
+            // $store_customer = StoreCustomer::where('store_stripe', $store_stripe->id, 'customer_stripe', $customer_stripe->id)->update(['token' => $token]);
+                $store_customer = StoreCustomer::where('discord_store_id', $discord_store->id)->where('user_id', $user_id)->first();
+                $store_customer->update(['customer_stripe' => $customer_stripe->id]); // Redundency if store had PayPal entry only
+                $store_customer->update(['stripe_token' => $stripe_token->id]);
+                $store_customer->update(['stripe_metadata' => $stripe_token]);
+                $store_customer->save();
+            }else{
+                // Stripe, Copy from master Stripe to Owner
+                $copiedCustomer = \Stripe\Customer::create(array(
+                    "description" => "Customer Created for "/*auth()->user()->getDiscordHelper()->getUsername()*/, // Rob TODO: maybe change or add store name
+                    "source" => $stripe_token
+                    ), array("stripe_account" => $processor_id, "livemode" => false));
+                // Create new Customer for Store  'customer_stripe_id', 'customer_paypal_id', 'customer_cur', 'stripe_token', 'paypal_token', 'stripe_metadata', 'paypal_metadata', 'enabled', 'metadata'
+                $store_customer = new StoreCustomer(['id' => Str::uuid(), 'user_id' => $user_id, 'discord_store_id' => $discord_store->id, 'customer_stripe_id' => $copiedCustomer->id, 'customer_paypal_id' => null, 'customer_cur' => 'usd', 'stripe_token' => $stripe_token->id, 'paypal_token' => null, 'stripe_metadata' => $stripe_token, 'paypal_metadata' => null, 'referal_code' => Str::random(8), 'enabled' => 0, 'ip_address' => null, 'metadata' => null]);
+                $store_customer->save();
+            }
         }
 
         $store_customer = StoreCustomer::where('discord_store_id', $discord_store->id)->where('user_id', $user_id)->first();
@@ -207,8 +220,8 @@ class StoreCustomerController extends Controller
                     $checkout_data['subscription_data']['coupon'] = $express_promo;
                 }*/
            
-                $session = $stripe->checkout->sessions->create($checkout_data, array("stripe_account" => $owner_stripe->express_id));
-
+                $session = $stripe->checkout->sessions->create($checkout_data, array("stripe_account" => $processor_id));
+                
                 //// START SUBSCRIPTION ENTRY ////
                 // Create subscription: status 0, visible 0
                 // Update and make 1 and 1 on Payment Succeeded. Update with other webhooks.
@@ -222,6 +235,7 @@ class StoreCustomerController extends Controller
                }
 
             return response()->json(['success' => true, 'msg' => $session->id]);
+        
 
         }catch (\Stripe\Exception\InvalidRequestException $e) {
             Log::info($e);

@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\AlertHelper;
 
 use App\StripeHelper;
+use App\Processors;
+use App\ProcessorsController;
 use Illuminate\Support\Facades\Log;
 
 class StripeConnectController extends Controller
@@ -32,9 +34,14 @@ class StripeConnectController extends Controller
         $user = auth()->user();
 
         $stripe_account = StripeHelper::getAccountFromStripeConnect($code);
-        if (/*$stripe_account->country == 'US' &&*/ $user->StripeConnect->express_id == null) {
-            $user->StripeConnect->express_id = $stripe_account->id;
-            $user->StripeConnect->save();
+        
+        if (Processors::where('user_id', $user->id)->where('type', 1)->processor_id == null) {
+    
+            $processorConnect = new Processors(['user_id' => $user->id, 'store_id' => null, 'type' => 1, 'processor_id', $stripe_account->id, 'cur'=> 'USD', 'enabled' => 1]);
+            $processorConnect->save();
+
+            /*$user->StripeConnect->express_id = $stripe_account->id;
+            $user->StripeConnect->save();*/
             AlertHelper::alertSuccess('Stripe account created! You can now accept payments.');
             return redirect('/servers');
         } else {

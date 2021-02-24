@@ -10,22 +10,23 @@ use App\User;
 use App\Product;
 use App\ProductRole;
 use App\Price;
-use App\Products\DiscordRoleProduct;
-use App\Refund;
+//use App\Products\DiscordRoleProduct;
+use App\DiscordHelper;
+use App\Subscription;
+use App\Stat;
+use App\Processors;
 use DateTime;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Stripe\Exception\InvalidRequestException;
-use App\DiscordHelper;
-use App\Subscription;
-use App\PaidOutInvoice;
-use App\Stat;
+
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
-use App\StripeHelper;
 use Illuminate\Support\Str;
 use App\ProductPlanController;
+use App\ProcessorsController;
 use App\Exception;
+use App\DiscordOAuth;
 
 class StoreController extends Controller {
 
@@ -108,7 +109,11 @@ class StoreController extends Controller {
             $guild = $discord_helper->getGuild($guild_id);
             $role = $discord_helper->getRole($guild_id, $role_id, 1, true);
 
-            return view('store.product-page')->with('discord_store', $discord_store)->with('guild', $guild)->with('role', $role)->with('role_id', $role_id)->with('product_role', $product_role)->with('product_prices', $product_prices)->with('affiliate_id', $affiliate_id);
+            $processor = Processors::where('user_id', $owner_array->id)->where('enabled', 1)->first();
+            $processor_type = $processor->type; //1 stripe
+            $processor_id = $processor->processor_id;
+
+            return view('store.product-page')->with('discord_store', $discord_store)->with('guild', $guild)->with('role', $role)->with('role_id', $role_id)->with('product_role', $product_role)->with('product_prices', $product_prices)->with('affiliate_id', $affiliate_id)->with('processor', $processor);//->with('store_processor_selected_id', $store_processor_selected_id);
             
         }else{
             return view('discord_login');
