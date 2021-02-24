@@ -34,18 +34,21 @@ class StripeConnectController extends Controller
         $user = auth()->user();
 
         $stripe_account = StripeHelper::getAccountFromStripeConnect($code);
-        
-        if (Processors::where('user_id', $user->id)->where('type', 1)->processor_id == null) {
+
+        Log::info("Stripe Account ID");
+        Log::info($stripe_account->id);
+
+        if (!Processors::where('user_id', $user->id)->where('type', 1)->exists()) {
     
-            $processorConnect = new Processors(['user_id' => $user->id, 'store_id' => null, 'type' => 1, 'processor_id', $stripe_account->id, 'cur'=> 'USD', 'enabled' => 1]);
+            $processorConnect = new Processors(['user_id' => $user->id, 'store_id' => null, 'type' => 1, 'processor_id' => $stripe_account->id, 'cur'=> 'USD', 'enabled' => 1]);
             $processorConnect->save();
 
             /*$user->StripeConnect->express_id = $stripe_account->id;
             $user->StripeConnect->save();*/
             AlertHelper::alertSuccess('Stripe account created! You can now accept payments.');
-            return redirect('/servers');
+            return redirect('/dashboard');
         } else {
-            AlertHelper::alertError('This is not a US account or you have already connected an account.');
+            AlertHelper::alertInfo('You have already linked a Stripe account.');
             return redirect('/dashboard');
         }
     }

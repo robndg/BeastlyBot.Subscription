@@ -95,7 +95,7 @@ class StoreCustomerController extends Controller
         $customer_stripe = StripeConnect::where('user_id', $user_id)->first();
         $owner_stripe = StripeConnect::where('user_id', $discord_store->user_id)->first();
 
-        $processor = Processors::where('user_id', $owner_array->id)->where('enabled', 1)->first();
+        $processor = Processors::where('store_id', $discord_store->id)->where('enabled', 1)->first();
         $processor_type = $processor->type; //1 stripe
         $processor_id = $processor->processor_id;
 

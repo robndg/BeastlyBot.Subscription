@@ -152,14 +152,15 @@
                                         <h4 class="card-title text-ellipsis short-1" id="note-title">Example Role</h4>
                                         <p class="mb-3 text-ellipsis short-6" id="note-description">Create a product first then set prices</p>
 
-                                       
-                                        @if(isset($product_role) && auth()->user()->payment_processor == 0)
+                                        @if(!App\Processors::where('user_id', Auth::id())->where('enabled', 1)->exists()) {{-- TODO check guild owner id not auth id--}}
+                                        @if(isset($product_role))
                                         <div class="alert  bg-success" role="alert">
                                             <div class="iq-alert-icon">
                                                 <i class="ri-alert-line"></i>
                                             </div>
                                             <div class="iq-alert-text"><b>Add payout</b> with your <a href="{{ \App\StripeHelper::getConnectURL() }}">Stripe Account</a></div>
                                         </div>
+                                        @endif
                                         @endif
                                         <div class="form-group">
                                         <label class="label-control">Subscription Price</label>
@@ -433,8 +434,7 @@ $(document).on('change', '[data-change="radio"]', function (e) {
 
 $(document).on('change', '[data-change="select"]', function (e) {
     const value = $(this).val()
-    console.log('ts')
-    const color = value.attr("data-color-value");
+    const color = value.data('product-role-color');
     console.log(color)
     if($(this).attr('data-custom-target') == 'color') {
         
@@ -489,11 +489,7 @@ function saveGuildProductRole(product_uuid) {
                 showConfirmButton: true,
             });
         }else{
-            if(product_uuid == 0){
-            product_uuid = msg['product_uuid'];
-                var url = document.location.href+"?uuid=" + product_uuid;
-                document.location = url;
-            }
+           
             Swal.fire({
                 title: 'Product Saved!',
                // text: "Awesome... add some prices",
@@ -501,6 +497,12 @@ function saveGuildProductRole(product_uuid) {
                 showCancelButton: false,
                 showConfirmButton: true,
             });
+            if(product_uuid == 0 || product_uuid  == 'undefined' || product_uuid == null || !product_uuid){
+            newProduct_uuid = msg['product_uuid'];
+                var url = document.location.href+"?uuid=" + newProduct_uuid;
+                document.location = url;
+            }
+           
            
 
            

@@ -52,6 +52,7 @@ class StoreController extends Controller {
                 Log::info($discord_store->id);
             }
             $owner_array = \App\User::where('id', $discord_store->first()->user_id)->first();
+ 
             $discord_helper = new DiscordHelper(auth()->user());
             $guild_id = $discord_store->guild_id;
 
@@ -109,7 +110,7 @@ class StoreController extends Controller {
             $guild = $discord_helper->getGuild($guild_id);
             $role = $discord_helper->getRole($guild_id, $role_id, 1, true);
 
-            $processor = Processors::where('user_id', $owner_array->id)->where('enabled', 1)->first();
+            $processor = Processors::where('store_id', $discord_store->id)->where('enabled', 1)->first();
             $processor_type = $processor->type; //1 stripe
             $processor_id = $processor->processor_id;
 

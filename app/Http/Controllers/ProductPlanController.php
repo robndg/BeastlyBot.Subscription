@@ -11,12 +11,15 @@ use App\StripeConnect;
 use App\StripeHelper;
 use App\Price;
 use App\Product;
-Use App\StoreCustomer;
+use App\StoreCustomer;
+use App\User;
+use App\Processors;
 use Illuminate\Support\Facades\Cache;
+use Auth;
 
-use App\Products\DiscordRoleProduct;
+/*use App\Products\DiscordRoleProduct;
 use App\Products\Plans\DiscordPlan;
-use App\Products\ProductMsgException;
+use App\Products\ProductMsgException;*/
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
 
@@ -78,10 +81,19 @@ class ProductPlanController extends Controller
         }else{
             $product = ProductRole::where('id', $product_id)->first();
             $discord_store_id = $product->discord_store_id;
-            $discord_store = DiscordStore::where('id', $$discord_store_id)->first()->user_id;
+            $discord_store = DiscordStore::where('UUID', $discord_store_id)->first();
            // $discOAuth = DiscordOAuth::where('discord_id', $discord_store_id)
-            $owner = User::where('id', $discord_store)->first();
-            $payment_processor = $owner->payment_processor;
+            //$owner = User::where('id', $discord_store)->first();
+            if(Processors::where('user_id', Auth::id())->where('enabled', 1)->exists()){ // TODO change from Auth to guild owner $discord_store->user_id
+                $processor = Processors::where('user_id', Auth::id())->where('enabled', 1)->first();
+                $processor->store_id = $discord_store->id;
+                $processor->save();
+                $processor_type = $processor->type; //1 stripe
+                $processor_id = $processor->processor_id;
+                $payment_processor = $processor_id;
+            }else{
+                $payment_processor = 0;
+            }
             if($payment_processor == 0){ // check price if same as disc owner stripe if new
                 // error new or old owner does not have payment processor for product
                 $prod_price_status = 0;

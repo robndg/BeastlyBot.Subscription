@@ -27,3 +27,7 @@ Route::post('/bknd00/returnNewStore', 'DashController@returnNewStore'); // * //
 Route::post('/bknd00/saveGuildProductRolePrices', 'ProductPlanController@create'); // * //
 
 //Route::get('/server/{id}', 'ServerController@getServerPage');
+
+
+
+Route::get('/connect_stripe', 'StripeConnectController@connect');
