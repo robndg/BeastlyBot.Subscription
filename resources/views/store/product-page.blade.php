@@ -57,7 +57,7 @@
                             <div class="title card-add-to-cart-plan">Subscribe @if(Carbon\Carbon::createFromTimestamp(strtotime($product_role->start_date)) > Carbon\Carbon::now()){{'in'}} <span id="datecounter"></span> @else{{"Today"}}@endif</div>
                             <p class="paragraph card-add-to-cart-plan">Select your plan duration below. We have plans for 1 week, 1 month and 1 year.</p>
                             <div class="card-add-to-cart-plan-wrapper">
-                                <form data-node-type="commerce-add-to-cart-form" data-commerce-sku-id="5fcfd70f3cb027385cf3b4f6" data-loading-text="Adding to cart..." data-commerce-product-id="5fcfd70dc7ca592fda36334d" class="w-commerce-commerceaddtocartform card-add-to-cart-plan-default-state"
+                                <div data-node-type="commerce-add-to-cart-form" data-commerce-sku-id="5fcfd70f3cb027385cf3b4f6" data-loading-text="Adding to cart..." data-commerce-product-id="5fcfd70dc7ca592fda36334d" class="w-commerce-commerceaddtocartform card-add-to-cart-plan-default-state"
                                     data-wf-atc-loading="">
                                     <div role="group" data-wf-sku-bindings="%5B%7B%22from%22%3A%22f_sku_values_3dr%22%2C%22to%22%3A%22opionValues%22%7D%5D" data-commerce-product-sku-values="%7B%22f72071673c70423b378004278be06033%22%3A%22aa4295942540ff24f674bbd0d11c17c6%22%7D"
                                         data-node-type="commerce-add-to-cart-option-list" data-commerce-product-id="5fcfd70dc7ca592fda36334d" data-preselect-default-variant="false">
@@ -74,9 +74,9 @@
                                         </div>
                                     </div>
                                     <div data-wf-sku-bindings="%5B%7B%22from%22%3A%22f_price_%22%2C%22to%22%3A%22innerHTML%22%7D%5D" class="card-add-to-cart-plan-price"><span id="selected-price-show">$ 169.00 USD</span></div>
-                                    <input type="submit" data-node-type="commerce-add-to-cart-button" data-loading-text="Adding role..." value="Subscribe" class="w-commerce-commerceaddtocartbutton button-primary full-width white">
-                                    <a href="checkout" data-node-type="commerce-buy-now-button" data-default-text="Buy now" data-subscription-text="Subscribe now" class="w-commerce-commercebuynowbutton button-secondary buy-now w-dyn-hide">Buy now</a>
-                                </form>
+                                    <button type="button" onclick="beginCheckout()" data-node-type="commerce-add-to-cart-button" data-loading-text="Adding role..." value="Subscribe" class="w-commerce-commerceaddtocartbutton button-primary full-width white"></button>
+                                    <button type="button" data-node-type="commerce-buy-now-button" data-default-text="Buy now" data-subscription-text="Subscribe now" class="w-commerce-commercebuynowbutton button-secondary buy-now w-dyn-hide">Buy now</button>
+                                </div>
                                 <div style="display:none" class="w-commerce-commerceaddtocartoutofstock empty-state small plan">
                                     <div>This product is out of stock.</div>
                                 </div>
@@ -155,6 +155,64 @@ $(document).on('change', '[data-change="select-interval"]', function (e) {
     }
 });
 
+
+function beginCheckout() {
+        Swal.fire({
+            title: 'Processing...',
+            text: '',
+            showCancelButton: false,
+            showConfirmButton: false,
+            allowOutsideClick: () => !Swal.isLoading(),
+            target: document.getElementById('slider-div')
+        });
+        Swal.showLoading();
+        var process_url = '/bknd00/setup-order';
+     
+        $.ajax({
+            url: process_url,
+            type: 'POST',
+            data: {
+           
+                'price-id': selectedPriceId,
+
+                _token: '{{ csrf_token() }}'
+            },
+        }).done(function (msg) {
+            if (msg['success']) {
+                swal.close();
+                console.log(msg['msg']);
+                
+                var stripeconnected = Stripe("{{ env('STRIPE_CLIENT_PUBLIC_TEST') }}", {
+                    stripeAccount: "{{ $processor->processor_id }}"
+                });
+                var stripeid = msg['msg'];
+                stripeconnected.redirectToCheckout({
+                    sessionId: stripeid
+                }).then(function (result) {
+                // If `redirectToCheckout` fails due to a browser or network
+                // error, display the localized error message to your customer
+                       // console.log(result.error.message)
+                });
+                /*stripe.redirectToCheckout({
+                    sessionId: msg['msg']
+                    
+                }).then(function (result) {
+                    // If `redirectToCheckout` fails due to a browser or network
+                    // error, display the localized error message to your customer
+                    // using `result.error.message`.
+                    alert(result.error.message);
+                });*/
+            } else {
+                Swal.fire({
+                    title: 'Failure',
+                    text: msg['msg'],
+                    showCancelButton: false,
+                    showConfirmButton: true,
+                    target: document.getElementById('slider-div')
+                });
+            }
+        });
+    }
 
 
 </script>
