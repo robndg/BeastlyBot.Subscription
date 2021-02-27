@@ -37,11 +37,16 @@ class CustomerSubscriptionCreated implements ShouldQueue
       $plan_amount = $webhookCall->payload['data']['object']['plan']['amount'];
       Log::info($plan_amount);
 
-      $subscription = Subscription::where('id', $subscriptionId)->first();
-      $subscription->sub_id = $sub_id;
-      $subscription->first_invoice_id = $first_invoice_id;
-      $subscription->latest_invoice_id = $first_invoice_id;
-      $subscription->save();
+      $subscription = Cache::get($subscriptionId);
+
+      if($subscription !== null) {
+          $subscription->sub_id = $sub_id;
+          $subscription->first_invoice_id = $first_invoice_id;
+          $subscription->latest_invoice_id = $first_invoice_id;
+          $subscription->create();
+          $subscription->save();
+          Cache::forget($subscriptionId);
+      }
         
     }
 

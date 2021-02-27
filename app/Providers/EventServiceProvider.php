@@ -32,9 +32,9 @@ class EventServiceProvider extends ServiceProvider
         'stripe-webhooks::checkout.session.completed' => [
             \App\Webhooks\Stripe\CheckoutSessionCompleted::class,
         ],
-       'stripe-webhooks::invoice.payment_succeeded' => [
-            \App\Webhooks\Stripe\PaymentSucceeded::class,
-        ],
+    //    'stripe-webhooks::invoice.payment_succeeded' => [
+    //         \App\Webhooks\Stripe\PaymentSucceeded::class,
+    //     ],
         /*
         'stripe-webhooks::invoice.payment_failed' => [
             \App\Webhooks\Stripe\PaymentFailed::class,

@@ -41,7 +41,7 @@ class CreateSubscriptionsTable extends Migration
             $table->integer('visible')->default(1); // can use to hide on site if not paid or premium plan etc
             $table->json('metadata')->nullable();
 
-            $table->timestamps();
+            // $table->timestamps();
         });
     }
     /**
