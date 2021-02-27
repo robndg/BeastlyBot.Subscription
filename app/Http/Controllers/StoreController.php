@@ -35,7 +35,7 @@ class StoreController extends Controller {
     }
 
 
-    public function getStoreProduct($url, $product_role_slug){
+    public function getStoreProduct($shop_title, $product_title){
 
         if(Auth::check()){
 
@@ -45,10 +45,10 @@ class StoreController extends Controller {
             }
         
             $discord_store = null;
-            if(! DiscordStore::where('url', $url)->exists()) {
+            if(! DiscordStore::where('url', $shop_title)->exists()) {
                 return abort(404);
             } else {
-                $discord_store = DiscordStore::where('url', $url)->first();
+                $discord_store = DiscordStore::where('url', $shop_title)->first();
                 Log::info($discord_store->id);
             }
             $owner_array = \App\User::where('id', $discord_store->first()->user_id)->first();
@@ -58,8 +58,8 @@ class StoreController extends Controller {
 
             Log::info($guild_id);
 
-            Log::info($product_role_slug);
-            $product_title_unslug = Str::title(str_replace('-', ' ', $product_role_slug));
+            Log::info($product_title);
+            $product_title_unslug = Str::title(str_replace('-', ' ', $product_title));
             Log::info($product_title_unslug);
 
         /* if(Ban::where('user_id', auth()->user()->id)->where('active', 1)->where('type', 1)->where('discord_store_id', $discord_store->id)->exists() && auth()->user()->id != $discord_store->user_id){
@@ -110,9 +110,15 @@ class StoreController extends Controller {
             $guild = $discord_helper->getGuild($guild_id);
             $role = $discord_helper->getRole($guild_id, $role_id, 1, true);
 
-            $processor = Processors::where('store_id', $discord_store->id)->where('enabled', 1)->first();
-            $processor_type = $processor->type; //1 stripe
-            $processor_id = $processor->processor_id;
+            $discord_o_auth = DiscordOAuth::where('discord_id', $discord_store->user_id)->first();
+            $processor = Processors::where('user_id', $discord_o_auth->user_id)->where('enabled', 1);
+            if ($processor->exists()) {
+                $processor = $processor->first();
+                $processor_type = $processor->type; //1 stripe
+                $processor_id = $processor->processor_id;
+            } else {
+                $processor = null;
+            }
 
             return view('store.product-page')->with('discord_store', $discord_store)->with('guild', $guild)->with('role', $role)->with('role_id', $role_id)->with('product_role', $product_role)->with('product_prices', $product_prices)->with('affiliate_id', $affiliate_id)->with('processor', $processor);//->with('store_processor_selected_id', $store_processor_selected_id);
             

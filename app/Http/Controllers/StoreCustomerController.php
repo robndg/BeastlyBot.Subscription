@@ -11,11 +11,15 @@ use App\StripeConnect;
 use App\StripeHelper;
 use App\Price;
 use App\Product;
+use App\User;
+use App\DiscordOAuth;
+use App\Processors;
+use App\StoreCustomer;
+use App\Subscription;
 
 use Illuminate\Support\Facades\Cache;
 
 use App\Products\DiscordRoleProduct;
-use App\Products\Plans\DiscordPlan;
 use App\Products\ProductMsgException;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Log;
@@ -42,7 +46,7 @@ class StoreCustomerController extends Controller
         Log::info($request['billing_cycle']); // todo remove for uuid*/
 
         $ref_code = null;//$request['ref_code'];
-        $priceId = $request['price_id'];
+        $priceId = $request['price-id'];
 
         $product_price = \App\Price::where('id', $priceId)->first();
         
@@ -74,13 +78,14 @@ class StoreCustomerController extends Controller
                 
         }
 
-        $discord_store = DiscordStore::where('id', $product_role->discord_store_id)->first();
-        $discord_helper = new \App\DiscordHelper(User::find(DiscordOAuth::where('discord_id', $discord_store->user_id)->first()->user_id));
+        $discord_store = DiscordStore::where('UUID', $product_role->discord_store_id)->first();
+        $discord_o_auth = DiscordOAuth::where('discord_id', $discord_store->user_id)->first();
+        $discord_helper = new \App\DiscordHelper(User::where('id', $discord_o_auth->user_id)->first());
 
         $guild = $discord_helper->getGuild($discord_store->guild_id);
 
         //$script_setup = false; // for later script migration use
-        $user_id = Auth::id();
+        $user_id = auth()->user()->id;
 
 
         ///// Initiate Stripe Checkout /////
@@ -95,7 +100,7 @@ class StoreCustomerController extends Controller
         $customer_stripe = StripeConnect::where('user_id', $user_id)->first();
         $owner_stripe = StripeConnect::where('user_id', $discord_store->user_id)->first();
 
-        $processor = Processors::where('store_id', $discord_store->id)->where('enabled', 1)->first();
+        $processor = Processors::where('user_id', $discord_o_auth->user_id)->where('enabled', 1)->first();
         $processor_type = $processor->type; //1 stripe
         $processor_id = $processor->processor_id;
 
@@ -170,12 +175,12 @@ class StoreCustomerController extends Controller
                 "line_items" => [
                     [
                     "quantity" => "1",
-                    "description" => "Subscription to " . $guild->name,
+                    "description" => "Subscription to " . $product_role->title . " in " . $guild->name,
                     "price_data" => [
                         "currency" => "usd",
                         "product_data" => [
-                        "name" => $guild->name . " Subscription",
-                        "description" => "Subscription to " . $role_name, // TODO: change to discord_helper role name
+                        "name" => $product_role->title . " in " . $guild->name,
+                        "description" => "Subscription to " . $product_role->title . " in " . $guild->name, // TODO: change to discord_helper role name
                             "metadata" => [
                                 "productId" => $product_role->id,
                                 "subscriptionId" => $new_sub_uuid,

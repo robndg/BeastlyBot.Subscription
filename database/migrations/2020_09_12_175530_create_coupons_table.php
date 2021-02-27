@@ -16,6 +16,9 @@ class CreateCouponsTable extends Migration
         Schema::create('coupons', function (Blueprint $table) {
             $table->string('id')->unique();
             $table->string('owner_id');
+            $table->string('guild_id');
+            $table->string('for_user')->default(null); // used if specific for one person
+            $table->json('json_obj');
             $table->timestamps();
         });
     }

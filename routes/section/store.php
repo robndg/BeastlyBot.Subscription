@@ -26,7 +26,7 @@ use App\Products\Plans\DiscordPlan;
 
 Route::group(['middleware' => ['auth', 'web']], function () {
     // Store Product Page
-    Route::get('/guild/{guildurl}/{roleslug}', 'StoreController@getStoreProduct'); // * page //
+    Route::get('/shop/{shop_title}/{product_title}', 'StoreController@getStoreProduct'); // * page //
     // Store Product Page Setup Order
     Route::post('/bknd00/setup-order', 'StoreCustomerController@setupOrder'); // * post bknd00 //
 });

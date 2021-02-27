@@ -61,11 +61,10 @@
                                 {{ $guild['name'] }}</span>
                         </a>
                         @endforeach
-                        <a class="dropdown-item add-bot-button" onclick="addBotScript()" href="{{ 'https://discordapp.com/oauth2/authorize?client_id=' . env('DISCORD_CLIENT_ID') . '&scope=bot&permissions=' . env('DISCORD_BOT_PERMISSIONS') }}" target="_blank">
-                            <span><i class="ri-add-line mr-3"></i>Add Bot</span>
-                        </a>
                     @endif
-                        
+                    <a class="dropdown-item add-bot-button" onclick="addBotScript()" href="{{ 'https://discordapp.com/oauth2/authorize?client_id=' . env('DISCORD_CLIENT_ID') . '&scope=bot&permissions=' . env('DISCORD_BOT_PERMISSIONS') }}" target="_blank">
+                            <span><i class="ri-add-line mr-3"></i>Add Bot</span>
+                    </a>
                     </div>
                 </div>
                 <nav class="iq-sidebar-menu">

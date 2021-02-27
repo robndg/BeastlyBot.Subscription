@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Cache;
 
 class PromotionController extends Controller {
 
-
+    // TODO: Needs work
     private $minutes_to_cache = 10;
 
     public function __construct() {

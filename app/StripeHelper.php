@@ -208,7 +208,6 @@ class StripeHelper
         return "https://connect.stripe.com/oauth/authorize?response_type=code&client_id=" . StripeHelper::getClientID() . "&scope=read_write";
     }
 
-
     public static function getStripeConnectAccount(): \Stripe\Account {
         StripeHelper::setApiKey();
         $stripe_user_id = $this->user->UserProcessor->processor_id;
