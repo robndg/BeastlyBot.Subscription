@@ -21,6 +21,7 @@ class PaymentSucceeded implements ShouldQueue
 {
     public function handle(WebhookCall $webhookCall)
     {
+        \Log::info("PAYMENT SUCCEEDEDDD");
         $reason = $webhookCall->payload['data']['object']['billing_reason'];
         $plan_id = $webhookCall->payload['data']['object']['lines']['data'][0]['plan']['id'];
         $paid = $webhookCall->payload['data']['object']['paid'];
@@ -96,12 +97,10 @@ class PaymentSucceeded implements ShouldQueue
                             // Create subscription: status 0, visible 0
                             // Update and make 1 and 1 on Payment Succeeded. Update with other webhooks.
                             // Gives us uuid and session so no duplicates with success URL
-                            try{
-                                    $subscription = new Subscription(['id' => $new_sub_uuid, 'connection_type' => 1, 'sub_id' => "", 'user_id' => $user_id, 'owner_id' => $discord_store->user_id, 'store_id' => $discord_store->id, 'store_customer_id' => $store_customer->id, 'product_id' => $product_role->id, 'price_id' => $product_price->id, 'first_invoice_id' => null, 'first_invoice_price' => $paid_amount, 'first_invoice_paid_at' => null, 'next_invoice_price' => $next_amount, 'latest_invoice_id' => null, 'latest_invoice_amount' => null, 'app_fee' => $store_app_fee, 'status' => 0, 'visible' => 0, 'metadata' => null]); 
-                                    $subscription->save();
-                            }catch (Exception $e){
-                                    // todo rob: if this catches fix that
-                                    Log::info($e);
+                            $subscriptionObj = Cache::get($role_id . '_' . $customer_discord_id);
+
+                            if($subscriptionObj !== null) {
+                                $subscriptionObj->create();
                             }
                             // Find and update
                             /*
