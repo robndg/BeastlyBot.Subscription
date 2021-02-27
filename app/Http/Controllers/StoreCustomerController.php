@@ -226,18 +226,9 @@ class StoreCustomerController extends Controller
                 }*/
            
                 $session = $stripe->checkout->sessions->create($checkout_data, array("stripe_account" => $processor_id));
+                Session::put('stripe_session_id', $session->id);
                 
-                //// START SUBSCRIPTION ENTRY ////
-                // Create subscription: status 0, visible 0
-                // Update and make 1 and 1 on Payment Succeeded. Update with other webhooks.
-                // Gives us uuid and session so no duplicates with success URL
-               try{
-                    $subscription = new Subscription(['id' => $new_sub_uuid, 'connection_type' => 1, 'session_id' => $session->id, 'sub_id' => "", 'user_id' => $user_id, 'owner_id' => $discord_store->user_id, 'store_id' => $discord_store->id, 'store_customer_id' => $store_customer->id, 'product_id' => $product_role->id, 'price_id' => $product_price->id, 'first_invoice_id' => null, 'first_invoice_price' => $paid_amount, 'first_invoice_paid_at' => null, 'next_invoice_price' => $next_amount, 'latest_invoice_id' => null, 'latest_invoice_amount' => null, 'app_fee' => $store_app_fee, 'status' => 0, 'visible' => 0, 'metadata' => null]); 
-                    $subscription->save();
-               }catch (Exception $e){
-                    // todo rob: if this catches fix that
-                    Log::info($e);
-               }
+               
 
             return response()->json(['success' => true, 'msg' => $session->id]);
         
