@@ -30,6 +30,7 @@ use App\DiscordOAuth;
 
 class StoreController extends Controller {
 
+    // TODO: remove this after making discord_helper load guild info without auth on store front page
     public function __construct() {
         $this->middleware('auth');
     }
@@ -125,6 +126,50 @@ class StoreController extends Controller {
         }else{
             return view('discord_login');
         }
+    }
+
+    public function getStoreFront($shop_title){
+
+
+
+        $discord_store = null;
+        if(! DiscordStore::where('url', $shop_title)->exists()) {
+            return abort(404);
+        } else {
+            $discord_store = DiscordStore::where('url', $shop_title)->first();
+            Log::info($discord_store->id);
+        }
+        if($discord_store != null){ // if offline, only show to admins
+            
+            //$owner_array = \App\User::where('id', $discord_store->user_id)->first();
+ 
+            //$discord_helper = new DiscordHelper($owner_array);
+            
+            $guild_id = $discord_store->guild_id;
+            $discord_helper = new DiscordHelper(auth()->user());
+            $guild = $discord_helper->getGuild($guild_id);
+            
+
+            $product_roles = ProductRole::where('discord_store_id', $discord_store->UUID)->get();
+
+
+            $auth = false;
+
+            if(Auth::check()){
+                $auth = true;
+                // get products already purchased, array
+            }
+
+            // three arrays
+            // 1 guild access
+            // 2 members products
+            // 3 other products 
+    
+            return view('store.front-page')->with('discord_helper', $discord_helper)->with('discord_store', $discord_store)->with('guild', $guild)->with('auth', $auth)->with('product_roles', $product_roles);
+        }else{
+            // return 404
+        }
+
     }
 
 

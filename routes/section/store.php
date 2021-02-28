@@ -20,7 +20,7 @@ use App\Products\Plans\DiscordPlan;
 
 
 // Store Page
-
+Route::get('/shop/{shop_title}', 'StoreController@getStoreFront'); // * page //
 
 /* Auths */
 
