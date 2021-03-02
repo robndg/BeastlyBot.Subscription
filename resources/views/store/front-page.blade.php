@@ -127,7 +127,7 @@
                             <div class="color-content">
                             <h3 class="title job-opening-v1">{{ $product->title }}</h3>
                                                 <!--<p class="paragraph job-opening-v1">{{ $product->description }}</p>-->
-                                                <div class="button-primary job-opening-v1">Apply Now</div>
+                                                <a href="/shop/{{ $discord_store->url }}/{{ Str::title(str_replace(' ', '-', $product->title))}}" class="button-primary job-opening-v1">Get Role</a>
                             </div>
 
                         </div>

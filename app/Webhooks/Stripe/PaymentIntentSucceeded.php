@@ -67,8 +67,8 @@ class PaymentIntentSucceeded implements ShouldQueue
             $product_role = ProductRole::where('id', $subscription->product_id)->first(); // store product
             $product_price = Price::where('id', $subscription->price_id); // product price
 
-            $discord_store = DiscordStore::where("id", $product_role->discord_store_id)->first();
-            $store_customer = StoreCustomer::where('user_id', $user_id)->where('discord_store_id', $subscription->store_id)->first();
+            $discord_store = DiscordStore::where("UUID", $product_role->discord_store_id)->first();
+            $store_customer = StoreCustomer::where('user_id', $user_id)->where('discord_store_id', $discord_store->id)->first();
             $store_customer->enabled = 1;
             $store_customer->save();
             //$discord_store = DiscordStore::where("guild_id", $guild_id)->first(); // might leave for store transfers
@@ -185,6 +185,176 @@ class PaymentIntentSucceeded implements ShouldQueue
 
 
     }
+
+
+/*
+{
+  "id": "evt_1IQRbHLAOUUi1P6vhJ4k8Uqf",
+  "object": "event",
+  "account": "acct_1H9y7RLAOUUi1P6v",
+  "api_version": "2020-08-27",
+  "created": 1614666055,
+  "data": {
+    "object": {
+      "id": "pi_1IQRbFLAOUUi1P6v8xGZ9ktI",
+      "object": "payment_intent",
+      "amount": 1000,
+      "amount_capturable": 0,
+      "amount_received": 1000,
+      "application": "ca_Il7ro20ve0WNT1KhxA1SGVpoZ4Fro6RU",
+      "application_fee_amount": 40,
+      "canceled_at": null,
+      "cancellation_reason": null,
+      "capture_method": "automatic",
+      "charges": {
+        "object": "list",
+        "data": [
+          {
+            "id": "ch_1IQRbGLAOUUi1P6v3IvqftFz",
+            "object": "charge",
+            "amount": 1000,
+            "amount_captured": 1000,
+            "amount_refunded": 0,
+            "application": "ca_Il7ro20ve0WNT1KhxA1SGVpoZ4Fro6RU",
+            "application_fee": "fee_1IQRbGLAOUUi1P6vRUf3Azfi",
+            "application_fee_amount": 40,
+            "balance_transaction": "txn_1IQRbGLAOUUi1P6vzb021ug4",
+            "billing_details": {
+              "address": {
+                "city": null,
+                "country": "CA",
+                "line1": null,
+                "line2": null,
+                "postal_code": "V3H 9V9",
+                "state": null
+              },
+              "email": "withCusty1@gmail.com",
+              "name": "Testing",
+              "phone": null
+            },
+            "calculated_statement_descriptor": "SNATCHED",
+            "captured": true,
+            "created": 1614666054,
+            "currency": "usd",
+            "customer": "cus_IqtdT7m9Zl9rcR",
+            "description": "Subscription update",
+            "destination": null,
+            "dispute": null,
+            "disputed": false,
+            "failure_code": null,
+            "failure_message": null,
+            "fraud_details": {
+            },
+            "invoice": "in_1IQQeJLAOUUi1P6v7kbEvOSy",
+            "livemode": false,
+            "metadata": {
+            },
+            "on_behalf_of": null,
+            "order": null,
+            "outcome": {
+              "network_status": "approved_by_network",
+              "reason": null,
+              "risk_level": "normal",
+              "risk_score": 36,
+              "seller_message": "Payment complete.",
+              "type": "authorized"
+            },
+            "paid": true,
+            "payment_intent": "pi_1IQRbFLAOUUi1P6v8xGZ9ktI",
+            "payment_method": "pm_1IFBqpLAOUUi1P6vchuCDjgK",
+            "payment_method_details": {
+              "card": {
+                "brand": "visa",
+                "checks": {
+                  "address_line1_check": null,
+                  "address_postal_code_check": "pass",
+                  "cvc_check": null
+                },
+                "country": "US",
+                "exp_month": 2,
+                "exp_year": 2030,
+                "fingerprint": "r5AXBoNgpukUr3h0",
+                "funding": "credit",
+                "installments": null,
+                "last4": "4242",
+                "network": "visa",
+                "three_d_secure": null,
+                "wallet": null
+              },
+              "type": "card"
+            },
+            "receipt_email": null,
+            "receipt_number": null,
+            "receipt_url": "https://pay.stripe.com/receipts/acct_1H9y7RLAOUUi1P6v/ch_1IQRbGLAOUUi1P6v3IvqftFz/rcpt_J2We3brtTHmtqdW3J64Qjs6nMnlWhQ8",
+            "refunded": false,
+            "refunds": {
+              "object": "list",
+              "data": [
+              ],
+              "has_more": false,
+              "total_count": 0,
+              "url": "/v1/charges/ch_1IQRbGLAOUUi1P6v3IvqftFz/refunds"
+            },
+            "review": null,
+            "shipping": null,
+            "source": null,
+            "source_transfer": null,
+            "statement_descriptor": null,
+            "statement_descriptor_suffix": null,
+            "status": "succeeded",
+            "transfer_data": null,
+            "transfer_group": null
+          }
+        ],
+        "has_more": false,
+        "total_count": 1,
+        "url": "/v1/charges?payment_intent=pi_1IQRbFLAOUUi1P6v8xGZ9ktI"
+      },
+      "client_secret": "pi_1IQRbFLAOUUi1P6v8xGZ9ktI_secret_PT6SmUUQngzeLStifzk3Ha4G8",
+      "confirmation_method": "automatic",
+      "created": 1614666053,
+      "currency": "usd",
+      "customer": "cus_IqtdT7m9Zl9rcR",
+      "description": "Subscription update",
+      "invoice": "in_1IQQeJLAOUUi1P6v7kbEvOSy",
+      "last_payment_error": null,
+      "livemode": false,
+      "metadata": {
+      },
+      "next_action": null,
+      "on_behalf_of": null,
+      "payment_method": "pm_1IFBqpLAOUUi1P6vchuCDjgK",
+      "payment_method_options": {
+        "card": {
+          "installments": null,
+          "network": null,
+          "request_three_d_secure": "automatic"
+        }
+      },
+      "payment_method_types": [
+        "card"
+      ],
+      "receipt_email": null,
+      "review": null,
+      "setup_future_usage": null,
+      "shipping": null,
+      "source": null,
+      "statement_descriptor": null,
+      "statement_descriptor_suffix": null,
+      "status": "succeeded",
+      "transfer_data": null,
+      "transfer_group": null
+    }
+  },
+  "livemode": false,
+  "pending_webhooks": 3,
+  "request": {
+    "id": null,
+    "idempotency_key": "in_1IQQeJLAOUUi1P6v7kbEvOSy-initial_attempt-ff09a558546b8d1fa"
+  },
+  "type": "payment_intent.succeeded"
+}
+*/
 
 /*
 

@@ -91,8 +91,8 @@ class StoreCustomerController extends Controller
         ///// Initiate Stripe Checkout /////
 
         // Check if user has stripe account, create?
-        if (! auth()->user()->hasStripeAccount()) 
-        return response()->json(['success' => false, 'msg' => 'You do not have a linked stripe account.']);
+        //if (! auth()->user()->hasStripeAccount()) 
+        //return response()->json(['success' => false, 'msg' => 'You do not have a linked stripe account.']);
 
       
 
@@ -124,13 +124,14 @@ class StoreCustomerController extends Controller
                 $store_customer->update(['stripe_metadata' => $stripe_token]);
                 $store_customer->save();
             }else{
+                $customerDiscordId = DiscordOAuth::where('user_id', auth()->user()->id)->first()->discord_id;
                 // Stripe, Copy from master Stripe to Owner
                 $copiedCustomer = \Stripe\Customer::create(array(
                     "description" => "Customer Created for "/*auth()->user()->getDiscordHelper()->getUsername()*/, // Rob TODO: maybe change or add store name
                     "source" => $stripe_token
                     ), array("stripe_account" => $processor_id, "livemode" => false));
                 // Create new Customer for Store  'customer_stripe_id', 'customer_paypal_id', 'customer_cur', 'stripe_token', 'paypal_token', 'stripe_metadata', 'paypal_metadata', 'enabled', 'metadata'
-                $store_customer = new StoreCustomer(['id' => Str::uuid(), 'user_id' => $user_id, 'discord_store_id' => $discord_store->id, 'customer_stripe_id' => $copiedCustomer->id, 'customer_paypal_id' => null, 'customer_cur' => 'usd', 'stripe_token' => $stripe_token->id, 'paypal_token' => null, 'stripe_metadata' => $stripe_token, 'paypal_metadata' => null, 'referal_code' => Str::random(8), 'enabled' => 0, 'ip_address' => null, 'metadata' => null]);
+                $store_customer = new StoreCustomer(['id' => Str::uuid(), 'user_id' => $user_id, 'discord_store_id' => $discord_store->id, 'customer_stripe_id' => $copiedCustomer->id, 'customer_paypal_id' => null, 'customer_cur' => 'usd', 'stripe_token' => $stripe_token->id, 'paypal_token' => null, 'stripe_metadata' => $stripe_token, 'paypal_metadata' => null, 'referal_code' => $customerDiscordId/*Str::random(8)*/, 'enabled' => 0, 'ip_address' => null, 'metadata' => null]);
                 $store_customer->save();
             }
         }
