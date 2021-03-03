@@ -17,4 +17,10 @@ class Subscription extends Model
         'first_invoice_paid_at'=>'datetime:Y-m-d H:i:s',
     ];
 
+    public static int $NOT_PAID = 0;
+    public static int $PAID = 1;
+    public static int $OVERDUE = 2;
+    public static int $CANCELLED = 3;
+    public static int $DISPUTED = 4;
+
 }
