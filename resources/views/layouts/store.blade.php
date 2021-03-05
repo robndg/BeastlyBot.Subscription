@@ -12,6 +12,7 @@
     @include('partials.store.header')
     
     @yield('content')
+    @yield('shopfooter')
        @section('partials.store.footer')
     </div>
     @include('partials.store.scripts')

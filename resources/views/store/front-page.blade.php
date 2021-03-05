@@ -16,30 +16,7 @@
 
 <div class="section integration-page">
             <div class="container-large-1040px">
-               <div class="top-content integration-page">
-                  <div class="container-default w-container">
-                     <div data-w-id="2c782146-49ba-b762-ba1c-c5a1c8797c1d" style="-webkit-transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);" class="integration-name-main-wrapper">
-                        <div class="integration-name-wrapper">
-                              @if($guild)
-                                    @if($guild->icon == NULL)
-                                    <img src="https://i.imgur.com/qbVxZbJ.png" alt="" class="image integration-logo">
-                                    @else
-                                    <img id="server_icon" src="https://cdn.discordapp.com/icons/{{ $guild->id }}/{{ $guild->icon }}.png?size=256" alt="..." class="image integration-logo">
-                                    @endif
-                                @else
-                                    <img src="{{asset('store/assets/img/beastlybot-logo4-w.png') }}" alt="" class="image integration-logo">
-                                @endif
-                           <h1 class="title integration-name">{{ $guild->name }}</h1>
-                        </div>
-                        <a href="https://" class="category-button integration-page w-button">Discord Group</a>
-                     </div>
-                     <p data-w-id="4143eed4-baa7-abec-98fc-4be4d7e0e691" style="-webkit-transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);" class="paragraph integration-excerpt">
-                     {{ $discord_store->desc }}
-                     </p>
-                  </div>
 
-               </div>
-               <div class="divider integration-page"></div>
                <div data-w-id="3e7a78ef-77f6-6e11-e17e-da3aa1a04313" style="-webkit-transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);" class="integration-tabs-menu w-tab-menu">
                         <button type="button" class="integration-tab-link w-inline-block w-tab-link tab-block store-description-block-tab w--current" onclick="showBlock('store-description-block')" data-target-block="store-description-block">
                            <div>Description</div>
@@ -47,7 +24,7 @@
                         <button type="button" class="integration-tab-link w-inline-block w-tab-link tab-block store-products-block-tab" onclick="showBlock('store-products-block')" data-target-block="store-products-block">
                            <div>Products</div>
                         </button>
-                        <button type="button" class="integration-tab-link w-inline-block w-tab-link tab-block store-referalls-block-tab">
+                        <button type="button" class="integration-tab-link w-inline-block w-tab-link tab-block store-referalls-block-tab" onclick="showBlock('store-referalls-block')" data-target-block="store-referalls-block">
                            <div>Referalls</div>
                         </button>
                      </div>
@@ -59,30 +36,10 @@
                            <div class="rich-text w-richtext">
                               <h2>About {{ $guild->name }}</h2>
                               <p></p><!-- TODO: either DB from store or use stats from guild helper / subscriber count-->
-                              <p>Volutpat, vitae <strong>sagittis sed aliquam ac</strong> elit. Purus augue elit feugiat lorem ultrices egestas. Egestas iaculis diam dolor, sed commodo, suscipit.</p>
-                              <p>Nisi, leo phasellus bibendum rutrum risus non. Massa ultrices senectus nisl, pretium ac nisl. Et id lacus dignissim nulla. <strong>Congue mollis enim</strong> eu cursus scelerisque quis feugiat. Senectus volutpat rhoncus nisi, ipsum mattis vitae nam. Cras nullam nulla faucibus quis. Quisque diam ut nunc auctor. Vestibulum.</p>
-                              <h3>Why integrating Software with Facebook?</h3>
+                              <p>{{-- store desc --}} Volutpat, vitae <strong>sagittis sed aliquam ac</strong> elit. Purus augue elit feugiat lorem ultrices egestas. Egestas iaculis diam dolor, sed commodo, suscipit.</p>
+                              <p>{{-- store long desc --}}Nisi, leo phasellus bibendum rutrum risus non. Massa ultrices senectus nisl, pretium ac nisl. Et id lacus dignissim nulla. <strong>Congue mollis enim</strong> eu cursus scelerisque quis feugiat. Senectus volutpat rhoncus nisi, ipsum mattis vitae nam. Cras nullam nulla faucibus quis. Quisque diam ut nunc auctor. Vestibulum.</p>
+                              <h3>How does BeastlyBot work?</h3>
                               <p><a href="#">Lorem ipsum dolor sit amet</a>, consectetur adipiscing elit. Magna urna viverra at in. Eleifend bibendum enim faucibus in id et convallis sed. <strong>Et praesent id consectetur</strong> dolor aliquam lectus viverra. Dignissim quis tristique.</p>
-                           </div>
-                        </div>
-                        <div data-w-tab="Tab 2" class="integration-tab-pane w-tab-pane">
-                           <div class="rich-text w-richtext">
-                              <h2>About BeastlyBot</h2>
-                              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cursus scelerisque risus nunc pharetra. Proin ullamcorper ultrices tempus phasellus vitae. Tincidunt nisl venenatis massa justo cursus <strong>tincidunt amet elit</strong> nisi. Egestas tempor eget in sit viverra. Consequat lectus non risus nunc dolor sed. </p>
-                              <p>Volutpat, vitae <strong>sagittis sed aliquam ac</strong> elit. Purus augue elit feugiat lorem ultrices egestas. Egestas iaculis diam dolor, sed commodo, suscipit.</p>
-                              <p>Nisi, leo phasellus bibendum rutrum risus non. Massa ultrices senectus nisl, pretium ac nisl. Et id lacus dignissim nulla. <strong>Congue mollis enim</strong> eu cursus scelerisque quis feugiat. Senectus volutpat rhoncus nisi, ipsum mattis vitae nam. Cras nullam nulla faucibus quis. Quisque diam ut nunc auctor. Vestibulum.</p>
-                              <h3>Why integrating Software with Facebook?</h3>
-                              <p><a href="#">Lorem ipsum dolor sit amet</a>, consectetur adipiscing elit. Magna urna viverra at in. Eleifend bibendum enim faucibus in id et convallis sed. <strong>Et praesent id consectetur</strong> dolor aliquam lectus viverra. Dignissim quis tristique.</p>
-                           </div>
-                        </div>
-                        <div data-w-tab="Tab 3" class="integration-tab-pane w-tab-pane">
-                           <div class="rich-text w-richtext">
-                              <h2>About Facebook integration</h2>
-                              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cursus scelerisque risus nunc pharetra. Proin ullamcorper ultrices tempus phasellus vitae. Tincidunt nisl venenatis massa justo cursus <strong>tincidunt amet elit</strong> nisi. Egestas tempor eget in sit viverra. Consequat lectus non risus nunc dolor sed. </p>
-                              <p>Volutpat, vitae <strong>sagittis sed aliquam ac</strong> elit. Purus augue elit feugiat lorem ultrices egestas. Egestas iaculis diam dolor, sed commodo, suscipit.</p>
-                              <p>Nisi, leo phasellus bibendum rutrum risus non. Massa ultrices senectus nisl, pretium ac nisl. Et id lacus dignissim nulla. <strong>Congue mollis enim</strong> eu cursus scelerisque quis feugiat. Senectus volutpat rhoncus nisi, ipsum mattis vitae nam. Cras nullam nulla faucibus quis. Quisque diam ut nunc auctor. Vestibulum.</p>
-                              <h3>Why integrating Software with Facebook?</h3>
-                              <p><a href="facebook.html#">Lorem ipsum dolor sit amet</a>, consectetur adipiscing elit. Magna urna viverra at in. Eleifend bibendum enim faucibus in id et convallis sed. <strong>Et praesent id consectetur</strong> dolor aliquam lectus viverra. Dignissim quis tristique.</p>
                            </div>
                         </div>
                      </div>
@@ -105,20 +62,28 @@
                         <div>Special</div>
                     </button>
                 </div>
-     
+
+               <div class="w-dyn-list product_roles_list" data-product-role-id="1" id="product_roles_list_1" style="display:none">
                @if($product_roles->where('access', 1)->count() > 0)
-                <div class="w-dyn-list product_roles_list" data-product-role-id="1" id="product_roles_list_1" style="display:none">
+                
                   <div role="list" class="more-openings-grid w-dyn-items">
                   @foreach($product_roles->where('access', 1) as $product)
                      <div data-w-id="8116e32d-45f9-b5ec-fa48-53777bb1af4d" style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); opacity: 1; transform-style: preserve-3d;" role="listitem" class="w-dyn-item">
                         <a href="/shop/{{ $discord_store->url }}/{{ Str::title(str_replace(' ', '-', $product->title))}}" aria-current="page" class="card job-opening-v1 w-inline-block w--current" style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;">
                            <div class="top-content job-opening-v1">
                               <div class="split-content job-opening-v1-left">
-                                 <div>Status</div>
+                                 <div class="image-wrapper icon-style-guide">
+                                    @if($subscriptions && $subscriptions->where('product_id', $product->id)->count() > 0)
+                                    <img src="{{ ($subscriptions->where('product_id', $product->id)->first()->status < 3) ? asset('store/assets/svg/icon-check-blue.svg') : asset('store/assets/svg/icon-lock-white.svg') }}" loading="lazy" alt="" class="image icon-style-guide"> 
+                                     @else
+                                     @if($product->max_sales >= 0 && $product->max_sales != NULL) <img src="{{ asset('store/assets/svg/icon-timer-blue.svg') }}" loading="lazy" alt="" class="image icon-style-guide"> @else <img src="{{ asset('store/assets/svg/icon-check-white.svg') }}" loading="lazy" alt="" class="image icon-style-guide">@endif  
+                                    @endif
+                                 </div>
                                  <div class="job-opening-v1-about-divider"></div>
-                                 <div>10 Available</div> {{-- Subscribed --}}
+                                 <div>@if($subscriptions && $subscriptions->where('product_id', $product->id)->count() > 0) {{ ($subscriptions->where('product_id', $product->id)->first()->status < 3) ? 'Subscribed' : 'Unsubscribed' }} @else
+                                 @if($product->max_sales >= 0){{ $product->max_sales }} @endif Available @endif </div>
                               </div>
-                              <div class="badge job-opening-v1">Guild Access</div>
+                              <div class="badge badge-success">Guild Access</div>
                            </div>
                            <h3 class="title job-opening-v1">{{ $product->title }}</h3>
                            <p class="paragraph job-opening-v1">{{ $product->description }}</p>
@@ -127,8 +92,25 @@
                      </div>
                      @endforeach
                   </div>
+               
+               @elseif($product_roles->count() > 0)
+               <div role="list" class="more-openings-grid w-dyn-items">
+                  <div data-w-id="8116e32d-45f9-b5ec-fa48-53777bb1af4d" style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); opacity: 1; transform-style: preserve-3d;" role="listitem" class="w-dyn-item">
+                        <div aria-current="page" class="card job-opening-v1 w-inline-block w--current" style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;">
+                           <div class="top-content job-opening-v1">
+                           <div class="image-wrapper icon-style-guide"><img src="{{ ($subscriptions) ? asset('store/assets/svg/icon-check-white.svg') : asset('store/assets/svg/icon-check-blue.svg') }}" loading="lazy" alt="" class="image icon-style-guide"></div>
+                              <div class="badge badge-success">Guild Access</div>
+                           </div>
+                        
+                           <h3 class="title job-opening-v1">Included</h3>
+                           <p class="paragraph job-opening-v1">All Products include Guild Access</p>
+                           <div class="button-primary job-opening-v1" onclick="showProductList('2')">View Products</div>
+                           </div>
+                     </div>
+                  </div>
                </div>
                @endif
+               </div>
 
                @if($product_roles->where('access', 2)->count() > 0)
                <div class="w-dyn-list product_roles_list" data-product-role-id="2" id="product_roles_list_2">
@@ -138,11 +120,18 @@
                         <a href="/shop/{{ $discord_store->url }}/{{ Str::title(str_replace(' ', '-', $product->title))}}" aria-current="page" class="card job-opening-v1 w-inline-block w--current" style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;">
                            <div class="top-content job-opening-v1">
                               <div class="split-content job-opening-v1-left">
-                                 <div>Status</div>
+                                 <div class="image-wrapper icon-style-guide">
+                                    @if($subscriptions && $subscriptions->where('product_id', $product->id)->count() > 0)
+                                    <img src="{{ ($subscriptions->where('product_id', $product->id)->first()->status < 3) ? asset('store/assets/svg/icon-check-white.svg') : asset('store/assets/svg/icon-lock-white.svg') }}" loading="lazy" alt="" class="image icon-style-guide"> 
+                                     @else
+                                    @if($product->max_sales >= 0 && $product->max_sales != NULL) <img src="{{ asset('store/assets/svg/icon-timer-blue.svg') }}" loading="lazy" alt="" class="image icon-style-guide"> @else <img src="{{ asset('store/assets/svg/icon-check-white.svg') }}" loading="lazy" alt="" class="image icon-style-guide">@endif  
+                                    @endif
+                                 </div>
                                  <div class="job-opening-v1-about-divider"></div>
-                                 <div>10 Available</div> {{-- Subscribed --}}
+                                 <div>@if($subscriptions && $subscriptions->where('product_id', $product->id)->count() > 0) {{ ($subscriptions->where('product_id', $product->id)->first()->status < 3) ? 'Subscribed' : 'Unsubscribed' }} @else
+                                 @if($product->max_sales >= 0){{ $product->max_sales }} @endif Available @endif </div>
                               </div>
-                              <div class="badge job-opening-v1">Members Only</div>
+                              <div class="badge badge-primary">Member Access {{-- $discord_helper->getRole($discord_store->guild_id, $product->role_id, 1, true) --}}</div>
                            </div>
                            <h3 class="title job-opening-v1">{{ $product->title }}</h3>
                            <p class="paragraph job-opening-v1">{{ $product->description }}</p>
@@ -162,11 +151,18 @@
                         <a href="/shop/{{ $discord_store->url }}/{{ Str::title(str_replace(' ', '-', $product->title))}}" aria-current="page" class="card job-opening-v1 w-inline-block w--current" style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;">
                            <div class="top-content job-opening-v1">
                               <div class="split-content job-opening-v1-left">
-                                 <div>Status</div>
+                                 <div class="image-wrapper icon-style-guide">
+                                    @if($subscriptions && $subscriptions->where('product_id', $product->id)->count() > 0)
+                                    <img src="{{ ($subscriptions->where('product_id', $product->id)->first()->status < 3) ? asset('store/assets/svg/icon-check-white.svg') : asset('store/assets/svg/icon-lock-white.svg') }}" loading="lazy" alt="" class="image icon-style-guide"> 
+                                     @else
+                                     @if($product->max_sales >= 0 && $product->max_sales != NULL) <img src="{{ asset('store/assets/svg/icon-timer-blue.svg') }}" loading="lazy" alt="" class="image icon-style-guide"> @else <img src="{{ asset('store/assets/svg/icon-plus-blue.svg') }}" loading="lazy" alt="" class="image icon-style-guide">@endif  
+                                    @endif
+                                 </div>
                                  <div class="job-opening-v1-about-divider"></div>
-                                 <div>10 Available</div> {{-- Subscribed --}}
+                                 <div>@if($subscriptions && $subscriptions->where('product_id', $product->id)->count() > 0) {{ ($subscriptions->where('product_id', $product->id)->first()->status < 3) ? 'Subscribed' : 'Unsubscribed' }} @else
+                                 @if($product->max_sales >= 0){{ $product->max_sales }} @endif Available @endif </div>
                               </div>
-                              <div class="badge job-opening-v1">Special Access</div>
+                              <div class="badge badge-secondary" style="background-color: #9992fc;">Special Access</div>
                            </div>
                            <h3 class="title job-opening-v1">{{ $product->title }}</h3>
                            <p class="paragraph job-opening-v1">{{ $product->description }}</p>
@@ -267,6 +263,59 @@
 
 
 
+         </div>
+         <div class="related-integrations-section store-block" id="store-referalls-block" style="display:none;">
+
+               <div class="styleguide-seccion">
+                  <div class="container-default">
+                     <div class="flex">
+                        <div data-w-id="b2fa23d4-8136-d8f4-e5c4-4d7ef74dcc62" style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); opacity: 1; transform-style: preserve-3d;" class="styleguide-sidebar">
+                           <div class="styleguide-sidebar-title">
+                              <div>Referalls Program</div>
+                           </div>
+                           <nav class="styleguide-navigation">
+                              <ul role="list" class="sidebar-navigation">
+                                 <li class="styleguide-link-wrapper">
+                                    <a href="#About" class="styleguide-link w-inline-block">
+                                       <div class="styleguide-icon-link"><img src="{{ asset('store/assets/svg/icon-growth-white.svg') }}" alt="" class="styelguide-sidebar-icon"></div>
+                                       <div>About</div>
+                                    </a>
+                                 </li>
+                              
+                              </ul>
+                           </nav>
+                           
+                           <div class="styleguide-sidebar-title middle">
+                              <div>My Program</div>
+                           </div>
+                           <nav class="styleguide-navigation">
+                              <ul role="list" class="sidebar-navigation">
+                              <li class="styleguide-link-wrapper">
+                                    <a href="#Links" class="styleguide-link w-inline-block">
+                                       <div class="styleguide-icon-link"><img src="{{ asset('store/assets/svg/icon-click-white.svg') }}" alt="" class="styelguide-sidebar-icon"></div>
+                                       <div>Links</div>
+                                    </a>
+                                 </li>
+                                 <li class="styleguide-link-wrapper">
+                                    <a href="#Returns" class="styleguide-link w-inline-block">
+                                       <div class="styleguide-icon-link"><img src="{{ asset('store/assets/svg/icon-plus-blue.svg') }}" alt="" class="styelguide-sidebar-icon"></div>
+                                       <div>Returns</div>
+                                    </a>
+                                 </li>
+                              </ul>
+                           </nav>
+                           <div class="styleguide-button-container"><a href="#" class="button-primary full-width w-button">View Terms</a></div>
+                        </div>
+
+                        
+                       
+                     <div>
+                  </div>
+               </div>
+            </div>
+
+         </div>
+      </div>
 </div>
 
 
@@ -303,38 +352,38 @@
                   <li class="styleguide-link-wrapper">
                      <a href="#Colors" class="styleguide-link w-inline-block">
                         <div class="styleguide-icon-link"><img src="https://assets.website-files.com/5fbd60e9c0e04c6e2ff0c2e0/5fbd60e9c0e04c7af4f0c305_colors-icon.svg" alt="" class="styelguide-sidebar-icon"></div>
-                        <div>Products</div>
+                        <div>Program</div>
                      </a>
                   </li>
                  
                </ul>
             </nav>
             <div class="styleguide-sidebar-title middle">
-               <div>Members</div>
+               <div>Payouts</div>
             </div>
             <nav class="styleguide-navigation">
                <ul role="list" class="sidebar-navigation">
                 <li class="styleguide-link-wrapper">
                      <a href="#Buttons" class="styleguide-link w-inline-block">
                         <div class="styleguide-icon-link"><img src="https://assets.website-files.com/5fbd60e9c0e04c6e2ff0c2e0/5fce8cadf0087fcd603f94b4_icon-value-4-software-ui-kit.svg" alt="" class="styelguide-sidebar-icon"></div>
-                        <div>Subscriptions</div>
+                        <div>asd</div>
                      </a>
                   </li>
                   <li class="styleguide-link-wrapper">
                      <a href="#Buttons" class="styleguide-link w-inline-block">
                         <div class="styleguide-icon-link"><img src="https://assets.website-files.com/5fbd60e9c0e04c6e2ff0c2e0/5fc7b408d30eb93baedc18d9_button-icon.svg" alt="" class="styelguide-sidebar-icon"></div>
-                        <div>Affiliates</div>
+                        <div>asd</div>
                      </a>
                   </li>
                </ul>
             </nav>
-            <div class="styleguide-button-container"><a href="#" class="button-primary full-width w-button">Get Template</a></div>
+            <div class="styleguide-button-container"><a href="#" class="button-primary full-width w-button">Results</a></div>
          </div>
          <div data-w-id="b2fa23d4-8136-d8f4-e5c4-4d7ef74dcc65" style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); opacity: 1; transform-style: preserve-3d;" class="styleguide-content">
 
             <div id="Colors" class="styleguide-section">
                <div class="styleguide-subheader">
-                  <h2>Products</h2>
+                  <h2>Returns</h2>
                </div>
                <div class="styleguide-content-wrapper">
                   <div class="color-content-wrapper">
@@ -427,14 +476,40 @@
 </div>--}}
 
 
-
-
         
                 
-                   
-                    
-  
+                  
 
+@endsection
+
+
+@section('shopfooter')
+<div class="divider integration-page"></div>
+
+
+<div class="top-content integration-page">
+    <div class="container-default w-container">
+       <div data-w-id="2c782146-49ba-b762-ba1c-c5a1c8797c1d" style="-webkit-transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);" class="integration-name-main-wrapper">
+          <div class="integration-name-wrapper">
+                @if($guild)
+                      @if($guild->icon == NULL)
+                      <img src="https://i.imgur.com/qbVxZbJ.png" alt="" class="image integration-logo">
+                      @else
+                      <img id="server_icon" src="https://cdn.discordapp.com/icons/{{ $guild->id }}/{{ $guild->icon }}.png?size=256" alt="..." class="image integration-logo">
+                      @endif
+                  @else
+                      <img src="{{asset('store/assets/img/beastlybot-logo4-w.png') }}" alt="" class="image integration-logo">
+                  @endif
+             <h1 class="title integration-name">{{ $guild->name }}</h1>
+          </div>
+          <a href="https://" class="category-button integration-page w-button">Discord Group</a>
+       </div>
+       <p data-w-id="4143eed4-baa7-abec-98fc-4be4d7e0e691" style="-webkit-transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);" class="paragraph integration-excerpt">
+       {{ $discord_store->desc }}
+       </p>
+    </div>
+
+ </div>
 
 @endsection
 

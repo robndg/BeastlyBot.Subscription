@@ -99,8 +99,8 @@
                                             <select name="priority" id="input-access" class="form-control" data-change="select" data-custom-target="color">
                                                 <!--<option value="danger">Archived</option>-->
                                                 <option value="1" data-color-value="success" @if(isset($product_role)) {{ $product_role->access == 1 ? 'selected' : '' }} @endif>Guild Access</option>
-                                                <option value="2" data-color-value="info"  @if(isset($product_role)) {{ $product_role->access == 2 ? 'selected' : '' }} @else selected @endif>Everyone</option>
-                                                <option value="3" data-color-value="purple" @if(isset($product_role)) {{ $product_role->access == 3 ? 'selected' : '' }} @endif>Members Only</option>
+                                                <option value="2" data-color-value="info"  @if(isset($product_role)) {{ $product_role->access == 2 ? 'selected' : '' }} @else selected @endif>Member Role</option>
+                                                <option value="3" data-color-value="purple" @if(isset($product_role)) {{ $product_role->access == 3 ? 'selected' : '' }} @endif>Special Role</option>
                                                 <!--<option value="warning">Specific Member</option>-->
                                                 <option value="0" data-color-value="primary" @if(isset($product_role)) {{ $product_role->access == 0 ? 'selected' : '' }} @endif>Archived Product</option>
                                                 

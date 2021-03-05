@@ -13,6 +13,7 @@ use App\Price;
 //use App\Products\DiscordRoleProduct;
 use App\DiscordHelper;
 use App\Subscription;
+use App\StoreCustomer;
 use App\Stat;
 use App\Processors;
 use DateTime;
@@ -150,22 +151,27 @@ class StoreController extends Controller {
             $guild = $discord_helper->getGuild($guild_id);
             
 
-            $product_roles = ProductRole::where('discord_store_id', $discord_store->UUID)->get();
+            $product_roles = ProductRole::where('discord_store_id', $discord_store->UUID)->where('access', '!=', 0)->get();
 
 
             $auth = false;
+            $subscriptions = false;
+            $store_customer = false;
 
             if(Auth::check()){
                 $auth = true;
                 // get products already purchased, array
+                //$store_customer = StoreCustomer::where()
+                $subscriptions = Subscription::where('user_id', auth()->user()->id)->where('store_id', $discord_store->id)->get();
+                $store_customer = StoreCustomer::where('user_id', auth()->user()->id)->where('discord_store_id', $discord_store->id)->first();
             }
-
+            
             // three arrays
             // 1 guild access
             // 2 members products
             // 3 other products 
     
-            return view('store.front-page')->with('discord_helper', $discord_helper)->with('discord_store', $discord_store)->with('guild', $guild)->with('auth', $auth)->with('product_roles', $product_roles);
+            return view('store.front-page')->with('discord_helper', $discord_helper)->with('discord_store', $discord_store)->with('guild', $guild)->with('auth', $auth)->with('product_roles', $product_roles)->with('subscriptions', $subscriptions)->with('store_customer', $store_customer);
         }else{
             // return 404
         }
