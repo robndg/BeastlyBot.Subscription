@@ -106,7 +106,7 @@
                                         <div id="note1" class="tab-pane fade active show">
                                             <div class="icon active animate__animated animate__fadeIn i-grid">
                                                 <div class="row">
-                                               
+                                                <!-- TODO; if plans have no prices or archived put in tab -->
                                                     @foreach($product_roles as $product)
 
                                                     <div class="col-lg-4 col-md-6">
@@ -135,10 +135,10 @@
                                                                 </div>
                                                             </div>
                                                             <div class="card-body rounded">
-                                                                <h4 class="card-title">Premium Role
+                                                                <h4 class="card-title">{{ $product->title }}
                                                                    
                                                                     {{-- auth()->user()->discord_helper->getRole($guild_id, $product->role_id)->name --}}</h4>
-                                                                <span class="card-text card-text-info"><i class="ri-time-line mr-2"></i>@if($loop->first){{'2 days'}}@else{{'Active'}}@endif</span>
+                                                                <span class="card-text card-text-info">@if($product->access > 0){{'Available'}}@else{{'Archived'}}@endif</span>
                                                                 <p class="mb-3 card-description short">{{ $product->description }}</p>
                                                                 
 
@@ -148,8 +148,8 @@
                                                                     </li>
                                                                     <li class="mb-2">
                                                                     <div class="btn-group btn-group-toggle btn-group-flat">
-                                                                    @foreach($product->prices()->get() as $price) <!-- TODO Rob: going to move prices to ajax popup with edit fields, checking relationship -->
-                                                                        <a class="button btn button-icon bg-primary" target="_blank" href="#">${{ number_format(($price->price/100),2) }}</a>
+                                                                    @foreach($product->prices()->get()->where('status', 1) as $price) <!-- TODO Rob: going to move prices to ajax popup with edit fields, checking relationship -->
+                                                                        <span class="button btn button-icon bg-primary" target="_blank" href="#">${{ number_format(($price->price/100),2) }}</a>
                                                                     @endforeach
                                                                     </div>
                                                                     </li>
@@ -164,8 +164,9 @@
                                                             </div>
                                                             <div class="card-footer">
                                                                 <div class="d-flex align-items-center justify-content-between beast-text beast-text-purple">
-                                                                    <a href="index.html#" class=""><i class="las la-user mr-2 font-size-20"></i>10/50 Left</a>
-                                                                    <a href="index.html#" class=""><i class="las la-calendar mr-2 font-size-20"></i>10 Jan 2021</a>
+                                                                    
+                                                                    <a href="index.html#" class=""><i class="las la-user mr-2 font-size-20"></i>{{\App\Subscription::where('product_id', $product->id)->where('status', 1)->count()}} @if($product->max_sales != null){{'/'}}{{$product->max_sales}}@endif</a>
+                                                                    <a href="index.html#" class=""><i class="las la-calendar mr-2 font-size-20"></i>{{ Carbon\Carbon::createFromTimestamp(strtotime($product->start_date))->diffForHumans() }}</a>
                                                                 </div>
                                                             </div>
                                                         </div>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Auth;
 use App\AlertHelper;
 use App\DiscordStore;
+use App\StoreSettings;
 #use App\Shop;
 use App\User;
 use App\Product;
@@ -69,6 +70,7 @@ class DashController extends Controller {
                      
                  } else {
                      $discord_store = DiscordStore::where('guild_id', $guild_id)->first();
+                     $guild_helper = $discord_helper->getGuild($guild_id);
                      //$discord_store->live = 1;
                      //$discord_store->save();
                     if(!Stat::where('type', 1)->where('type_id', $discord_store->id)->exists()){
@@ -77,6 +79,12 @@ class DashController extends Controller {
                         $stats->save();
                     }else{
                         $stats = Stat::where('type', 1)->where('type_id', $discord_store->id)->first();
+                    }
+
+                    if(!StoreSettings::where('store_type', 1)->where('store_id', $discord_store->id)->exists()){
+                        $guild_icon = 'https://cdn.discordapp.com/icons/' . $guild_id . '/' . $guild_helper->icon . '.png?size=256';
+                        $store_settings = new StoreSettings(['store_type' => 1, 'store_id' => $discord_store->id, 'store_image' => $guild_icon, 'store_name' => $guild_helper->name, 'url_slug' => $guild_id]);
+                        $store_settings->save();
                     }
                      
                  }
@@ -123,7 +131,7 @@ class DashController extends Controller {
                  // Also need to fix the servers list subscribers count because if I subscribed to premium and new role it says the subscribers, really 1 subscriber and 2 susbcriptions for that 1 subscriber
                  //$users_roles = $this::getUsersRoles($discord_store->id);
          
-                 return view('dash.dash-guild')->with('discord_helper', $discord_helper)->with('guild_id', $guild_id)->with('guild', $discord_helper->getGuild($guild_id))->with('shop', $discord_store)->with('product_roles', $product_roles)->with('bot_positioned', $discord_helper->isBotPositioned($guild_id));
+                 return view('dash.dash-guild')->with('discord_helper', $discord_helper)->with('guild_id', $guild_id)->with('guild', $guild_helper)->with('shop', $discord_store)->with('product_roles', $product_roles)->with('bot_positioned', $discord_helper->isBotPositioned($guild_id));
 
 
                // return view('dash.dash-guild')->with('guilds', $discord_helper->getOwnedGuilds())->with('stripe_helper', $stripe_helper)->with('discord_helper', $discord_helper);
