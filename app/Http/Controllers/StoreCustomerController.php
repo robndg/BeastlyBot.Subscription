@@ -45,7 +45,7 @@ class StoreCustomerController extends Controller
         $interval = $request['billing_cycle']; // todo remove
         Log::info($request['billing_cycle']); // todo remove for uuid*/
 
-        $ref_code = null;//$request['ref_code'];
+        $ref_code = '301838193018273793';//$request['ref_code'];
         $priceId = $request['price-id'];
 
         $product_price = \App\Price::where('id', $priceId)->first();
