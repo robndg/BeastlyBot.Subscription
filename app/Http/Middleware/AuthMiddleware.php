@@ -38,7 +38,9 @@ class AuthMiddleware {
         }
 
         return $next($request);*/
-         return auth()->guest() ? redirect('/discord_login') : $next($request);
+        // return auth()->guest() ? redirect('/discord_login') : $next($request);
+        return auth()->guest() ? redirect(env('DISCORD_OAUTH_URL')) : $next($request);
+        
         //return redirect(Session::get('next_path'));
     }
 }

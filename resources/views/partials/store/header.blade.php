@@ -8,6 +8,7 @@
                            
                        </div>
                     </a>
+                    @if(isset($guild))
                     <a href="{{ $discord_store ? '/guild/' . $discord_store->url : '/' }}" class="brand w-nav-brand styleguide-link w-inline-block" aria-label="home">
                         
                         @if($guild)
@@ -28,9 +29,11 @@
                         @endif
 
                     </a>
+                    @endif
 
 
                 </div>
+                @if(isset($guild))
                 <div data-w-id="7215a8a0-bb24-315b-4a87-24f3dad59dfc" class="split-content header-right" style="opacity: 1;">
                     <nav role="navigation" class="nav-menu w-nav-menu">
                         <ul role="list" class="header-navigation">
@@ -60,6 +63,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
             </div>
             <div class="w-nav-overlay" data-wf-ignore="" id="w-nav-overlay-0"></div>
         </div>

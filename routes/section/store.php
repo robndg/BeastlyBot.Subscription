@@ -18,13 +18,18 @@ use Illuminate\Support\Facades\Cache;
 use App\Products\DiscordRoleProduct; 
 use App\Products\Plans\DiscordPlan;
 
+Route::group(['middleware' => ['auth', 'web']], function () {
 
-// Store Page
-Route::get('/shop/{shop_title}', 'StoreController@getStoreFront'); // * page //
+});
+
+// routes thru beastly.store/welcome/storename
+Route::get('/welcome/{store_slug}', 'StoreController@getStoreWelcome'); // * page *//
 
 /* Auths */
 
 Route::group(['middleware' => ['auth', 'web']], function () {
+    // Store Page
+    Route::get('/shop/{shop_title}', 'StoreController@getStoreFront'); // * page //
     // Store Product Page
     Route::get('/shop/{shop_title}/{product_title}', 'StoreController@getStoreProduct'); // * page //
     // Store Product Page Setup Order

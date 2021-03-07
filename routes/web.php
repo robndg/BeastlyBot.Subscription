@@ -21,7 +21,7 @@ Route::get('/impersonate/{id}', 'UserController@impersonate');
     require_once __DIR__ . "/section/site.php"; // * main //
 //});
 
-require_once __DIR__ . "/section/store.php"; // * main // // product page requires auth
+require_once __DIR__ . "/section/store.php"; // * main // // product/front page requires auth
 
 require_once __DIR__ . "/section/auth.php";
 
