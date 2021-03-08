@@ -51,10 +51,10 @@ class SubscriptionStarted implements ShouldQueue {
 
           if(StoreCustomer::where('referral_code', $referral_code)->exists()){
             $product_price = Price::where('price_id', $subscription->price_id)->first();
-            $store = DiscordStore::where('UUID', $product_price->store_id);
-            $store_settings = StoreSettings::where('store_id', $product_price->store_id);
-            $referrer_customer = StoreCustomer::where('referral_code', $referral_code)->first();
-            $purchaser_customer = StoreCustomer::where('store_customer', $subscription->user_id);
+            $store = DiscordStore::where('UUID', $product_price->store_id)->first();
+            $store_settings = StoreSettings::where('store_id', $product_price->store_id)->first();
+            $referrer_customer = StoreCustomer::where('referral_code', $referral_code)->where('discord_store_id',$store->id)->first();
+            $purchaser_customer = StoreCustomer::where('store_customer', $subscription->user_id)->where('discord_store_id',$store->id)->first();
             
             if($referrer_customer->id != $purchaser_customer){
               Log::info('Refferer and Purchaser cannot get referral');
@@ -79,8 +79,8 @@ class SubscriptionStarted implements ShouldQueue {
                 'count' => 0,
                 'UUID' => $subscriptionId, // cron copies if store setting recur, creates new table
               ]);
+              $refferal->create();
             }
-
 
          }
       }
