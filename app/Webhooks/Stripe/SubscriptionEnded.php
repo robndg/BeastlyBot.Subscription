@@ -28,7 +28,7 @@ class SubscriptionEnded implements ShouldQueue {
         $customer = $webhookCall->payload['data']['object']['customer'];
         $customer_id = StripeConnect::where('customer_id', $customer)->first()->user_id;
         $partner_id = $webhookCall->payload['data']['object']['items']['data'][0]['plan']['metadata']['user_id'];
-        $data = explode('_', $plan_id);
+        $subscriptionType = $webhookCall->payload['data']['object']['metadata']['type'];
 
         try {
             $subscription = Subscription::where('id', $subscription_id)->first();
@@ -39,13 +39,13 @@ class SubscriptionEnded implements ShouldQueue {
             Log::info("Sub canceled (4) did not save in DB: ", $subscription_id);
         }
     
-        switch ($data[0]) {
-            case 'discord': $this->handleDiscord($customer_id, $partner_id, $sub_id, $data[1], $data[2]);
+        switch ($subscriptionType) {
+            case 'discord_subscription': $this->handleDiscord($customer_id, $partner_id, $sub_id);
         }
         
     }
 
-    private function handleDiscord ($customer_id, $partner_id, $subscription_id, $guild_id, $role_id) {
+    private function handleDiscord ($customer_id, $partner_id, $subscription_id) {
         $customer_discord_id = DiscordOAuth::where('user_id', $customer_id)->first()->discord_id;
         $partner_discord_id = DiscordOAuth::where('user_id', $customer_id)->first()->discord_id;
         $discord_helper = new \App\DiscordHelper(\App\User::where('id', $customer_id)->first());
