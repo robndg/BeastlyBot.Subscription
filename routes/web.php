@@ -24,7 +24,6 @@ Route::get('/impersonate/{id}', 'UserController@impersonate');
 require_once __DIR__ . "/section/store.php"; // * main // // product/front page requires auth
 
 require_once __DIR__ . "/section/auth.php";
-
 /**
  * All routes that require authentication
  */
@@ -32,11 +31,10 @@ require_once __DIR__ . "/section/auth.php";
 
 Route::group(['middleware' => ['auth', 'web']], function () {
 
-    require_once __DIR__ . "/section/dash.php"; // * main //
+    require_once __DIR__ . "/section/dash.php"; 
 
     require_once __DIR__ . "/section/paypal.php";
+
     require_once __DIR__ . "/section/admin.php";
 });
 
-
-/* test */

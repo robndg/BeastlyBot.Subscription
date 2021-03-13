@@ -28,6 +28,7 @@ Route::get('/welcome/{store_slug}', 'StoreController@getStoreWelcome'); // * pag
 /* Auths */
 
 Route::group(['middleware' => ['auth', 'web']], function () {
+    Route::get('/checkout-subscription-success/{id}', 'StoreController@checkoutSuccess');
     // Store Page
     Route::get('/shop/{shop_title}', 'StoreController@getStoreFront'); // * page //
     // Store Product Page

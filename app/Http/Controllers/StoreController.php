@@ -252,5 +252,30 @@ class StoreController extends Controller {
     }
 
 
+    public function checkoutSuccess($sub_id) {
+        $subscription = Subscription::where('id', $sub_id)->first();
+
+        if ($subscription == null) {
+            AlertHelper::alertError('Subscription invalid.');
+            return redirect('/dashboard');
+        }
+
+        $store = DiscordStore::where('id', $subscription->store_id)->first();
+
+        if ($store == null) {
+            AlertHelper::alertError('Invalid store.');
+            return redirect('/dashboard');
+        }
+
+        $product = \App\ProductRole::where('id', $subscription->product_id)->first();
+
+        if ($product == null) {
+            AlertHelper::alertError('Invalid product.');
+            return redirect('/dashboard');
+        }
+
+        AlertHelper::alertSuccess('You are now an ' . $product->title . '.' .  ' You will automatically be billed every 1 month(s) starting today.');
+        return redirect('/dashboard');
+    }
 
 }
