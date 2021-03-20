@@ -192,8 +192,12 @@ class DashController extends Controller {
         $max_sales = $request->max_sales; 
 
         $url_slug = Str::title(str_replace(' ', '-', $title));
-
-        $slug_count = ProductRole::where('discord_store_id', $discord_store_id)->where('url_slug', $product_role->url_slug)->count();
+        
+        if(ProductRole::where('discord_store_id', $discord_store_id)->where('url_slug', $url_slug)->exists()){
+            $slug_count = ProductRole::where('discord_store_id', $discord_store_id)->where('url_slug', $url_slug)->count();
+        }else{
+            $slug_count = 1;
+        }
 
         if($slug_count > 1){
             $url_slug = $url_slug . "-" . $slug_count;
