@@ -277,6 +277,8 @@
 	animation: shadowx 1500ms ease-in-out alternate infinite;
 }
 </style>
+<span id="css-changes">
+</span>
 @endsection
 @section('content')
 <div class="container-fluid"><!-- container div -->
@@ -399,7 +401,7 @@
                               <div class="checkbox">
                                  <label><input class="mr-2" type="checkbox">Enable Two-Factor-Authentication</label>
                               </div>--}}
-                              <button type="submit" class="btn btn-success float-right" style="display:none">Save Changes</button> <!-- TODO: check vars jquery for changes -->
+                              <button type="submit" class="btn btn-success float-right save-changes-button" style="display:none">Save Changes</button> <!-- TODO: check vars jquery for changes -->
                            </form>
                         </div>
                      </div>
@@ -414,7 +416,7 @@
                         </div>
                      </div>
                      <div class="card-body">-->
-                        <div style="margin-top: 100px;">
+                        <div class="custom-beastly" style="margin-top: 100px;">
                         <div class="d-flex justify-content-center">
                             <div class="xx banner-image">
                                 <div class="xx-head"></div>
@@ -444,6 +446,9 @@
 
 <script>
 
+var eyes_color = "{{ $settings->eyes_color }}";
+var save_eyes_color = false;
+
 var eyes_shown = false;
 $(document).on('click', '[data-change="click"]', function (e) {
     //$('.btn-product-role').removeClass('active');
@@ -460,7 +465,31 @@ $(document).on('click', '[data-change="click"]', function (e) {
        }
     }
     
-})
+});
+
+$(document).on('click', '[data-change="eyes"]', function (e) {
+    //$('.btn-product-role').removeClass('active');
+    const value = $(this).val();
+    console.log('Eyes button');
+    if($(this).attr('data-custom-target') != eyes_color) {
+        console.log('Eyes Color Changed');
+        var save_eyes_color = $(this).attr('data-custom-target');
+        console.log(save_eyes_color);
+        $('#css-changes').empty();
+        $( "<style>.custom-beastly .xx-head::after { background-color: " + save_eyes_color + "; box-shadow: 12.25vmin 0 " + save_eyes_color + ";  }</style>" ).appendTo( "#css-changes" );
+       /* $('.xx-head::after').css(
+        {
+            'background-color': save_eyes_color,
+            'box-shadow': '12.25vmin 0 ' + save_eyes_color
+        }
+        )*//*.css("background-color", save_eyes_color)*//*.css("box-shadow", "12.25vmin 0 " + save_eyes_color);*/
+        $('.save-changes-button').slideDown();
+    }else{
+        $('#css-changes').empty();
+        $('.save-changes-button').slideUp();
+    }
+    
+});
 
 $(document).on('change', '[data-save="text"]', function (e) {
 
