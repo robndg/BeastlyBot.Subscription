@@ -14,17 +14,21 @@ use App\StripeHelper;
     return redirect('/server/' . $guild_id);
 });*/
 
-Route::get('/dashboard', 'DashController@getDash'); // * //
+Route::get('/dashboard', 'DashController@getDash'); // * Page: Dash Guilds + More //
 
-Route::get('/dashboard/{guildid}', 'DashController@getDashGuild'); // * //
+Route::get('/dashboard/{guildid}', 'DashController@getDashGuild'); // * Page: Dash Guild //
 
-Route::get('/dashboard/{guildid}/product', 'DashController@getDashGuildProduct'); // * //
+Route::get('/dashboard/{guildid}/product', 'DashController@getDashGuildProduct'); // * Page: Dash Guild Product Role //
 
-Route::post('/bknd00/saveGuildProductRole', 'DashController@saveGuildProductRole'); // * //
+Route::post('/bknd00/saveGuildProductRole', 'DashController@saveGuildProductRole'); // * Save: Dash Guild Product Role //
 
-Route::post('/bknd00/returnNewStore', 'DashController@returnNewStore'); // * //
+Route::post('/bknd00/returnNewStore', 'DashController@returnNewStore'); // * Redirect: Latest Guild Added Page //
 
-Route::post('/bknd00/saveGuildProductRolePrices', 'ProductPlanController@create'); // * //
+Route::post('/bknd00/saveGuildProductRolePrices', 'ProductPlanController@create'); // * Save: Dash Guild Product Role Prices //
+
+Route::get('/dashboard/{guildid}/settings', 'DashController@getDashGuildStoreSettings'); // * Page: Dash Guild Store Settings //
+
+Route::get('/dashboard/{guildid}/settings/bot', 'DashController@getDashGuildStoreSettingsBot'); // * Page: Dash Guild Store Settings Bot //
 
 //Route::get('/server/{id}', 'ServerController@getServerPage');
 

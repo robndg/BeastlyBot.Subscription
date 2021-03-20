@@ -33,6 +33,7 @@ class CreateStoreSettingsTable extends Migration
             $table->integer('refunds_terms')->default(0); // 0 anytime // 1 owner discretion
             $table->integer('refunds_days')->default(7);
 
+            $table->boolean('referrals_enabled')->default(false);
             $table->boolean('recurring_referrals')->default(true);
             $table->double('referral_percent_fee')->default(10);
 
@@ -47,7 +48,8 @@ class CreateStoreSettingsTable extends Migration
             $table->string('main_color')->nullable();
             $table->string('secondary_color')->nullable();
             $table->boolean('show_beastly')->default(true);
-            $table->string('eyes_color')->nullable();
+            $table->string('eyes_color')->default('#b0e0e6');
+            
             $table->boolean('allow_featured')->default(false);
 
             $table->json('metadata')->nullable();

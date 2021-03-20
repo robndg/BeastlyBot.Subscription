@@ -27,7 +27,7 @@ class CreateReferralsTable extends Migration
             $table->string('refund_invoice_id')->nullable(); // rest done with cron
             $table->integer('paid')->nullable(); // should be refund_amount
             $table->integer('override')->default(0); // 1 to cancel
-            $table->integer('count')->default(0); // recur count
+            $table->integer('count')->default(0); // recur count // 0 if no recur (get from store settings)
             $table->longText('UUID')->nullable(); // subID
             $table->timestamps();
         });

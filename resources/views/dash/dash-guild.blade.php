@@ -18,13 +18,13 @@
                              <div class="iq-sub-dropdown dropdown-menu" aria-labelledby="dropdownSearch" style="">
                                    <form action="#" class="searchbox">
                                       <div class="form-group mb-0 position-relative">
-                                      <input type="text" class="text search-input font-size-12" placeholder="Find a member..">
+                                      <input type="text" class="text search-input font-size-12" placeholder="Find a product...">
                                       <a href="#" class="search-link"><i class="ri-search-line"></i></a> 
                                       </div>
                                    </form>
                              </div>
                           </div>
-                          <a href="#" class="btn btn-primary add-btn" data-toggle="modal" data-target="#new-note"><i class="las la-plus pr-2"></i>Store Front</a>
+                          <a class="btn btn-info add-btn" href="/shop/{{ $store_settings->url_slug }}"><i class="las la-store pr-2"></i>Store Front</a>
                        </div>
                  </div>
               </div>

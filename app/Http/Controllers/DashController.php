@@ -85,6 +85,8 @@ class DashController extends Controller {
                         $guild_icon = 'https://cdn.discordapp.com/icons/' . $guild_id . '/' . $guild_helper->icon . '.png?size=256';
                         $store_settings = new StoreSettings(['store_type' => 1, 'store_id' => $discord_store->id, 'store_image' => $guild_icon, 'store_name' => $guild_helper->name, 'url_slug' => $guild_id]);
                         $store_settings->save();
+                    }else{
+                        $store_settings = StoreSettings::where('store_type', 1)->where('store_id', $discord_store->id)->first();
                     }
                      
                  }
@@ -131,7 +133,7 @@ class DashController extends Controller {
                  // Also need to fix the servers list subscribers count because if I subscribed to premium and new role it says the subscribers, really 1 subscriber and 2 susbcriptions for that 1 subscriber
                  //$users_roles = $this::getUsersRoles($discord_store->id);
          
-                 return view('dash.dash-guild')->with('discord_helper', $discord_helper)->with('guild_id', $guild_id)->with('guild', $guild_helper)->with('shop', $discord_store)->with('product_roles', $product_roles)->with('bot_positioned', $discord_helper->isBotPositioned($guild_id));
+                 return view('dash.dash-guild')->with('discord_helper', $discord_helper)->with('guild_id', $guild_id)->with('guild', $guild_helper)->with('shop', $discord_store)->with('product_roles', $product_roles)->with('bot_positioned', $discord_helper->isBotPositioned($guild_id))->with('store_settings', $store_settings);
 
 
                // return view('dash.dash-guild')->with('guilds', $discord_helper->getOwnedGuilds())->with('stripe_helper', $stripe_helper)->with('discord_helper', $discord_helper);
@@ -188,6 +190,14 @@ class DashController extends Controller {
         $start_time = $request->start_time;
         $end_date = $request->end_date;
         $max_sales = $request->max_sales; 
+
+        $url_slug = Str::title(str_replace(' ', '-', $title));
+
+        $slug_count = ProductRole::where('discord_store_id', $discord_store_id)->where('url_slug', $product_role->url_slug)->count();
+
+        if($slug_count > 1){
+            $url_slug = $url_slug . "-" . $slug_count;
+        }
         
         //Log::info($start_time);
 
@@ -212,6 +222,7 @@ class DashController extends Controller {
                 'end_date' => $end_date,
                 'max_sales' => $max_sales,
                 'active' => 0,
+                'url_slug' => $url_slug,
                 ]);
                 $product_role->save();
 
@@ -230,14 +241,18 @@ class DashController extends Controller {
         }else{
 
            // try{
+                
                 $product_role = ProductRole::where('id', $product_uuid)->first();
+                
                 //$product_role->discord_store_id = $discord_store_id;
                 $product_role->role_id = $role_id;
+                $product_role->title = $title;
                 $product_role->description = $description;
                 $product_role->access = $access;
                 $product_role->start_date = $start_date_time;
                 $product_role->end_date = $end_date;
                 $product_role->max_sales = $max_sales;
+                $product_role->url_slug = $url_slug;
                 // if prices then active 1
                 //$product_role->active = 1;
                 $product_role->save();
@@ -270,6 +285,117 @@ class DashController extends Controller {
         
 
         
+    }
+
+
+    public function getDashGuildStoreSettings($guild_id){
+            if(Auth::check()){
+                $stripe_helper = auth()->user()->getStripeHelper();
+                $discord_helper = new DiscordHelper(auth()->user());
+        
+                $owner = true; $admin = true;
+    
+                if($owner || $admin) {
+                    //$guild_id = \request('guild');
+                 
+                     $discord_store = null;
+             
+                     if(! DiscordStore::where('guild_id', $guild_id)->exists()) {
+                       
+                        AlertHelper::alertError('Please retry adding the bot.');
+                        return redirect('/dashboard');
+                        
+                         
+                     } else {
+                         $discord_store = DiscordStore::where('guild_id', $guild_id)->first();
+                         $guild_helper = $discord_helper->getGuild($guild_id);
+                         //$discord_store->live = 1;
+                         //$discord_store->save();
+                        if(!Stat::where('type', 1)->where('type_id', $discord_store->id)->exists()){
+                            $stats = new Stat(['type' => 1, 'type_id' => $discord_store->id]);
+                            $stats->data = ['subscribers' => ['active' => 0, 'total' => 0], 'disputes' => ['active' => 0, 'total' => 0]];
+                            $stats->save();
+                        }else{
+                            $stats = Stat::where('type', 1)->where('type_id', $discord_store->id)->first();
+                        }
+    
+                        if(!StoreSettings::where('store_type', 1)->where('store_id', $discord_store->id)->exists()){
+                            $guild_icon = 'https://cdn.discordapp.com/icons/' . $guild_id . '/' . $guild_helper->icon . '.png?size=256';
+                            $store_settings = new StoreSettings(['store_type' => 1, 'store_id' => $discord_store->id, 'store_image' => $guild_icon, 'store_name' => $guild_helper->name, 'url_slug' => $guild_id]);
+                            $store_settings->save();
+                        }
+                         
+                     }
+    
+                     if(! $discord_helper->ownsGuild($guild_id)) { // only allow real admin owner
+                        AlertHelper::alertError('You are not the owner of that server.');
+                        return redirect('/dashboard');
+                    }
+
+                    $store_settings = StoreSettings::where('store_type', 1)->where('store_id', $discord_store->id)->first();
+
+                    return view('dash.dash-guild-settings')->with('discord_helper', $discord_helper)->with('guild_id', $guild_id)->with('guild', $guild_helper)->with('shop', $discord_store)->with('settings', $store_settings);
+    
+
+                } // end owner/admin check
+            } // end auth
+
+    }
+
+    public function getDashGuildStoreSettingsBot($guild_id) {
+
+
+        if(Auth::check()){
+            $stripe_helper = auth()->user()->getStripeHelper();
+            $discord_helper = new DiscordHelper(auth()->user());
+    
+            $owner = true; $admin = true;
+
+            if($owner || $admin) {
+                //$guild_id = \request('guild');
+             
+                 $discord_store = null;
+         
+                 if(! DiscordStore::where('guild_id', $guild_id)->exists()) {
+                   
+                    AlertHelper::alertError('Please retry adding the bot.');
+                    return redirect('/dashboard');
+                    
+                     
+                 } else {
+                     $discord_store = DiscordStore::where('guild_id', $guild_id)->first();
+                     $guild_helper = $discord_helper->getGuild($guild_id);
+                     //$discord_store->live = 1;
+                     //$discord_store->save();
+                    if(!Stat::where('type', 1)->where('type_id', $discord_store->id)->exists()){
+                        $stats = new Stat(['type' => 1, 'type_id' => $discord_store->id]);
+                        $stats->data = ['subscribers' => ['active' => 0, 'total' => 0], 'disputes' => ['active' => 0, 'total' => 0]];
+                        $stats->save();
+                    }else{
+                        $stats = Stat::where('type', 1)->where('type_id', $discord_store->id)->first();
+                    }
+
+                    if(!StoreSettings::where('store_type', 1)->where('store_id', $discord_store->id)->exists()){
+                        $guild_icon = 'https://cdn.discordapp.com/icons/' . $guild_id . '/' . $guild_helper->icon . '.png?size=256';
+                        $store_settings = new StoreSettings(['store_type' => 1, 'store_id' => $discord_store->id, 'store_image' => $guild_icon, 'store_name' => $guild_helper->name, 'url_slug' => $guild_id]);
+                        $store_settings->save();
+                    }
+                     
+                 }
+
+                 if(! $discord_helper->ownsGuild($guild_id)) { // only allow real admin owner
+                    AlertHelper::alertError('You are not the owner of that server.');
+                    return redirect('/dashboard');
+                }
+
+                $store_settings = StoreSettings::where('store_type', 1)->where('store_id', $discord_store->id)->first();
+
+                return view('dash.dash-guild-settings-bot')->with('discord_helper', $discord_helper)->with('guild_id', $guild_id)->with('guild', $guild_helper)->with('shop', $discord_store)->with('settings', $store_settings);
+
+
+            } // end owner/admin check
+        } // end auth
+
     }
     
 

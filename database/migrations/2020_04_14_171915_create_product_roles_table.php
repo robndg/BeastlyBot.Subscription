@@ -24,6 +24,7 @@ class CreateProductRolesTable extends Migration
             $table->string('end_date')->nullable(); // date time
             $table->integer('max_sales')->nullable();
             $table->integer('active')->default(0);
+            $table->string('url_slug');
             //$table->string('UUID')->unique();
             $table->timestamps();
         });
