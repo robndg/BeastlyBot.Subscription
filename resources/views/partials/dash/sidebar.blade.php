@@ -196,7 +196,8 @@
                         <div class="card-body">
                             <div class="sidebarbottom-content">
                                <!-- <div class="image"><img src="{{ asset('dash/assets/images/layouts/side-bkg.png') }}" class="img-fluid" alt="side-bkg"></div>-->
-                               <div class="d-flex justify-content-center" height="height:210px;">
+                               <!--<div class="image" data-toggle="tooltip" data-placement="top" title="" data-original-title="Go Premium"><i class="las la-certificate" class="img-fluid"></i></div>-->
+                               <div class="d-flex justify-content-center" style="height: 250px;transform: scale(0.6);">
                                     <div class="xx banner-image">
                                         <div class="xx-head"></div>
                                         <div class="xx-body"></div>
