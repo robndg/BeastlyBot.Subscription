@@ -28,6 +28,8 @@ Route::post('/bknd00/saveGuildProductRolePrices', 'ProductPlanController@create'
 
 Route::get('/dashboard/{guildid}/settings', 'DashController@getDashGuildStoreSettings'); // * Page: Dash Guild Store Settings //
 
+Route::post('/bknd00/saveGuildSettings', 'StoreSettingsController@saveGuildSettings'); // * Save: Dash Guild Save Settings //
+
 Route::get('/dashboard/{guildid}/settings/bot', 'DashController@getDashGuildStoreSettingsBot'); // * Page: Dash Guild Store Settings Bot //
 
 //Route::get('/server/{id}', 'ServerController@getServerPage');

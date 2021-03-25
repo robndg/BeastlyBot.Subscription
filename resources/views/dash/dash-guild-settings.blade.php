@@ -17,7 +17,7 @@
                         </svg>
                         <span>Back</span>
                     </a>
-                    <button type="button" class="btn btn-success ml-2" id="settings-save-button" style="display:none">Save Changes</button> <!-- TODO: check vars jquery for changes -->
+                    <button type="button" class="btn btn-success ml-2" id="settings-save-button" onclick="saveGuildStoreSettings()" style="display:none">Save Changes</button> <!-- TODO: check vars jquery for changes -->
                     </div>
                 </div>
             </div>
@@ -85,11 +85,11 @@
                            
                               <div class="row">
                                  <div class="form-group col-md-12">
-                                    <label for="fname">Description:</label>
-                                    <input type="text" class="form-control save-target" id="settings-description" data-save-settings="description" data-original="{!! $settings->description !!}" data-new="" data-save="text" placeholder="Store Description" value="{{ $settings->description }}">
+                                    <label for="fname">Introduction:</label>
+                                    <input type="text" class="form-control save-target" id="settings-description" data-save-settings="description" data-original="{!! $settings->description !!}" data-new="" data-save="text" placeholder="Store Description" value="{!! $settings->description !!}">
                                  </div>
                                  <div class="form-group col-md-12">
-                                    <label for="lname">About:</label>
+                                    <label for="lname" class="mb-0">{{ 'What is ' . $settings->store_name . ' About?' }}</label>
                                     <style>
                                     .ql-toolbar.ql-snow{
                                         border: none;
@@ -102,14 +102,14 @@
                                         padding: 10px!important;
                                     }
                                     </style>
-                                     <div class="card card-transparent card-block card-stretch event-note mb-0">
+                                     <div class="card card-transparent card-block card-stretch event-note mb-0 mt-0">
                                         <div class="card-body px-0 bukmark">
                                             <div class="d-flex align-items-center justify-content-between pb-2 mb-3">
                                                 <div class="quill-tool">
                                                 </div>
                                             </div>
                                             <div class="card-body rounded ql-dark" id="quill-toolbar1" style="border: none;">
-                                                @if($settings->about){!! $settings->about !!}@else{!!'<h3>What is ' . $settings->store_name . ' About?'!!}@endif</p>
+                                                @if($settings->about){!! $settings->about !!}{{--@else{!!'<h3>What is ' . $settings->store_name . ' About?'!!}--}}@endif</p>
                                             </div>
                                         </div>
                                     </div>
@@ -336,7 +336,7 @@ function saveGuildStoreSettings() {
             'url_slug': $('#settings-url_slug').attr('data-new'),
             'members_only': $('#settings-members_only').attr('data-new'),
             'description': $('#settings-description').attr('data-new'),
-            'about':$('#settings-description').attr('data-new'), // TODO: get from new description plugin
+            'about':$('#settings-about').attr('data-new'), // TODO: get from new description plugin
             'cancel_subscriptions_on_exit': $('#settings-cancel_subscriptions_on_exit').attr('data-new'),
             'disable_public_downgrades': $('#settings-disable_public_downgrades').attr('data-new'),
             'refunds_enabled': $('#settings-refunds_enabled').attr('data-new'),
