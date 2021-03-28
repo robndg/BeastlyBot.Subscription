@@ -73,8 +73,8 @@
                                                 </div>
                                         </div>
                                     </div>
-                                    <div data-wf-sku-bindings="%5B%7B%22from%22%3A%22f_price_%22%2C%22to%22%3A%22innerHTML%22%7D%5D" class="card-add-to-cart-plan-price"><span id="selected-price-show">$ 169.00 USD</span></div>
-                                    <button type="button" onclick="beginCheckout()" data-node-type="commerce-add-to-cart-button" data-loading-text="Adding role..." value="Subscribe" class="w-commerce-commerceaddtocartbutton button-primary full-width white">Select Plan</button>
+                                    <div data-wf-sku-bindings="%5B%7B%22from%22%3A%22f_price_%22%2C%22to%22%3A%22innerHTML%22%7D%5D" class="card-add-to-cart-plan-price"><span id="selected-price-show"></span></div>
+                                    <button type="button" onclick="beginCheckout()" data-node-type="commerce-add-to-cart-button" data-loading-text="Adding role..." value="Subscribe" class="w-commerce-commerceaddtocartbutton button-primary full-width white disabled" disabled>Select Plan</button>
                                     <button type="button" data-node-type="commerce-buy-now-button" data-default-text="Buy now" data-subscription-text="Subscribe now" class="w-commerce-commercebuynowbutton button-secondary buy-now w-dyn-hide">Buy now</button>
                                 </div>
                                 <div style="display:none" class="w-commerce-commerceaddtocartoutofstock empty-state small plan">
