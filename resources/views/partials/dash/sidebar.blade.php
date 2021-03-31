@@ -58,7 +58,7 @@
                                 @else
                                 <img src="https://cdn.discordapp.com/icons/{{ $guild['id'] }}/{{ $guild['icon'] }}.png?size=256" class="rounded-circle mr-1" style="width:25px;" alt="...">
                                 @endif
-                                {{ $guild['name'] }}</span>
+                                {{ substr($guild['name'], 0, 18) . '...' }}</span>
                         </a>
                         @endforeach
                     @endif
