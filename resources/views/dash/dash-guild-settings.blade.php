@@ -225,8 +225,6 @@ function showShowButton(){
 
 $(document).on('change', '[data-save="text"]', function (e) {
     
-       
-   // if($(this).hasClass('save-target')){
         var name_save_settings = $(this).attr('data-save-settings');
         const current_save_settings = $(this).attr('data-original');
         if($(this).attr('data-premium')){
@@ -245,18 +243,12 @@ $(document).on('change', '[data-save="text"]', function (e) {
         if((current_save_settings != new_save_setting) || new_save_setting == null){
             new_save_setting = $(this).val();
             $(this).attr('data-new', new_save_setting);
-            //if(current_save_settings != 'new_' + name_save_settings){
-            //name_save_settings + '_save' = false;
         }else{
             new_save_setting = $(this).val();
             $(this).attr('data-new', new_save_setting);
-            //name_save_settings = $(`settings_${name_save_settings}`).val();
-            //name_save_settings + '_save' = true;
         }
             showShowButton();
         }
-        //checkShowSave();
-  //  }
     
 })
 
