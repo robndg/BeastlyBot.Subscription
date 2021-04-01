@@ -119,4 +119,166 @@
         });
     </script>
 
+
+
+
+<script>
+        console.log("goPremiumButton here");
+
+        function goPremiumButton(){
+
+
+            Swal.fire({
+                //title: 'Custom width, padding, background.',
+                title: '<strong>Beastly <u>Premium</u> Member</strong>',
+                //icon: 'info',
+                html:
+                    'Unlock <b>special premium features<b> to your store<br>' +
+                    'and control in new ways.',
+                showCloseButton: true,
+                showCancelButton: false,
+                focusConfirm: false,
+                confirmButtonText:
+                    '<i class="las la-certificate"></i> Great!',
+                confirmButtonAriaLabel: 'Premium, great!',
+                cancelButtonText:
+                    '<i class="fa fa-thumbs-down"></i>',
+                cancelButtonAriaLabel: 'Thumbs down',
+                width: 600,
+                padding: '3em',
+                background: '#2C2F33 url("/site/assets/images/4-b.png") no-repeat scroll center top / cover',
+                backdrop: `
+                    rgba(0,0,123,0.4)
+                    url(https://sweetalert2.github.io/images/nyan-cat.gif)
+                    left top
+                    no-repeat
+                `
+                }).then((result) => {
+                    console.log(result)
+                /* Read more about isConfirmed, isDenied below */
+                    if (result.value == true) {
+                            /*const inputOptions = new Promise((resolve) => {
+                                setTimeout(() => {
+                                    resolve({
+                                    'beastly_premium_monthly-1': 'Monthly',
+                                    'beastly_premium_yearly-1': 'Yearly',
+                                    })
+                                }, 1000)
+                            })*/
+
+                            Swal.fire({
+                            title: 'Select Premium Plan',
+                            confirmButtonText:
+                            '<i class="las la-certificate"></i> Unlock',
+                            confirmButtonAriaLabel: 'Premium, great!',
+                            width: 600,
+                            padding: '3em',
+                           // background: '#000 url("https://sweetalert2.github.io/images/trees.png")',
+                            background: '#2C2F33 url("/site/assets/images/4-b.png") no-repeat scroll center top / cover',
+                            backdrop: `
+                                rgba(0,0,123,0.4)
+                                url(https://sweetalert2.github.io/images/nyan-cat.gif)
+                                left top
+                                no-repeat
+                            `,
+                            input: 'radio',
+                            inputOptions: {
+                                'beastly_premium_monthly-1': 'Monthly',
+                                'beastly_premium_yearly-1': 'Yearly',
+                            },
+                                inputValidator: (value) => {
+                                    console.log(value);
+                                    if (!value) {
+                                    return 'Select the plan that suits you, discount on yearly!'
+                                    }else{
+                                        interval_plan = value;
+                                        if (interval_plan) {
+                                            window.open(`https://thestripelink.com/${interval_plan}`, "_blank") || window.location.replace(`https://thestripelink.com/${interval_plan}`);
+                                            setTimeout(() => {
+                                                Toast.fire({
+                                                    title: 'Premium Confirming!',
+                                                    text: "We'll let you know when successful",
+                                                    type: 'success',
+                                                    showCancelButton: false,
+                                                    showConfirmButton: false, // TODO: look below, make true if can do session with Toast
+                                                });
+                                            }, 1000)
+                                            /*setTimeout(() => { // for video
+                                                Swal.fire({
+                                                    title: 'Premium Added',
+                                                    text: "Congratulations you're now a Beastly Premium member! Reload the page?",
+                                                    type: 'success',
+                                                    showCancelButton: true,
+                                                    showConfirmButton: true,
+                                                });
+                                            }, 3000)*/
+                                           
+                                            //checkPremiumCount(40) <!-- TODO!!: create returnCheckPremium for function checkPremiumCount
+                                        }
+                                    }
+                                }
+                            })
+                            
+                           /* if (interval_plan) {
+                                Swal.fire({ html: `You selected: Premium ${interval_plan}... redirecting` })
+                            }*/
+                            ///Swal.fire('Awesome Opening Page', '', 'success')
+                          
+
+                        
+                    } else if (result.isDenied) {
+                        Swal.fire('All good!', 'Maybe next time :)', 'success')
+                    }
+                });
+
+        } // end function goPremium
+
+
+        function checkPremiumCount(checkInterval){ // TODO: session this, instead of waiting on page
+            var checkInterval = checkInterval
+            
+            setTimeout(function() { 
+
+                $.ajax({
+                    url: '/bknd00/returnCheckPremium', // TODO: this
+                    type: 'POST',
+                    data: {
+                        _token: '{{ csrf_token() }}'
+                    },
+                }).done(function (msg) {
+
+                    if(!msg['success']){
+                        checkInterval = checkInterval - 1;
+                        if(checkInterval > 0){
+                            console.log("checking premium")
+                            checkPremiumCount(checkInterval)
+                        }else{
+                            console.log("false premium")
+                        }
+                    }else{
+                        Swal.fire({
+                            title: 'Premium Added',
+                            text: "Congratulations you're now a Beastly Premium member! Reload the page?",
+                            type: 'success',
+                            showCancelButton: true,
+                            showConfirmButton: true,
+                        });
+                        
+                        // Save Settings (or page), then....
+                        // add fireworks or confetti css, reload.. or change data element to allow premium features
+
+                        // Add if easier to reload the page, add result denied or accepted from confirm/cancel buttons.
+                        //location.reload();
+                        
+                    }
+
+                })
+
+
+            
+            }, 1500);
+        }
+
+        </script>
+
 @endauth

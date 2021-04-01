@@ -205,7 +205,7 @@
                                     </div>
                                 </div>
                                 <p class="mb-0">Set Business Account To Explore Premiun Features</p>
-                                <button type="button" class="btn bg-primary mt-3">Upgrade</button>
+                                <button type="button" onclick="goPremiumButton()" class="btn bg-primary mt-3">Upgrade</button>
                             </div>
                         </div>
                     </div>
