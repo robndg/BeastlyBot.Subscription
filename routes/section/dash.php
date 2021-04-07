@@ -24,6 +24,8 @@ Route::post('/bknd00/saveGuildProductRole', 'DashController@saveGuildProductRole
 
 Route::post('/bknd00/returnNewStore', 'DashController@returnNewStore'); // * Redirect: Latest Guild Added Page //
 
+Route::post('/bknd00/returnCheckPremium', 'DashController@returnCheckPremium');
+
 Route::post('/bknd00/saveGuildProductRolePrices', 'ProductPlanController@create'); // * Save: Dash Guild Product Role Prices //
 
 Route::get('/dashboard/{guildid}/settings', 'DashController@getDashGuildStoreSettings'); // * Page: Dash Guild Store Settings //

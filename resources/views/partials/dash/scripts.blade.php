@@ -213,7 +213,7 @@
                                                 });
                                             }, 3000)*/
                                            
-                                            //checkPremiumCount(40) <!-- TODO!!: create returnCheckPremium for function checkPremiumCount
+                                            checkPremiumCount(40) 
                                         }
                                     }
                                 }
@@ -243,10 +243,11 @@
                     url: '/bknd00/returnCheckPremium', // TODO: this
                     type: 'POST',
                     data: {
+                        guild_id: '{{ $guild_id ?? '' }}',
                         _token: '{{ csrf_token() }}'
                     },
                 }).done(function (msg) {
-
+                    console.log(msg);
                     if(!msg['success']){
                         checkInterval = checkInterval - 1;
                         if(checkInterval > 0){
@@ -264,11 +265,13 @@
                             showConfirmButton: true,
                         });
                         
+                       
                         // Save Settings (or page), then....
-                        // add fireworks or confetti css, reload.. or change data element to allow premium features
+                        // add fireworks or confetti css, reload.. or change data element to allow premium features  
+                        // can do by looking at {{" URL "}}, and changing page variables:
 
                         // Add if easier to reload the page, add result denied or accepted from confirm/cancel buttons.
-                        //location.reload();
+                        // Okay: location.reload();
                         
                     }
 

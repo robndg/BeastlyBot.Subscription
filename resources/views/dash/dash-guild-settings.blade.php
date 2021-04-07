@@ -59,8 +59,13 @@
                               <input type="text" class="form-control save-target" id="settings-store_name" data-save-settings="store_name" data-original="{{ $settings->store_name }}" data-new="" data-save="text" placeholder="{{ $settings->store_name }}" value="{{ $settings->store_name }}">
                            </div>
                            <div class="form-group">
-                              <label for="furl">Store URL: <span class="btn btn-sm btn-outline-info pr-1 go-premium-button" data-toggle="tooltip" data-placement="top" title="" data-original-title="Go Premium"><i class="las la-certificate"></i></span></label>
+                            @if($settings->premium == 0)
+                              <label for="furl">Store URL: <span class="btn btn-sm btn-outline-info pr-1 go-premium-button" data-toggle="tooltip" data-placement="top" title="" data-original-title="Go Premium" onclick="goPremiumButton()"><i class="las la-certificate"></i></span></label>
                               <input type="text" class="form-control save-target" id="settings-url_slug" data-save-settings="url_slug" data-original="{{ $settings->url_slug }}" data-new="" data-save="text" data-premium="true" placeholder="{{ Str::title(str_replace(' ', '-', $settings->store_name)) }}" value="{{ $settings->url_slug }}">
+                            @else
+                            <label for="furl">Store URL: <span class="btn btn-sm btn-info pr-1" data-toggle="tooltip" data-placement="top" title="" data-original-title="Premium"><i class="las la-certificate"></i></span></label>
+                              <input type="text" class="form-control save-target" id="settings-url_slug" data-save-settings="url_slug" data-original="{{ $settings->url_slug }}" data-new="" data-save="text" data-premium="true" placeholder="{{ $guild_id }}" value="{{ $settings->url_slug }}">
+                            @endif
                            </div>
                            <div class="form-group">
                               <label>Store Access:</label>
@@ -229,13 +234,34 @@ $(document).on('change', '[data-save="text"]', function (e) {
         const current_save_settings = $(this).attr('data-original');
         if($(this).attr('data-premium')){
             console.log("Premium");
+            @if($settings->premium == 0)
             $('.go-premium-button').addClass('btn-info');
+            
             setTimeout(function(){ 
                 console.log(name_save_settings);
                 console.log(current_save_settings);
                 $('#settings-'+name_save_settings).val(current_save_settings)
                 $('.go-premium-button').removeClass('btn-info');
             }, 750);
+            goPremiumButton();
+            @else
+            var premium_url_string = "{{ Str::title(str_replace(' ', '-', $settings->store_name)) }}";
+            var premium_guild_id = "{{ $guild_id }}";
+            setTimeout(function(){ 
+                if($('#settings-'+name_save_settings).val() == null){
+                    $('#settings-'+name_save_settings).val(premium_guild_id);
+                    $('#settings-'+name_save_settings).attr('data-new', premium_guild_id);
+                }else if($('#settings-'+name_save_settings).val() != premium_url_string && $('#settings-'+name_save_settings).val() != premium_guild_id){
+                    setTimeout(function(){ 
+                    console.log(name_save_settings);
+                    console.log(current_save_settings);
+                    $('#settings-'+name_save_settings).val(premium_url_string)
+                    $('#settings-'+name_save_settings).attr('data-new', premium_url_string);
+                    }, 400);
+                }
+            }, 100);
+            showShowButton();
+            @endif
             
         }else{
         var new_save_setting = $(this).attr('data-new');
@@ -317,6 +343,7 @@ $(document).on('change', '[data-change="src"]', function (e) {
 <script>
 
 function saveGuildStoreSettings() {
+    $('#settings-save-button').html("Saving...");
 
     $.ajax({
         url: '/bknd00/saveGuildSettings', // TODO Controller: with if's for Premium / if data-new == null skip.
@@ -345,6 +372,8 @@ function saveGuildStoreSettings() {
                 showCancelButton: false,
                 showConfirmButton: true,
             });
+            $('#settings-save-button').html("Save Changes");
+            $('#settings-save-button').slidUp();
         }else{
            
             Swal.fire({
@@ -354,7 +383,8 @@ function saveGuildStoreSettings() {
                 showCancelButton: false,
                 showConfirmButton: true,
             });
-           
+            $('#settings-save-button').html("Save Changes");
+            $('#settings-save-button').slidUp();
             // TODO: add view store button if saved
             //window.location.href = '/shop/' + msg['store_slug']
         }

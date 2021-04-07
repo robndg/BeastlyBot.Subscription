@@ -304,6 +304,27 @@ class DashController extends Controller {
         
     }
 
+    public function returnCheckPremium(Request $request){
+        Log::info($request->all());
+        if($request->guild_id != '' && $request->guild_id != NULL){
+            $discord_store = DiscordStore::where('guild_id', $request->guild_id)->first();
+            Log::info($discord_store);
+            $store_settings = StoreSettings::where('store_type', 1)->where('store_id', $discord_store->id)->first();
+            Log::info($store_settings);
+            if(StoreSettings::where('store_type', 1)->where('store_id', $discord_store->id)->where('premium', '!=', 0)->exists()){
+                Log::info("Premium Added");
+                // TODO: check if success and make all stores premium
+                AlertHelper::alertSuccess('Beastly Premium Added!');
+                return response()->json(['success' => true]);
+            }else{
+                return response()->json(['success' => false]);
+            }
+        }else{
+            // TODO: check if success and make all stores premium
+            return response()->json(['success' => false]);
+        }
+    }
+
 
     public function getDashGuildStoreSettings($guild_id){
             if(Auth::check()){

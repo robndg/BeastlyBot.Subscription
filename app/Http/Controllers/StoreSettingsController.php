@@ -37,9 +37,30 @@ class StoreSettingsController extends Controller
 
         foreach ($request->all() as $key => $setting){
             if($key != '_token' && $key != 'discord_store_id' && $key != 'premium' && $key != 'store_id' && $key != 'store_type' && $setting != null){
-                if(($store_settings->premium == 1 && $key == 'url_slug') || ($store_settings->premium == 1 && $key == 'show_beastly')){  // premium 
-                    $store_settings->$key = $setting; // data-new premium
+                // Premium Store
+                if(($store_settings->premium == 1 && $key == 'url_slug') || ($store_settings->premium == 1 && $key == 'show_beastly')){  
+                // Premium Settings
+                    // Premium URL Slug
+                    if($key == 'url_slug'){
+                        $string_discord_url = Str::title(str_replace(' ', '-', $store_settings->store_name));
+                        // Unique or set check
+                        if(($store_settings->url_slug != $string_discord_url && ($setting != $discord_store->guild_id || $setting != $string_discord_url)) && StoreSettings::where('url_slug', 'LIKE', '%' . $string_discord_url . '%')/*->where('store_id', '!=', $store_settings->store_id)*/->get()->count() > 0){
+                            $counted_url =  StoreSettings::where('url_slug', 'LIKE', '%' . $string_discord_url . '%')/*->where('store_id', '!=', $store_settings->store_id)*/->count();
+                            $count_string = '_' . $store_settings->store_id;//$counted_url; /**  Best to use primary key instead of count if other close server close name **/
+                            $store_settings->url_slug = $string_discord_url . $count_string; // = Premium URL store name + _count int
+                        }else{
+                            if($setting == $string_discord_url){
+                                $store_settings->url_slug = $string_discord_url; // = Premium URL Store_Mame
+                            }else{
+                                $store_settings->url_slug = $discord_store->guild_id; // = Premium URL guild_id
+                            }
+                        }
+                    // Other Premium Settings
+                    }else{
+                        $store_settings->$key = $setting; // data-new premium
+                    }
                 }else{
+                    // Regular Settings
                     $store_settings->$key = $setting; // data-new
                 }
             }
