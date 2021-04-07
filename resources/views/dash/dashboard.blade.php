@@ -24,7 +24,7 @@
                                        </form>
                                  </div>
                               </div>
-                              <a href="#" class="btn btn-primary add-btn add-bot-button" onclick="addBotScript()" href="{{ 'https://discordapp.com/oauth2/authorize?client_id=' . env('DISCORD_CLIENT_ID') . '&scope=bot&permissions=' . env('DISCORD_BOT_PERMISSIONS') }}" target="_blank"><i class="las la-plus pr-2"></i>Add Bot</a>
+                              <a class="btn btn-primary add-bot-button" onclick="addBotScript()" href="{{ 'https://discordapp.com/oauth2/authorize?client_id=' . env('DISCORD_CLIENT_ID') . '&scope=bot&permissions=' . env('DISCORD_BOT_PERMISSIONS') }}" target="_blank"><i class="las la-plus pr-2"></i>Add Bot</a>
                            </div>
                      </div>
                   </div>

@@ -24,7 +24,7 @@
                                    </form>
                              </div>
                           </div>
-                          <a class="btn btn-info add-btn" href="/shop/{{ $store_settings->url_slug }}"><i class="las la-store pr-2"></i>Store Front</a>
+                          <a class="btn btn-info add-btn" href="/shop/{{ $store_settings->url_slug }}" target="_blank"><i class="las la-store pr-2"></i>Store Front</a>
                        </div>
                  </div>
               </div>

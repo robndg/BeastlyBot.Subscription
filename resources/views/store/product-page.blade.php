@@ -74,7 +74,7 @@
                                         </div>
                                     </div>
                                     <div data-wf-sku-bindings="%5B%7B%22from%22%3A%22f_price_%22%2C%22to%22%3A%22innerHTML%22%7D%5D" class="card-add-to-cart-plan-price"><span id="selected-price-show"></span></div>
-                                    <button type="button" onclick="beginCheckout()" data-node-type="commerce-add-to-cart-button" data-loading-text="Adding role..." value="Subscribe" class="w-commerce-commerceaddtocartbutton button-primary full-width white disabled" disabled>Select Plan</button>
+                                    <button type="button" onclick="beginCheckout()" id="begin-checkout-button" data-node-type="commerce-add-to-cart-button" data-loading-text="Adding role..." value="Subscribe" class="w-commerce-commerceaddtocartbutton button-primary full-width white disabled" disabled>Select Plan</button>
                                     <button type="button" data-node-type="commerce-buy-now-button" data-default-text="Buy now" data-subscription-text="Subscribe now" class="w-commerce-commercebuynowbutton button-secondary buy-now w-dyn-hide">Buy now</button>
                                 </div>
                                 <div style="display:none" class="w-commerce-commerceaddtocartoutofstock empty-state small plan">
@@ -145,16 +145,21 @@ $(document).on('change', '[data-change="select-interval"]', function (e) {
         selectedPriceId = price_id;
         const price_str = $('#target-select-price-' + interval).attr('data-price-format');
         $('#selected-price-show').html('$ ' + price_str + ' USD');
+        $('#begin-checkout-button').attr('disabled', false);
         // set var for selected
     }else{
         $('#selected-price-show').html('');
+        $('#begin-checkout-button').attr('disabled', true);
     }
 });
 
-
-@if($processor != null)
+</script>
+<script>
+console.log('{{$processor_type}}');
+console.log('{{$processor_id}}');
+@if($processor_type > 0 && $processor_type != null)
 function beginCheckout() {
-
+        console.log("beginCheckoutButton");
         Swal.fire({
             title: 'Processing...',
             text: '',
@@ -165,7 +170,7 @@ function beginCheckout() {
         });
         Swal.showLoading();
         var process_url = '/bknd00/setup-order';
-     
+        console.log("Here");
         $.ajax({
             url: process_url,
             type: 'POST',
@@ -181,7 +186,7 @@ function beginCheckout() {
                 console.log(msg['msg']);
                 
                 var stripeconnected = Stripe("{{ env('STRIPE_CLIENT_PUBLIC_TEST') }}", {
-                    stripeAccount: "{{ $processor->processor_id }}"
+                    stripeAccount: "{{ $processor_id }}"
                 });
                 var stripeid = msg['msg'];
                 stripeconnected.redirectToCheckout({

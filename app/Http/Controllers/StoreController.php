@@ -234,16 +234,20 @@ class StoreController extends Controller {
             $role = $discord_helper->getRole($guild_id, $role_id, 1, true);
 
             
-            $processor = Processors::where('user_id', $discord_o_auth->user_id)->where('enabled', 1);
-            if ($processor->exists()) {
-                $processor = $processor->first();
-                $processor_type = $processor->type; //1 stripe
+            if(Processors::where('id', $discord_store->processor_id)->where('enabled', 1)->exists()){
+                $processor = Processors::where('id', $discord_store->processor_id)->where('enabled', 1)->first();
+                $processor_type = $processor->type;
                 $processor_id = $processor->processor_id;
+                //$processor_type = $processor->type; //1 stripe
+                //$processor_id = $processor->processor_id;
+                Log::info("Found Processor");
             } else {
-                $processor = null;
+                // add if null no processor for now 0
+                $processor_type = 0;
+                $processor_id = null;
             }
 
-            return view('store.product-page')->with('discord_store', $discord_store)->with('guild', $guild)->with('role', $role)->with('role_id', $role_id)->with('product_role', $product_role)->with('product_prices', $product_prices)->with('affiliate_id', $affiliate_id)->with('processor', $processor);//->with('store_processor_selected_id', $store_processor_selected_id);
+            return view('store.product-page')->with('discord_store', $discord_store)->with('guild', $guild)->with('role', $role)->with('role_id', $role_id)->with('product_role', $product_role)->with('product_prices', $product_prices)->with('affiliate_id', $affiliate_id)->with('processor_type', $processor_type)->with('processor_id', $processor_id);//->with('store_processor_selected_id', $store_processor_selected_id);
             
         }else{
             //return view('discord_login');
@@ -264,18 +268,24 @@ class StoreController extends Controller {
 
         if ($store == null) {
             AlertHelper::alertError('Invalid store.');
-            return redirect('/dashboard');
+            return redirect('/');
         }
 
         $product = \App\ProductRole::where('id', $subscription->product_id)->first();
+        $store_settings = \App\StoreSettings::where('store_id', $store->id)->first();
 
         if ($product == null) {
             AlertHelper::alertError('Invalid product.');
-            return redirect('/dashboard');
+            //return redirect('/dashboard');
+            return redirect('/welcome'.'/'.$store_settings->url_slug);
         }
-
-        AlertHelper::alertSuccess('You are now an ' . $product->title . '.' .  ' You will automatically be billed every 1 month(s) starting today.');
-        return redirect('/dashboard');
+        $interval_string = "month"; // TODO2: get from $subscription or from $price (from $product)
+        AlertHelper::alertSuccess('You are now an ' . $product->title . '.' .  ' You will automatically be billed every 1 ' . $interval_string . '(s) starting today.');
+        
+        return redirect('/welcome'.'/'.$store_settings->url_slug);
+        
+        //return redirect('/dashboard');
+        
     }
 
 }

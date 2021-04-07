@@ -167,7 +167,7 @@
                             </a>
                         </li>
                         <li class="">
-                            <a href="page-bin.html" class="svg-icon">
+                            <a href="#" class="svg-icon">
                                 <i>
                                     <svg width="23" height="23" class="svg-icon" id="iq-main-03" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" style="stroke-dasharray: 74, 94; stroke-dashoffset: 0;"></path>
@@ -177,7 +177,7 @@
                             </a>
                         </li>
                         <li class="">
-                            <a href="index.html#otherpage" class="collapsed svg-icon" data-toggle="collapse" aria-expanded="false">
+                            <a href="#" class="collapsed svg-icon" data-toggle="collapse" aria-expanded="false">
                                 <i>
                                   <svg width="20" class="svg-icon" id="iq-main-9" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 20l4-16m2 16l4-16M6 9h14M4 15h14" />
@@ -221,9 +221,8 @@
             var checkInterval = 10;
 
             function addBotScript(){
-               // const ownedGuildsNow = getOwnedGuildsCount();
+               
                 var refreshFoundNew = false
-                //$.post( "test.php" );
                 
                 setTimeout(function() { 
                     checkNewGuildsCount(40)
@@ -272,8 +271,6 @@
 
                     })
 
-
-                   
                 }, 1500);
             }
             

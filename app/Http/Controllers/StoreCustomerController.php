@@ -34,6 +34,7 @@ class StoreCustomerController extends Controller
 
     public function setupOrder(Request $request){
  
+        Log::info("setupOrder Log");
         // TODO COLBY: make this get from price ID:
 
         /*$role_name = $request['role_name'];
@@ -100,7 +101,7 @@ class StoreCustomerController extends Controller
         $customer_stripe = StripeConnect::where('user_id', $user_id)->first();
         $owner_stripe = StripeConnect::where('user_id', $discord_store->user_id)->first();
 
-        $processor = Processors::where('user_id', $discord_o_auth->user_id)->where('enabled', 1)->first();
+        $processor = Processors::where('user_id', $discord_o_auth->user_id)->where('enabled', 1)->first(); // TODOV2: add storeId
         $processor_type = $processor->type; //1 stripe
         $processor_id = $processor->processor_id;
 
@@ -227,7 +228,7 @@ class StoreCustomerController extends Controller
                 }*/
            
                 $session = $stripe->checkout->sessions->create($checkout_data, array("stripe_account" => $processor_id));
-                $subscription = new Subscription(['id' => $new_sub_uuid, 'connection_type' => 1, 'sub_id' => "", 'session_id' => $session->id, 'user_id' => $user_id, 'owner_id' => $discord_store->user_id, 'store_id' => $discord_store->id, 'store_customer_id' => $store_customer->id, 'product_id' => $product_role->id, 'price_id' => $product_price->id, 'first_invoice_id' => null, 'first_invoice_price' => $paid_amount, 'first_invoice_paid_at' => null, 'next_invoice_price' => $next_amount, 'latest_invoice_id' => null, 'latest_invoice_amount' => null, 'app_fee' => $store_app_fee, 'status' => 0, 'visible' => 0, 'metadata' => null]); 
+                $subscription = new Subscription(['id' => $new_sub_uuid, 'connection_type' => 1, 'session_id' => $session->id, 'sub_id' => "", 'user_id' => $user_id, 'owner_id' => $discord_store->user_id, 'store_id' => $discord_store->id, 'store_customer_id' => $store_customer->id, 'product_id' => $product_role->id, 'price_id' => $product_price->id, 'first_invoice_id' => null, 'first_invoice_price' => $paid_amount, 'first_invoice_paid_at' => null, 'next_invoice_price' => $next_amount, 'latest_invoice_id' => null, 'latest_invoice_amount' => null, 'app_fee' => $store_app_fee, 'status' => 0, 'visible' => 0, 'metadata' => null]); 
                 
                 Cache::put($new_sub_uuid, $subscription);
         

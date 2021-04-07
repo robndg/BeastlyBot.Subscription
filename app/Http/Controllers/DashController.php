@@ -60,83 +60,96 @@ class DashController extends Controller {
                 //$guild_id = \request('guild');
          
              
-                 $discord_store = null;
-         
-                 if(! DiscordStore::where('guild_id', $guild_id)->exists()) {
-                   
+                $discord_store = null;
+                try{
+                    if(! $discord_helper->ownsGuild($guild_id)) {
+                        AlertHelper::alertError('You are not the owner of that server.');
+                        return redirect('/dashboard');
+                    }
+            
+                    if(! DiscordStore::where('guild_id', $guild_id)->exists()) {
+                    
+                        AlertHelper::alertError('Please retry adding the bot.');
+                        return redirect('/dashboard');
+                        
+                    } else {
+
+                        $discord_store = DiscordStore::where('guild_id', $guild_id)->first();
+                        $guild_helper = $discord_helper->getGuild($guild_id);
+                        //$discord_store->live = 1;
+                        //$discord_store->save();
+                        if(!Stat::where('type', 1)->where('type_id', $discord_store->id)->exists()){
+                            $stats = new Stat(['type' => 1, 'type_id' => $discord_store->id]);
+                            $stats->data = ['subscribers' => ['active' => 0, 'total' => 0], 'disputes' => ['active' => 0, 'total' => 0]];
+                            $stats->save();
+                        }else{
+                            $stats = Stat::where('type', 1)->where('type_id', $discord_store->id)->first();
+                        }
+
+                        if(!StoreSettings::where('store_type', 1)->where('store_id', $discord_store->id)->exists()){
+                            $guild_icon = 'https://cdn.discordapp.com/icons/' . $guild_id . '/' . $guild_helper->icon . '.png?size=256';
+                            $store_settings = new StoreSettings(['store_type' => 1, 'store_id' => $discord_store->id, 'store_image' => $guild_icon, 'store_name' => $guild_helper->name, 'url_slug' => $guild_id]);
+                            $store_settings->save();
+                        }else{
+                            $store_settings = StoreSettings::where('store_type', 1)->where('store_id', $discord_store->id)->first();
+                        }
+
+                        // Set all stores to processor_id if Stripe connected
+                        if(DiscordStore::where('user_id', $discord_store->user_id)->where('processor_id', '!=', NULL)->get()->count() > 0){
+                            $processor_id = DiscordStore::where('user_id', $discord_store->user_id)->where('processor_id', '!=', NULL)->first()->processor_id;
+                            $user_discord_stores = DiscordStore::where('user_id', $discord_store->user_id)->update(['processor_id' => $processor_id]);
+                        }
+                        
+                    }
+
+                
+
+                    $product_roles = ProductRole::where('discord_store_id', $discord_store->UUID)->get();
+                    
+                    /*$guild_products = [];
+
+                    foreach($product_roles as $product_role) { 
+                        $product_prices = Price::where('product_id', $product_role->id)->get();
+
+                    }*/
+
+                    
+            
+                    /* $roles = $discord_helper->getRoles($guild_id);
+            
+                    $active = array();
+                    $product_roles = [];
+            
+                    $subscribers = [];
+            
+                    foreach($roles as $role) { 
+                        $discord_product = new DiscordRoleProduct($guild_id, $role->id, null, null);
+                        $product = $discord_product->getProduct(); // TODO: check if product active in Stripe/PayPal and change product DB
+                        if($product != null) {
+                            if($product->active == 1){
+                                array_push($active, $role->id);
+                            }
+                            $product_roles[$role->id] = $product;
+                            $subscribers[$role->id] = 0;
+                            //$subscribers[$role->id] = Subscription::where('store_id', $discord_store->id)->where('status', '<=', 3)->where('status', '<=', 2)->where('metadata', 'LIKE', '%' . $role->id . '%')->count();
+                        } else {
+                            $subscribers[$role->id] = 0;
+                        }
+                    }*/
+            
+                    // TODO: Fix this for the subscribers tab. 
+                    // Also need to fix the servers list subscribers count because if I subscribed to premium and new role it says the subscribers, really 1 subscriber and 2 susbcriptions for that 1 subscriber
+                    //$users_roles = $this::getUsersRoles($discord_store->id);
+            
+                    return view('dash.dash-guild')->with('discord_helper', $discord_helper)->with('guild_id', $guild_id)->with('guild', $guild_helper)->with('shop', $discord_store)->with('product_roles', $product_roles)->with('bot_positioned', $discord_helper->isBotPositioned($guild_id))->with('store_settings', $store_settings);
+
+
+                // return view('dash.dash-guild')->with('guilds', $discord_helper->getOwnedGuilds())->with('stripe_helper', $stripe_helper)->with('discord_helper', $discord_helper);
+                
+                } catch (\Exception $e){
                     AlertHelper::alertError('Please retry adding the bot.');
                     return redirect('/dashboard');
-                    
-                     
-                 } else {
-                     $discord_store = DiscordStore::where('guild_id', $guild_id)->first();
-                     $guild_helper = $discord_helper->getGuild($guild_id);
-                     //$discord_store->live = 1;
-                     //$discord_store->save();
-                    if(!Stat::where('type', 1)->where('type_id', $discord_store->id)->exists()){
-                        $stats = new Stat(['type' => 1, 'type_id' => $discord_store->id]);
-                        $stats->data = ['subscribers' => ['active' => 0, 'total' => 0], 'disputes' => ['active' => 0, 'total' => 0]];
-                        $stats->save();
-                    }else{
-                        $stats = Stat::where('type', 1)->where('type_id', $discord_store->id)->first();
-                    }
-
-                    if(!StoreSettings::where('store_type', 1)->where('store_id', $discord_store->id)->exists()){
-                        $guild_icon = 'https://cdn.discordapp.com/icons/' . $guild_id . '/' . $guild_helper->icon . '.png?size=256';
-                        $store_settings = new StoreSettings(['store_type' => 1, 'store_id' => $discord_store->id, 'store_image' => $guild_icon, 'store_name' => $guild_helper->name, 'url_slug' => $guild_id]);
-                        $store_settings->save();
-                    }else{
-                        $store_settings = StoreSettings::where('store_type', 1)->where('store_id', $discord_store->id)->first();
-                    }
-                     
-                 }
-
-                 if(! $discord_helper->ownsGuild($guild_id)) {
-                    AlertHelper::alertError('You are not the owner of that server.');
-                    return redirect('/dashboard');
                 }
-
-                 $product_roles = ProductRole::where('discord_store_id', $discord_store->UUID)->get();
-                 
-                 /*$guild_products = [];
-
-                 foreach($product_roles as $product_role) { 
-                    $product_prices = Price::where('product_id', $product_role->id)->get();
-
-                 }*/
-
-                 
-         
-                /* $roles = $discord_helper->getRoles($guild_id);
-         
-                 $active = array();
-                 $product_roles = [];
-         
-                 $subscribers = [];
-         
-                 foreach($roles as $role) { 
-                     $discord_product = new DiscordRoleProduct($guild_id, $role->id, null, null);
-                     $product = $discord_product->getProduct(); // TODO: check if product active in Stripe/PayPal and change product DB
-                     if($product != null) {
-                         if($product->active == 1){
-                             array_push($active, $role->id);
-                         }
-                         $product_roles[$role->id] = $product;
-                         $subscribers[$role->id] = 0;
-                         //$subscribers[$role->id] = Subscription::where('store_id', $discord_store->id)->where('status', '<=', 3)->where('status', '<=', 2)->where('metadata', 'LIKE', '%' . $role->id . '%')->count();
-                     } else {
-                         $subscribers[$role->id] = 0;
-                     }
-                 }*/
-         
-                 // TODO: Fix this for the subscribers tab. 
-                 // Also need to fix the servers list subscribers count because if I subscribed to premium and new role it says the subscribers, really 1 subscriber and 2 susbcriptions for that 1 subscriber
-                 //$users_roles = $this::getUsersRoles($discord_store->id);
-         
-                 return view('dash.dash-guild')->with('discord_helper', $discord_helper)->with('guild_id', $guild_id)->with('guild', $guild_helper)->with('shop', $discord_store)->with('product_roles', $product_roles)->with('bot_positioned', $discord_helper->isBotPositioned($guild_id))->with('store_settings', $store_settings);
-
-
-               // return view('dash.dash-guild')->with('guilds', $discord_helper->getOwnedGuilds())->with('stripe_helper', $stripe_helper)->with('discord_helper', $discord_helper);
             } else {
                 return view('dash.dashboard')->with('stripe_helper', $stripe_helper)->with('discord_helper', $discord_helper);
             }
@@ -279,8 +292,8 @@ class DashController extends Controller {
 
         $discord_helper = new DiscordHelper(auth()->user());
         $guild_user_id = $discord_helper->getID();
-        if(DiscordStore::where('user_id', $guild_user_id, 'created_at', NULL)->exists()){
-            $lastNewStore = DiscordStore::where('user_id', $guild_user_id, 'created_at', NULL)->first();
+        if(DiscordStore::where('user_id', $guild_user_id)->where('updated_at', NULL)->where('processor_id', NULL)->exists()){
+            $lastNewStore = DiscordStore::where('user_id', $guild_user_id)->where('updated_at', NULL)->where('processor_id', NULL)->first();
             AlertHelper::alertSuccess('Your store dashboard!');
             return response()->json(['success' => true, 'store' => $lastNewStore]);
         }else{
@@ -328,6 +341,9 @@ class DashController extends Controller {
                             $store_settings = new StoreSettings(['store_type' => 1, 'store_id' => $discord_store->id, 'store_image' => $guild_icon, 'store_name' => $guild_helper->name, 'url_slug' => $guild_id]);
                             $store_settings->save();
                         }
+
+                    
+
                          
                      }
     
