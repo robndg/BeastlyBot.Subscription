@@ -32,7 +32,8 @@ class PaymentIntentSucceeded implements ShouldQueue {
         
         $paid = $webhookCall->payload['data']['object']['charges']['data'][0]['paid'];
         $latest_invoice_id = $webhookCall->payload['data']['object']['charges']['data'][0]['invoice'];
-        $type = $webhookCall->payload['data']['object']['lines']['data'][0]['plan']['metadata']['type'];
+        //$type = $webhookCall->payload['data']['object']['lines']['data'][0]['plan']['metadata']['type'];
+        $type = 'discord_subscription'; // TODO Colby, error "lines" -> has no type
         $subscription = Subscription::where('latest_invoice_id', $latest_invoice_id)->first();
 
         if($paid == true || $paid == 1) {
@@ -125,7 +126,7 @@ class PaymentIntentSucceeded implements ShouldQueue {
 
         try{
 
-          $subscription = Subscription::where('latest_invoice_id', $latest_invoice_id)->first();
+          //$subscription = Subscription::where('latest_invoice_id', $latest_invoice_id)->first();
         
           $customer_discord_id = DiscordOAuth::where('user_id', $user_id)->first()->discord_id;
 
@@ -133,11 +134,11 @@ class PaymentIntentSucceeded implements ShouldQueue {
 
           // add role php
 
-          $isMember = $discord_helper->isMember($guild->id, $discord_helper->getID());
+          $isMember = $discord_helper->isMember($guild_id, $discord_helper->getID());
 
           Log::info("Checking Member and adding if not");
 
-          if (!$isMember) {
+          if (!$isMember) { //TODO2: this area results in error
             $discord_client->guild->addGuildMember([
               'guild.id' => intval($guild_id),
               'user.id' => intval($customer_discord_id)
@@ -158,12 +159,17 @@ class PaymentIntentSucceeded implements ShouldQueue {
         }catch(\Exception $e) {
           Log::info($e);
           $discord_helper->sendMessage('Uh-oh! I couldn\'t add the role your account. Please contact server owner.');
-              
-          $discord_error = new \App\DiscordError();
+          Log::info("Discord Error");
+          Log::info($e->getMessage());
+          Log::info($guild_id);
+          Log::info($role_id);
+          Log::info($user_id);
+          
+         /* $discord_error = new \App\DiscordError();
               $discord_error->guild_id = $guild_id;
               $discord_error->role_id = $role_id;
               $discord_error->user_id = $user_id;
-              $discord_error->message = $e->getMessage();
+              $discord_error->message = $e->getMessage();*/
 
         }
 

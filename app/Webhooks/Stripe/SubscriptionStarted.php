@@ -45,7 +45,7 @@ class SubscriptionStarted implements ShouldQueue {
           $subscription->create();
           $subscription->save();
 
-          if($referral_code != null){
+          /*if($referral_code != null){
             try{
               if(StoreCustomer::where('referral_code', $referral_code)->exists()){
                 $product_price = Price::where('price_id', $subscription->price_id)->first();
@@ -85,7 +85,7 @@ class SubscriptionStarted implements ShouldQueue {
               Log::info($e);
               Cache::forget($subscriptionId);
             }
-        }
+        }*/
 
         Cache::forget($subscriptionId);
           

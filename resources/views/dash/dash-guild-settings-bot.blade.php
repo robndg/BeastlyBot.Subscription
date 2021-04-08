@@ -55,7 +55,7 @@
                                  <div class="form-group col-md-12">
                                         <label class="label-control">Beastly Eyes Color</label>
                                         <div id="icon-button">
-                                            <button class="btn btn-outline-info ml-1" type="button" data-change="click" data-custom-target="eyes-buttons">
+                                            <button class="btn btn-outline-info ml-1" type="button" data-change="click" data-custom-target="eyes-buttons" id="settings-eyes_color" data-save-settings="eyes_color" data-original="{{ $settings->eyes_color}}" data-new="" data-save="button">
                                                 <svg width="23" class="svg-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"></path>
                                                 </svg>
@@ -80,7 +80,7 @@
                                             <button class="btn btn-outline-light ml-1 eyes-buttons" style="display:none; border-color:#fafd47; color:#fafd47;" type="button" data-change="eyes" data-custom-target="#fafd47">
                                                 <i class="las la-meh-rolling-eyes mr-0"></i>
                                             </button>
-                                            <button class="btn btn-outline-light ml-1 eyes-buttons" style="display:none; border-color:#fd6847; color:#fd6847;" type="button" data-change="eyes" data-custom-target="#fd6847">
+                                            <button class="btn btn-outline-light ml-1 eyes-buttons save-target" style="display:none; border-color:#fd6847; color:#fd6847;" type="button" data-change="eyes" data-custom-target="#fd6847">
                                                 <i class="las la-meh-rolling-eyes mr-0"></i>
                                             </button>
                                         </div>
@@ -172,6 +172,13 @@
 
 
 <script>
+var showSave = false;
+
+function showShowButton(){
+    showSave = true;
+    $('#settings-save-button').slideDown();
+
+}
 
 var eyes_color = "{{ $settings->eyes_color }}";
 var save_eyes_color = false;
@@ -198,61 +205,92 @@ $(document).on('click', '[data-change="eyes"]', function (e) {
     //$('.btn-product-role').removeClass('active');
     const value = $(this).val();
     console.log('Eyes button');
-    if($(this).attr('data-custom-target') != eyes_color) {
+    const current_save_settings = $(this).attr('data-original');
+    var name_save_settings = $(this).attr('data-save-settings');
+    if($(this).attr('data-custom-target') != current_save_settings) {
         console.log('Eyes Color Changed');
         var save_eyes_color = $(this).attr('data-custom-target');
         console.log(save_eyes_color);
         $('#css-changes').empty();
         $( "<style>.custom-beastly .xx-head::after { background-color: " + save_eyes_color + "; box-shadow: 12.25vmin 0 " + save_eyes_color + ";  }</style>" ).appendTo( "#css-changes" );
+        $('#settings-'+name_save_settings).attr('data-new', save_eyes_color);
        /* $('.xx-head::after').css(
         {
             'background-color': save_eyes_color,
             'box-shadow': '12.25vmin 0 ' + save_eyes_color
         }
         )*//*.css("background-color", save_eyes_color)*//*.css("box-shadow", "12.25vmin 0 " + save_eyes_color);*/
-        $('.save-changes-button').slideDown();
+        showShowButton();
     }else{
         $('#css-changes').empty();
-        $('.save-changes-button').slideUp();
+        //$('.save-changes-button').slideUp();
     }
     
 });
 
-$(document).on('change', '[data-save="text"]', function (e) {
+// Removed will just show save if anything data-new changed.
 
-    const value = $(this).val()
-    if($(this).attr('data-price-target') == '#enable-money') {
-        const price_interval = $(this).attr('data-price-interval')
-        const price = $(this).val();
-        if(price >= 1){
-            $(`.button-price-${price_interval}`).removeClass('d-none');
-        }else{
-            $(`.button-price-${price_interval}`).addClass('d-none');
-        }
-        
-        /*const price_interval_str = $(this).attr('data-price-interval-str')
-        
-        //$('.select-interval-blocks').hide();
-        console.log(value);
-        add_button = `<button type="button" class="button btn btn-sm badge badge-info button-prices button-price-${price_interval}" data-button-price-interval="${price_interval}" data-button-price-price="${price}">${price_interval_str}</button>`
-       $('.group-button-prices').append(add_button)*/
+/*function checkShowSave(){
+    if(description || about || cancel_subscriptions_on_exit || disable_public_downgrades || refunds_enabled){
+        showSave = true;
+        console.log("checkShowSave: true save button");
+    }else{
+        showSave = false;
+        console.log("checkShowSave: false save button");
     }
+}*/
+
+
+$(document).on('change', '[data-save="text"]', function (e) {
+    
+        var name_save_settings = $(this).attr('data-save-settings');
+        const current_save_settings = $(this).attr('data-original');
+        if($(this).attr('data-premium')){
+            console.log("Premium");
+            @if($settings->premium == 0)
+            $('.go-premium-button').addClass('btn-info');
+            
+            setTimeout(function(){ 
+                console.log(name_save_settings);
+                console.log(current_save_settings);
+                $('#settings-'+name_save_settings).val(current_save_settings)
+                $('.go-premium-button').removeClass('btn-info');
+            }, 750);
+            goPremiumButton();
+            @else
+            var premium_url_string = "{{ Str::title(str_replace(' ', '-', $settings->store_name)) }}";
+            var premium_guild_id = "{{ $guild_id }}";
+            setTimeout(function(){ 
+                if($('#settings-'+name_save_settings).val() == null){
+                    $('#settings-'+name_save_settings).val(premium_guild_id);
+                    $('#settings-'+name_save_settings).attr('data-new', premium_guild_id);
+                }else if($('#settings-'+name_save_settings).val() != premium_url_string && $('#settings-'+name_save_settings).val() != premium_guild_id){
+                    setTimeout(function(){ 
+                    console.log(name_save_settings);
+                    console.log(current_save_settings);
+                    $('#settings-'+name_save_settings).val(premium_url_string)
+                    $('#settings-'+name_save_settings).attr('data-new', premium_url_string);
+                    }, 400);
+                }
+            }, 100);
+            showShowButton();
+            @endif
+            
+        }else{
+        var new_save_setting = $(this).attr('data-new');
+
+        if((current_save_settings != new_save_setting) || new_save_setting == null){
+            new_save_setting = $(this).val();
+            $(this).attr('data-new', new_save_setting);
+        }else{
+            new_save_setting = $(this).val();
+            $(this).attr('data-new', new_save_setting);
+        }
+            showShowButton();
+        }
+    
 })
 
-$(document).on('click', '[data-save="button"]', function (e) {
-    $('.btn-product-role').removeClass('active');
-    const value = $(this).val()
-   /* if($(this).attr('data-custom-target') == '#product-role-id') {
-        const roleid = $(this).attr('data-product-role-id')
-        $('#product-role-id').val(roleid)
-        const rolename = $(this).attr('data-product-role-name')
-        $('#product-title').val(rolename)
-        $('#note-title').val(rolename)
-        $(this).addClass('active');
-        console.log(roleid)
-    }*/
-    console.log('Saving Button')
-})
 $(document).on('change', '[data-change="textarea"]', function (e) {
     const value = $(this).val()
     const textarea = value.data('save-target');
@@ -264,157 +302,212 @@ $(document).on('change', '[data-change="textarea"]', function (e) {
     console.log('Saving Text Area')
 })
 
-$(document).on('change', '[data-change="src"]', function (e) {
-    const value = $(this).val()
-    const src = value.data('save-target');
-    //if($(this).attr('src') == 'store_image') {
-       /* $('#note-icon').attr('class',' ')
-        $('#update-note').attr('class', ' ')
 
-        $('#note-icon').addClass(`icon iq-icon-box-2 icon-border-${value} rounded`);
+</script>
 
-        $('#update-note').addClass(`card card-block card-stretch card-height card-bottom-border-${value} note-detail`)*/
-   // }
+<script>
+var showSave = false;
+// Removed will just show save if anything data-new changed.
+/*
+{{-- const settings_description = '{!!$settings->description!!}}' // exmaple settings-refunds_enabled --}}
+var description = false;
+var description_save = false;
+
+{{-- const settings_about = '{!!$settings->about!!}}' // exmaple settings-refunds_enabled --}}
+var about = false;
+var about_save = false;
+
+{{-- const settings_cancel_subscriptions_on_exit = '{{$settings->cancel_subscriptions_on_exit}}'
+var cancel_subscriptions_on_exit = false;
+var cancel_subscriptions_on_exit_save = false;
+
+{{-- const settings_disable_public_downgrades = '{{$settings->disable_public_downgrades}}' --}}
+var disable_public_downgrades = false;
+var disable_public_downgrades_save = false;
+
+{{-- const settings_refunds_enabled = '{{settings->refunds_enabled}}' --}}
+var refunds_enabled = false;
+var refunds_enabled_save = false;
+
+{{-- const settings_terms_of_service = '{!!$settings->terms_of_service!!}}' --}}
+var terms_of_service = false;
+var terms_of_service_save = false;
+*/
+
+function showShowButton(){
+    showSave = true;
+    $('#settings-save-button').slideDown();
+
+}
+// Removed will just show save if anything data-new changed.
+
+/*function checkShowSave(){
+    if(description || about || cancel_subscriptions_on_exit || disable_public_downgrades || refunds_enabled){
+        showSave = true;
+        console.log("checkShowSave: true save button");
+    }else{
+        showSave = false;
+        console.log("checkShowSave: false save button");
+    }
+}*/
+
+$(document).on('click', '[data-save="button"]', function (e) {
+
+const current_save_settings = $(this).attr('data-original');
+var new_save_setting = $(this).attr('data-new');
+
+    if((current_save_settings == 1 && new_save_setting  == null) || (new_save_setting == 1)){
+        new_save_setting = 0;
+        console.log('Button 0');
+        $(this).removeClass('btn-info').addClass('btn-primary');
+    }else{
+        new_save_setting = 1;
+        console.log('Button 1');
+        $(this).removeClass('btn-primary').addClass('btn-info');
+    }
+    $(this).attr('data-new', new_save_setting);
+    console.log("New Save Setting");
+    console.log(new_save_setting);
+    showShowButton();
+
+});
+
+$(document).on('change', '[data-save="select"]', function (e) {
+    const current_save_settings = $(this).attr('data-original');
+    var new_save_setting = $(this).attr('data-new');
+    new_save_setting = $(this).val()
+    $(this).attr('data-new', new_save_setting);
+    console.log("New Select Option");
+    console.log(new_save_setting);
+    showShowButton();
+});
+
+$(document).on('change', '[data-save="text"]', function (e) {
+    
+        var name_save_settings = $(this).attr('data-save-settings');
+        const current_save_settings = $(this).attr('data-original');
+        if($(this).attr('data-premium')){
+            console.log("Premium");
+            @if($settings->premium == 0)
+            $('.go-premium-button').addClass('btn-info');
+            
+            setTimeout(function(){ 
+                console.log(name_save_settings);
+                console.log(current_save_settings);
+                $('#settings-'+name_save_settings).val(current_save_settings)
+                $('.go-premium-button').removeClass('btn-info');
+            }, 750);
+            goPremiumButton();
+            @else
+            var premium_url_string = "{{ Str::title(str_replace(' ', '-', $settings->store_name)) }}";
+            var premium_guild_id = "{{ $guild_id }}";
+            setTimeout(function(){ 
+                if($('#settings-'+name_save_settings).val() == null){
+                    $('#settings-'+name_save_settings).val(premium_guild_id);
+                    $('#settings-'+name_save_settings).attr('data-new', premium_guild_id);
+                }else if($('#settings-'+name_save_settings).val() != premium_url_string && $('#settings-'+name_save_settings).val() != premium_guild_id){
+                    setTimeout(function(){ 
+                    console.log(name_save_settings);
+                    console.log(current_save_settings);
+                    $('#settings-'+name_save_settings).val(premium_url_string)
+                    $('#settings-'+name_save_settings).attr('data-new', premium_url_string);
+                    }, 400);
+                }
+            }, 100);
+            showShowButton();
+            @endif
+            
+        }else{
+        var new_save_setting = $(this).attr('data-new');
+
+        if((current_save_settings != new_save_setting) || new_save_setting == null){
+            new_save_setting = $(this).val();
+            $(this).attr('data-new', new_save_setting);
+        }else{
+            new_save_setting = $(this).val();
+            $(this).attr('data-new', new_save_setting);
+        }
+            showShowButton();
+        }
+    
 })
 
-$(document).on('change', '[data-change="select"]', function (e) {
-    const value = $(this).val()
-    const color = value.data('save-target');
-   /* console.log(color)
-    if($(this).attr('data-custom-target') == 'color') {
+// Removed, will show Save if any data-new
+
+/*function setToggleSaveSettings(name_save_setting){
+    console.log('setToggleSaveSettings');
+    const element = $('#'+name_save_setting);
+    const new_save_setting = element.attr('data-new');
+    const original_save_setting = element.attr('data-new');
+    if(new_save_setting != current_save_settings){
+        if(new_save_setting == 1){
+            $('#settings_'+name_save_setting).removeClass('btn-default').addClass('btn-info');
+            name_save_settings = new_save_setting;
+            console.log("New Save Enabled")
+        }else{
+            $('#settings_'+name_save_setting).removeClass('btn-info').addClass('btn-default');
+            name_save_settings = new_save_setting;
+            console.log("New Save Disabled")
+        }
         
-        $('#note-icon').attr('class',' ')
-        $('#update-note').attr('class', ' ')
-        $('#note-icon').addClass(`icon iq-icon-box-2 icon-border-${color} rounded`)
-        $('#update-note').addClass(`card card-block card-stretch card-height card-bottom-border-${color} note-detail`)
-    }*/
-    console.log('Saving Select')
-})
+    }
  
-/* $(document).on('change', '[data-change="select"]', function (e) {
-     const value = $(this).val()
-     console.log('ts')
-     if($(this).attr('data-custom-target') == 'color') {
-         $('#note-icon').attr('class',' ')
-         $('#update-note').attr('class', ' ')
-         $('#note-icon').addClass(`icon iq-icon-box-2 icon-border-${value} rounded`)
-         $('#update-note').addClass(`card card-block card-stretch card-height card-bottom-border-${value} note-detail`)
-     }
-})*/
+}*/
 
-//console.log(new Date($('#start_date').val() + "T" + $('#start_time').val()));
+</script>
+<script>
 
-var shop_UUID = '{{ $shop->UUID }}';
-
-function saveGuildProductRole(product_uuid) {
+function saveGuildStoreSettings() {
+    $('#settings-save-button').html("Saving...");
 
     $.ajax({
-        url: '/bknd00/saveGuildProductRole',
+        url: '/bknd00/saveGuildSettings', // TODO Controller: with if's for Premium / if data-new == null skip.
         type: 'POST',
         data: {
-            'id': '{{ $product_role->id ?? 0 }}',
-            'discord_store_id': '{{ $shop->UUID }}',
-            'role_id': $('#product-role-id').val(),//$product_id,
-            'title': $('#product-title').val(),
-            'description': $('#input-description').val(),
-            'access': $('#input-access').val(),
-            'start_date': $('#start_date').val(),//new Date($('#start_date').val() + "T" + $('#start_time').val()).toLocaleDateString(),//$('#start_date').val(),
-            'start_time': $('#start_time').val(),
-            'end_date': $('#end_date').val(),
-            'max_sales': $('#max_sales').val(),
+            'discord_store_id': '{{ $shop->UUID }}', // get store_settings from shop uuid to hide primary key
+            'store_image': $('#settings-store_image').attr('data-new'),
+            'store_name': $('#settings-store_name').attr('data-new'),
+            'url_slug': $('#settings-url_slug').attr('data-new'),
+            'members_only': $('#settings-members_only').attr('data-new'),
+            'description': $('#settings-description').attr('data-new'),
+            'about':$('#settings-about').attr('data-new'), // TODO: get from new description plugin
+            'cancel_subscriptions_on_exit': $('#settings-cancel_subscriptions_on_exit').attr('data-new'),
+            'disable_public_downgrades': $('#settings-disable_public_downgrades').attr('data-new'),
+            'refunds_enabled': $('#settings-refunds_enabled').attr('data-new'),
+            'terms_of_service': $('#settings-terms_of_service').attr('data-new'),
             _token: '{{ csrf_token() }}'
         },
     }).done(function (msg) {
         console.log(msg);
         if(!msg['success']){
             Swal.fire({
-                title: 'Product not Saved',
+                title: 'Store Settings not Saved',
                 text: msg['message'],
                 type: 'info',
                 showCancelButton: false,
                 showConfirmButton: true,
             });
+            $('#settings-save-button').html("Save Changes");
+            $('#settings-save-button').slidUp();
         }else{
            
             Swal.fire({
-                title: 'Product Saved!',
+                title: 'Store Settings Saved',
                // text: "Awesome... add some prices",
                 type: 'success',
                 showCancelButton: false,
                 showConfirmButton: true,
             });
-            if(product_uuid == 0 || product_uuid  == 'undefined' || product_uuid == null || !product_uuid){
-            newProduct_uuid = msg['product_uuid'];
-                var url = document.location.href+"?uuid=" + newProduct_uuid;
-                document.location = url;
-            }
-           
-           
-
-           
-
-        
-           
-            //window.location.href = '/dashboard/' + msg['store'].guild_id
+            $('#settings-save-button').html("Save Changes");
+            $('#settings-save-button').slidUp();
+            // TODO: add view store button if saved
+            //window.location.href = '/shop/' + msg['store_slug']
         }
     })
 }
 </script>
 
-<script>
 
-
-var product_uuid = '{{ $product_role->id ?? 0 }}'
-
-    // TODO: For now we close the slide but we need to turn off the switcheries
-    function updatePrices(product_role_id) {
-        Toast.fire({
-            title: 'Processing....',
-            text: '',
-            showCancelButton: false,
-            showConfirmButton: false,
-            allowOutsideClick: () => !Toast.isLoading(),
-            //target: document.getElementById('slider-div')
-        });
-        Toast.showLoading();
-        @if(isset($product_role))
-        $.ajax({
-            url: '/bknd00/saveGuildProductRolePrices',
-            type: 'POST',
-            data: {
-                'price_interval_day': $('#day').val(),
-                'price_interval_week': $('#week').val(),
-                'price_interval_month': $('#month').val(),
-                'price_interval_year': $('#year').val(),
-                'product_id': product_role_id,
-                //'role_id': role_id,
-                //'role_name': Global.role_name,
-                //'guild_id': guild_id,
-                _token: '{{ csrf_token() }}'
-            },
-        }).done(function (msg) {
-            if (msg['success']) {
-                Toast.fire({
-                    title: 'Success!',
-                    text: msg['msg'],
-                    type: 'success',
-                    showCancelButton: false,
-                    //target: document.getElementById('slider-div')
-                });
-            } else {
-                Swal.fire({
-                    title: 'Oops!',
-                    text: msg['msg'],
-                    type: 'warning',
-                    showCancelButton: false,
-                    target: document.getElementById('slider-div')
-                });
-            }
-        });
-        @endif
-    }
-
-</script>
 
 <script>
 (function() {
