@@ -9,7 +9,7 @@
                        </div>
                     </a>
                     @if(isset($guild))
-                    <a href="{{ $discord_store ? '/guild/' . $discord_store->url : '/' }}" class="brand w-nav-brand styleguide-link w-inline-block" aria-label="home">
+                    <a href="{{ $store_settings ? '/shop/' . $store_settings->url_slug : '/' }}" class="brand w-nav-brand styleguide-link w-inline-block" aria-label="home">
                         
                         @if($guild)
                         <div class="">
@@ -37,7 +37,7 @@
                 <div data-w-id="7215a8a0-bb24-315b-4a87-24f3dad59dfc" class="split-content header-right" style="opacity: 1;">
                     <nav role="navigation" class="nav-menu w-nav-menu">
                         <ul role="list" class="header-navigation">
-                            <li class="nav-item-wrapper"><a href="{{ $discord_store ? '/guild/' . $discord_store->url : '/' }}" class="nav-link">Home</a></li>
+                            <li class="nav-item-wrapper"><a href="{{ $store_settings ? '/guild/' . $store_settings->url_slug : '/' }}" class="nav-link">Home</a></li>
                             <li class="nav-item-wrapper">
                                 <div data-hover="" data-delay="0" data-w-id="2b2d6c1c-2e02-85e3-50e3-053cd961e58a" class="nav-link-dropdown w-dropdown">
                                     <div class="nav-link dropdown w-dropdown-toggle" id="w-dropdown-toggle-0" aria-controls="w-dropdown-list-0" aria-haspopup="menu" aria-expanded="false" role="button" tabindex="0">
@@ -50,8 +50,17 @@
                             <li class="nav-item-wrapper sign-up-mobile"><a href="#" class="button-primary sign-up-header-mobile w-button">Sign Up</a></li>
                         </ul>
                     </nav>
-                    <div class="_2-buttons header-buttons-wrapper"><a href="utility-pages/sign-up" class="button-primary sign-up-header w-button">{{ auth()->user()->getDiscordHelper()->getUsername() }}</a>
-                        <div class="space _2-buttons header-buttons"></div><a href="utility-pages/sign-in" class="button-secondary login-header w-button">My Subscriptions</a></div>
+                    @if(Auth::check())
+                    <div class="_2-buttons header-buttons-wrapper">
+                        <a href="utility-pages/sign-up" class="button-primary sign-up-header w-button">{{ auth()->user()->getDiscordHelper()->getUsername() }}</a>
+                       {{-- @if(isset($owner)) --}}
+                        @if($owner)
+                        <div class="space _2-buttons header-buttons"></div>
+                        <a href="/dashboard/{{$guild->id}}/settings" class="button-secondary login-header w-button">Store Settings</a>
+                        @endif 
+                       {{-- @endif --}}
+                    </div>
+                    @endif
                     <div class="menu-button w-nav-button" style="-webkit-user-select: text;" aria-label="menu"
                         role="button" tabindex="0" aria-controls="w-nav-overlay-0" aria-haspopup="menu" aria-expanded="false">
                         <div class="menu-button-wrapper">

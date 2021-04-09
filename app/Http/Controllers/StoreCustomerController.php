@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 //use App\plan;
+use App\AlertHelper;
 use Illuminate\Http\Request;
 use App\DiscordStore;
 use App\ProductRole;
@@ -80,6 +81,7 @@ class StoreCustomerController extends Controller
         }
 
         $discord_store = DiscordStore::where('UUID', $product_role->discord_store_id)->first();
+        $store_settings = StoreSettings::where('id', $discord_store->id)->first();
         $discord_o_auth = DiscordOAuth::where('discord_id', $discord_store->user_id)->first();
         $discord_helper = new \App\DiscordHelper(User::where('id', $discord_o_auth->user_id)->first());
 
@@ -168,8 +170,8 @@ class StoreCustomerController extends Controller
     
         try {
             $checkout_data = [
-                'cancel_url' => 'http://localhost:8080/shop/' . $discord_store->url,//$product->getCallbackCancelURL(), // product_role id, interval
-                'success_url' => 'http://localhost:8080/checkout-subscription-success/' . $new_sub_uuid,/* . $copiedProduct->id . '/' . $product_price->id . '/' . $store_customer->id . '/' . $role_name,*///$product->getCallbackSuccessURL(),
+                'cancel_url' => 'http://localhost:8080/shop/' . $store_settings->url_slug . '/' . $product_role->url_slug,//$product->getCallbackCancelURL(), // product_role id, interval
+                'success_url' => 'http://localhost:8080/checkout-subscription-success/' . $new_sub_uuid . '/' . $store_customer->id . '/' . $product_role->id,/* . $copiedProduct->id . '/' . $product_price->id . '/' . $store_customer->id . '/' . $role_name,*///$product->getCallbackSuccessURL(),
                 'payment_method_types' => ['card'],
                 "mode" => "subscription",
                 "client_reference_id" => $store_customer->id,
@@ -229,9 +231,9 @@ class StoreCustomerController extends Controller
            
                 $session = $stripe->checkout->sessions->create($checkout_data, array("stripe_account" => $processor_id));
                 $subscription = new Subscription(['id' => $new_sub_uuid, 'connection_type' => 1, 'session_id' => $session->id, 'sub_id' => "", 'user_id' => $user_id, 'owner_id' => $discord_store->user_id, 'store_id' => $discord_store->id, 'store_customer_id' => $store_customer->id, 'product_id' => $product_role->id, 'price_id' => $product_price->id, 'first_invoice_id' => null, 'first_invoice_price' => $paid_amount, 'first_invoice_paid_at' => null, 'next_invoice_price' => $next_amount, 'latest_invoice_id' => null, 'latest_invoice_amount' => null, 'app_fee' => $store_app_fee, 'status' => 0, 'visible' => 0, 'metadata' => null]); 
-                
+                $subscription->save();
                 Cache::put($new_sub_uuid, $subscription);
-        
+
 
             return response()->json(['success' => true, 'msg' => $session->id]);
         
@@ -247,34 +249,79 @@ class StoreCustomerController extends Controller
 
     }
     
-
-    public function checkoutSubscriptionSuccessRole($subscriptionId) {
+    public function checkoutSubscriptionSuccessRole($subscriptionId, $customerId, $productId) { // V# 
         Log::info($subscriptionId);
-        $subscription = Subscription::where('id', $subscriptionId)->first();
-        if($subscription->user_id != auth()->user()->id){
-            AlertHelper::alertError('This is not your subscription.');
-            return redirect('/dashboard');
-        }
-        if($subscription->connection_type == 1){
-            if (! auth()->user()->hasStripeAccount())  {
-                AlertHelper::alertError('You do not have a linked stripe account.');
+        if(!Subscription::where('id', $subscriptionId)->exists()){
+            //$store_customer_id = Cache::get($store_customer);
+
+            if(StoreCustomer::where('id', $customerId)->exists()) {
+                AlertHelper::alertError('Store Customer Page TODO.');
+                Log::info("Store Customer ID here");
+                Log::info($customerId);
+                return redirect('/dashboard');
+                //Cache::forget($storeCustomerId);
+            }else{
+                AlertHelper::alertError('No Cus or Store TODO.');
+                Log::info("No Customer ID here");
                 return redirect('/dashboard');
             }
-        }
-        if($subscription->status <= 2){ // 0 payment processing // 1 payment success // 2 role added to discord
-            if($subscription->status == 0){
-                AlertHelper::alertSuccess('Just a second...');
-                // waiting on Stripe webhook, show product processing
-            }else{
-                AlertHelper::alertSuccess('Congratulations. Subscription Success!');
+        }elseif(Subscription::where('id', $subscriptionId)->exists()){
+            $subscription = Subscription::where('id', $subscriptionId)->first();
+
+            $store = DiscordStore::where('id', $subscription->store_id)->first();
+
+            if ($store == null) {
+                AlertHelper::alertError('Invalid store.');
+                return redirect('/dashboard');
             }
-            $subscription->visible = 1;
-            $subscription->save();
-            return redirect('/account/subscriptions'); // Todo Rob: make store sub manager page
+
+            $product = \App\ProductRole::where('id', $subscription->product_id)->first();
+            $store_settings = \App\StoreSettings::where('store_id', $store->id)->first();
+
+            if ($product == null) {
+                AlertHelper::alertError('Invalid product.');
+                //return redirect('/dashboard');
+                return redirect('/shop'.'/'.$store_settings->url_slug);
+            }
+            $interval_string = "month"; // TODO2: get from $subscription or from $price (from $product)
+            //AlertHelper::alertSuccess('You are now an ' . $product->title . '.' .  ' You will automatically be billed every 1 ' . $interval_string . '(s) starting today.');
+            
+            //return redirect('/welcome'.'/'.$store_settings->url_slug);
+
+            if($subscription->user_id != auth()->user()->id){
+                AlertHelper::alertError('This is not your subscription.');
+                return redirect('/dashboard');
+            }
+            if($subscription->connection_type == 1){
+                if (! auth()->user()->hasStripeAccount())  {
+                    Log::info("You do not have a linked stripe account Please relogin.");
+                    AlertHelper::alertError('You do not have a linked stripe account Please relogin.');
+                    //return redirect('/dashboard');
+                    return redirect('/shop'.'/'.$store_settings->url_slug);
+                }
+            }
+            if($subscription->status <= 2){ // 0 payment processing // 1 payment success // 2 role added to discord
+                if($subscription->status == 0){
+                    AlertHelper::alertSuccess('Just a second...');
+                    // waiting on Stripe webhook, show product processing
+                }else{
+                    AlertHelper::alertSuccess('Congratulations. Subscription Success!');
+                }
+                $subscription->visible = 1;
+                $subscription->save();
+                //return redirect('/account/subscriptions'); // Todo Rob: make store sub manager page
+                return redirect('/shop'.'/'.$store_settings->url_slug);
+            }else{
+                AlertHelper::alertInfo('Subscription already added or cancelled.');
+            // return redirect('/account/subscriptions'); // Todo Rob: make store sub manager page
+                return redirect('/shop'.'/'.$store_settings->url_slug);
+            }
         }else{
-            AlertHelper::alertInfo('Subscription already added or cancelled.');
-            return redirect('/account/subscriptions'); // Todo Rob: make store sub manager page
+            AlertHelper::alertError('Colby must do this plz.');
+            return redirect('/dashboard');
         }
+
+      
 
         //return $success ? $product->checkoutSuccess() : $product->checkoutCancel();
     }

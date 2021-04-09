@@ -37,54 +37,73 @@ class StoreController extends Controller {
         $this->middleware('auth');
     }*/
 
-    public function getStoreWelcome($store_slug){
+    public function getStoreWelcome($shop_url){
 
-        if(! DiscordStore::where('url', $store_slug)->exists()) {
+        $discord_store = null;
+        if(!StoreSettings::where('url_slug', $shop_url)->exists() && !DiscordStore::where('url', $shop_url)->exists()) {
             return abort(404);
-        } else {
-            $discord_store = DiscordStore::where('url', $store_slug)->first();
+        }else
+        if(DiscordStore::where('url', $shop_url)->exists()){
+            $discord_store = DiscordStore::where('url', $shop_url)->first();
             $store_settings = StoreSettings::where('store_id', $discord_store->id)->where('store_type', 1)->first();
-        }
-
-        $owner = false;
-        if(Auth::check()){
-            if(/*$store_settings->members_only && */$discord_store->live == 0){
-                $user_o_auth = DiscordOAuth::where('user_id', auth()->user()->id)->first();
-                if($user_o_auth->discord_id != $discord_store->user_id){
-                    //return abort(404);
-                }else{
-                    $owner = true;
-                }
-                return view('store.welcome-page')->with('store_settings', $store_settings)->with('discord_store',$discord_store)->with('logged_in', true)->with('owner', $owner);
-            }else{
-                return redirect('/shop'.'/'.$store_slug);
-            }
-
+            Log::info($discord_store->id);
         }else{
+            $store_settings = StoreSettings::where('url_slug', $shop_url)->where('store_type', 1)->first();
+            $discord_store = DiscordStore::where('id', $store_settings->store_id)->first();
+            Log::info($discord_store->id);
+        }
+        if($discord_store != null){
 
-            return view('store.welcome-page')->with('store_settings', $store_settings)->with('discord_store',$discord_store)->with('logged_in', false)->with('owner', $owner);
-            
+            $owner = false;
+            if(Auth::check()){
+                if(/*$store_settings->members_only && */$discord_store->live == 0){
+                    $user_o_auth = DiscordOAuth::where('user_id', auth()->user()->id)->first();
+                    if($user_o_auth->discord_id != $discord_store->user_id){
+                        //return abort(404);
+                    }else{
+                        $owner = true;
+                    }
+                    return view('store.welcome-page')->with('store_settings', $store_settings)->with('discord_store',$discord_store)->with('logged_in', true)->with('owner', $owner);
+                }else{
+                    return redirect('/shop'.'/'.$shop_url);
+                }
+
+            }else{
+
+                return view('store.welcome-page')->with('store_settings', $store_settings)->with('discord_store',$discord_store)->with('logged_in', false)->with('owner', $owner);
+                
+            }
         }
 
 
     }
 
 
-    public function getStoreFront($shop_title){
+    public function getStoreFront($shop_url){
 
 
 
         $discord_store = null;
-        if(! DiscordStore::where('url', $shop_title)->exists()) {
+        if(!StoreSettings::where('url_slug', $shop_url)->exists() && !DiscordStore::where('url', $shop_url)->exists()) {
             return abort(404);
-        } else {
-            $discord_store = DiscordStore::where('url', $shop_title)->first();
+        }else
+        if(DiscordStore::where('url', $shop_url)->exists()){
+            $discord_store = DiscordStore::where('url', $shop_url)->first();
             $store_settings = StoreSettings::where('store_id', $discord_store->id)->where('store_type', 1)->first();
+            Log::info($discord_store->id);
+        }else{
+            $store_settings = StoreSettings::where('url_slug', $shop_url)->where('store_type', 1)->first();
+            $discord_store = DiscordStore::where('id', $store_settings->store_id)->first();
             Log::info($discord_store->id);
         }
         if($discord_store != null){ // if offline, only show to admins
 
             $user_o_auth = DiscordOAuth::where('user_id', auth()->user()->id)->first();
+           
+            $owner = false;
+            if($user_o_auth->discord_id == $discord_store->user_id){
+                $owner = true;
+            }
             
             $member_function = true;
             if($store_settings->members_only == true){
@@ -130,28 +149,33 @@ class StoreController extends Controller {
             // 2 members products
             // 3 other products 
     
-            return view('store.front-page')->with('discord_helper', $discord_helper)->with('discord_store', $discord_store)->with('guild', $guild)->with('auth', $auth)->with('product_roles', $product_roles)->with('subscriptions', $subscriptions)->with('store_customer', $store_customer);
+            return view('store.front-page')->with('discord_helper', $discord_helper)->with('discord_store', $discord_store)->with('store_settings', $store_settings)->with('guild', $guild)->with('auth', $auth)->with('owner', $owner)->with('product_roles', $product_roles)->with('subscriptions', $subscriptions)->with('store_customer', $store_customer);
         }else{
             // return 404
-
+            return abort(404);
             
         }
 
     }
 
     // AUTH//
-    public function getStoreProduct($shop_title, $product_title){
+    public function getStoreProduct($shop_url, $product_url){
 
         $discord_store = null;
-        if(! DiscordStore::where('url', $shop_title)->exists()) {
+        if(!StoreSettings::where('url_slug', $shop_url)->exists() && !DiscordStore::where('url', $shop_url)->exists()) {
             return abort(404);
-        } else {
-            $discord_store = DiscordStore::where('url', $shop_title)->first();
+        }else
+        if(DiscordStore::where('url', $shop_url)->exists()){
+            $discord_store = DiscordStore::where('url', $shop_url)->first();
             $store_settings = StoreSettings::where('store_id', $discord_store->id)->where('store_type', 1)->first();
+            Log::info($discord_store->id);
+        }else{
+            $store_settings = StoreSettings::where('url_slug', $shop_url)->where('store_type', 1)->first();
+            $discord_store = DiscordStore::where('id', $store_settings->store_id)->first();
             Log::info($discord_store->id);
         }
         
-        if(Auth::check()){
+        if(Auth::check() && $discord_store != null){
 
             $affiliate_id = null;
             if(\request('affiliate_id') !== null) {
@@ -162,6 +186,11 @@ class StoreController extends Controller {
             $discord_helper = new DiscordHelper(auth()->user());
             $discord_o_auth = DiscordOAuth::where('discord_id', $discord_store->user_id)->first();
             $user_o_auth = DiscordOAuth::where('user_id', auth()->user()->id)->first();
+
+            $owner = false;
+            if($user_o_auth->discord_id == $discord_store->user_id){
+                $owner = true;
+            }
             
             $member_function = true;
             if($store_settings->members_only == true){
@@ -181,9 +210,9 @@ class StoreController extends Controller {
 
             Log::info($guild_id);
 
-            Log::info($product_title);
-            $product_title_unslug = Str::title(str_replace('-', ' ', $product_title));
-            Log::info($product_title_unslug);
+            Log::info($product_url);
+            //$product_title_unslug = Str::title(str_replace('-', ' ', $product_title));
+            //Log::info($product_title_unslug);
 
         /* if(Ban::where('user_id', auth()->user()->id)->where('active', 1)->where('type', 1)->where('discord_store_id', $discord_store->id)->exists() && auth()->user()->id != $discord_store->user_id){
                 return abort(404);
@@ -198,11 +227,11 @@ class StoreController extends Controller {
                 return view('offline');
             }*/
 
-            if(! ProductRole::where('discord_store_id', $discord_store->UUID)->where('title', 'LIKE', '%' . $product_title_unslug . '%')->exists()) {
+            if(! ProductRole::where('discord_store_id', $discord_store->UUID)->where('url_slug', $product_url)->exists()) {
                 // add error
                 Log::info("Product Role not Found");
             } else {
-                $product_role = ProductRole::where('discord_store_id', $discord_store->UUID)->where('title', 'LIKE', '%' . $product_title_unslug . '%')->first();
+                $product_role = ProductRole::where('discord_store_id', $discord_store->UUID)->where('url_slug', $product_url)->first();
             }
 
             $product_discord_store_uuid = $product_role->discord_store_id;
@@ -247,7 +276,7 @@ class StoreController extends Controller {
                 $processor_id = null;
             }
 
-            return view('store.product-page')->with('discord_store', $discord_store)->with('guild', $guild)->with('role', $role)->with('role_id', $role_id)->with('product_role', $product_role)->with('product_prices', $product_prices)->with('affiliate_id', $affiliate_id)->with('processor_type', $processor_type)->with('processor_id', $processor_id);//->with('store_processor_selected_id', $store_processor_selected_id);
+            return view('store.product-page')->with('discord_store', $discord_store)->with('store_settings', $store_settings)->with('owner', $owner)->with('guild', $guild)->with('role', $role)->with('role_id', $role_id)->with('product_role', $product_role)->with('product_prices', $product_prices)->with('affiliate_id', $affiliate_id)->with('processor_type', $processor_type)->with('processor_id', $processor_id);//->with('store_processor_selected_id', $store_processor_selected_id);
             
         }else{
             //return view('discord_login');
@@ -256,35 +285,73 @@ class StoreController extends Controller {
     }
 
 
-    public function checkoutSuccess($sub_id) {
-        $subscription = Subscription::where('id', $sub_id)->first();
+    public function checkoutSuccess($subscriptionId) { // V2 
 
-        if ($subscription == null) {
-            AlertHelper::alertError('Subscription invalid.');
-            return redirect('/dashboard');
+        Log::info($subscriptionId);
+        if(!Subscription::where('id', $subscriptionId)->exists()){
+            //$store_customer_id = Cache::get($storeCustomerId);
+
+            if($store_customer_id !== null) {
+                AlertHelper::alertError('Store Load Page TODO.');
+                Log::info("Store Customer ID here");
+                return redirect('/dashboard');
+               // Cache::forget($storeCustomerId);
+            }else{
+                AlertHelper::alertError('No Cus or Store TODO.');
+                Log::info("No Customer ID here");
+                return redirect('/dashboard');
+            }
+        }else{
+            $subscription = Subscription::where('id', $subscriptionId)->first();
+
+            $store = DiscordStore::where('id', $subscription->store_id)->first();
+
+            if ($store == null) {
+                AlertHelper::alertError('Invalid store.');
+                return redirect('/dashboard');
+            }
+
+            $product = \App\ProductRole::where('id', $subscription->product_id)->first();
+            $store_settings = \App\StoreSettings::where('store_id', $store->id)->first();
+
+            if ($product == null) {
+                AlertHelper::alertError('Invalid product.');
+                //return redirect('/dashboard');
+                return redirect('/shop'.'/'.$store_settings->url_slug);
+            }
+            $interval_string = "month"; // TODO2: get from $subscription or from $price (from $product)
+            //AlertHelper::alertSuccess('You are now an ' . $product->title . '.' .  ' You will automatically be billed every 1 ' . $interval_string . '(s) starting today.');
+            
             //return redirect('/welcome'.'/'.$store_settings->url_slug);
+
+            if($subscription->user_id != auth()->user()->id){
+                AlertHelper::alertError('This is not your subscription.');
+                return redirect('/dashboard');
+            }
+            if($subscription->connection_type == 1){
+                if (! auth()->user()->hasStripeAccount())  {
+                    AlertHelper::alertError('You do not have a linked stripe account Please relogin.');
+                    //return redirect('/dashboard');
+                    return redirect('/shop'.'/'.$store_settings->url_slug);
+                }
+            }
+            if($subscription->status <= 2){ // 0 payment processing // 1 payment success // 2 role added to discord
+                if($subscription->status == 0){
+                    AlertHelper::alertSuccess('Just a second...');
+                    // waiting on Stripe webhook, show product processing
+                }else{
+                    AlertHelper::alertSuccess('Congratulations. Subscription Success!');
+                }
+                $subscription->visible = 1;
+                $subscription->save();
+                //return redirect('/account/subscriptions'); // Todo Rob: make store sub manager page
+                return redirect('/shop'.'/'.$store_settings->url_slug);
+            }else{
+                AlertHelper::alertInfo('Subscription already added or cancelled.');
+            // return redirect('/account/subscriptions'); // Todo Rob: make store sub manager page
+                return redirect('/shop'.'/'.$store_settings->url_slug);
+            }
         }
-
-        $store = DiscordStore::where('id', $subscription->store_id)->first();
-
-        if ($store == null) {
-            AlertHelper::alertError('Invalid store.');
-            return redirect('/');
-        }
-
-        $product = \App\ProductRole::where('id', $subscription->product_id)->first();
-        $store_settings = \App\StoreSettings::where('store_id', $store->id)->first();
-
-        if ($product == null) {
-            AlertHelper::alertError('Invalid product.');
-            //return redirect('/dashboard');
-            return redirect('/welcome'.'/'.$store_settings->url_slug);
-        }
-        $interval_string = "month"; // TODO2: get from $subscription or from $price (from $product)
-        AlertHelper::alertSuccess('You are now an ' . $product->title . '.' .  ' You will automatically be billed every 1 ' . $interval_string . '(s) starting today.');
-        
-        return redirect('/welcome'.'/'.$store_settings->url_slug);
-        
         //return redirect('/dashboard');
         
     }

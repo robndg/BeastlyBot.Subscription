@@ -18,28 +18,37 @@
             <div class="container-large-1040px">
 
                <div data-w-id="3e7a78ef-77f6-6e11-e17e-da3aa1a04313" style="-webkit-transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0, 20px, 0) scale3d(1, 1, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);" class="integration-tabs-menu w-tab-menu">
-                        <button type="button" class="integration-tab-link w-inline-block w-tab-link tab-block store-description-block-tab w--current" onclick="showBlock('store-description-block')" data-target-block="store-description-block">
-                           <div>Description</div>
+                        <button type="button" class="integration-tab-link w-inline-block w-tab-link tab-block store-description-block-tab" onclick="showBlock('store-description-block')" data-target-block="store-description-block">
+                           <div>About Store</div>
                         </button>
-                        <button type="button" class="integration-tab-link w-inline-block w-tab-link tab-block store-products-block-tab" onclick="showBlock('store-products-block')" data-target-block="store-products-block">
+                        <button type="button" class="integration-tab-link w-inline-block w-tab-link tab-block store-products-block-tab w--current" onclick="showBlock('store-products-block')" data-target-block="store-products-block">
                            <div>Products</div>
                         </button>
+                        @if($store_settings->referrals_enabled != 0)
                         <button type="button" class="integration-tab-link w-inline-block w-tab-link tab-block store-referalls-block-tab" onclick="showBlock('store-referalls-block')" data-target-block="store-referalls-block">
-                           <div>Referalls</div>
+                           <div>Referrals</div>
                         </button>
-                     </div>
-               <div class="integration-page-tabs-wrapper store-block" id="store-description-block">
+                        @else
+                           {{--@if($owner)
+                           <button type="button" class="integration-tab-link w-inline-block w-tab-link tab-block store-referalls-block-tab" onclick="showBlock('store-referalls-block')" data-target-block="store-referalls-block">
+                              <div>Referrals</div>
+                           </button>
+                           @endif--}}
+                           <!-- TODO: suggest referrals program to owner -->
+                        @endif
+                     </div> 
+               <div class="integration-page-tabs-wrapper store-block" id="store-description-block" style="display:none;">
                   <div data-duration-in="300" data-duration-out="100" class="integration-tabs w-tabs">
                     
                      <div  data-w-id="3e7a78ef-77f6-6e11-e17e-da3aa1a0431d" style="-webkit-transform:translate3d(0, 0, 0) scale3d(0.85, 0.85, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-moz-transform:translate3d(0, 0, 0) scale3d(0.85, 0.85, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);-ms-transform:translate3d(0, 0, 0) scale3d(0.85, 0.85, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);transform:translate3d(0, 0, 0) scale3d(0.85, 0.85, 1) rotateX(0) rotateY(0) rotateZ(0) skew(0, 0);" class="card integration-tabs-content w-tab-content">
                         <div data-w-tab="Tab 1" class="integration-tab-pane w-tab-pane w--tab-active">
                            <div class="rich-text w-richtext">
                               <h2>About {{ $guild->name }}</h2>
-                              <p></p><!-- TODO: either DB from store or use stats from guild helper / subscriber count-->
-                              <p>{{-- store desc --}} Volutpat, vitae <strong>sagittis sed aliquam ac</strong> elit. Purus augue elit feugiat lorem ultrices egestas. Egestas iaculis diam dolor, sed commodo, suscipit.</p>
-                              <p>{{-- store long desc --}}Nisi, leo phasellus bibendum rutrum risus non. Massa ultrices senectus nisl, pretium ac nisl. Et id lacus dignissim nulla. <strong>Congue mollis enim</strong> eu cursus scelerisque quis feugiat. Senectus volutpat rhoncus nisi, ipsum mattis vitae nam. Cras nullam nulla faucibus quis. Quisque diam ut nunc auctor. Vestibulum.</p>
+                              <p><strong>{{ $store_settings->store_name }}</strong> has {{$product_roles->count() }} Products to subscribe to roles instantly.</p><!-- TODO: either DB from store or use stats from guild helper / subscriber count-->
+                              <p>{{ $store_settings->description }} @if($owner && $store_settings->description == NULL) <a href="/dashboard"><span class="badge badge-primary">Add an intro</span></a> @endif</p>
+                              <p>{!! $store_settings->about !!} @if($owner && $store_settings->about == NULL) <a href="/dashboard"><span class="badge badge-primary">Add an about section</span></a> @endif</p>
                               <h3>How does BeastlyBot work?</h3>
-                              <p><a href="#">Lorem ipsum dolor sit amet</a>, consectetur adipiscing elit. Magna urna viverra at in. Eleifend bibendum enim faucibus in id et convallis sed. <strong>Et praesent id consectetur</strong> dolor aliquam lectus viverra. Dignissim quis tristique.</p>
+                              <p><a href="#">The beastly subscription bot</a>, read our <a href="#">subscriber FAQ's</a>. Guild owners can easily and instantly <strong>give you access</strong> to perks and roles securely on this store.</p>
                            </div>
                         </div>
                      </div>
@@ -48,7 +57,7 @@
                  
                </div>
 
-         <div class="related-integrations-section store-block" id="store-products-block" style="display:none;">
+         <div class="related-integrations-section store-block" id="store-products-block">
             <div class="container-default w-container">
 
                <div data-w-id="0e53f2b7-9467-6285-9db7-c8917faec362" style="margin-bottom: 1rem; margin-top: 1rem; transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); opacity: 1; transform-style: preserve-3d;" class="teams-v1-tabs-menu w-tab-menu" role="tablist">
@@ -69,7 +78,7 @@
                   <div role="list" class="more-openings-grid w-dyn-items">
                   @foreach($product_roles->where('access', 1) as $product)
                      <div data-w-id="8116e32d-45f9-b5ec-fa48-53777bb1af4d" style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); opacity: 1; transform-style: preserve-3d;" role="listitem" class="w-dyn-item">
-                        <a href="/shop/{{ $discord_store->url }}/{{ Str::title(str_replace(' ', '-', $product->title))}}" aria-current="page" class="card job-opening-v1 w-inline-block w--current" style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;">
+                        <a href="/shop/{{ $store_settings->url_slug }}/{{ $product->url_slug }}" aria-current="page" class="card job-opening-v1 w-inline-block w--current" style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;">
                            <div class="top-content job-opening-v1">
                               <div class="split-content job-opening-v1-left">
                                  <div class="image-wrapper icon-style-guide">
@@ -117,7 +126,7 @@
                   <div role="list" class="more-openings-grid w-dyn-items">
                   @foreach($product_roles->where('access', 2) as $product)
                      <div data-w-id="8116e32d-45f9-b5ec-fa48-53777bb1af4d" style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); opacity: 1; transform-style: preserve-3d;" role="listitem" class="w-dyn-item">
-                        <a href="/shop/{{ $discord_store->url }}/{{ Str::title(str_replace(' ', '-', $product->title))}}" aria-current="page" class="card job-opening-v1 w-inline-block w--current" style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;">
+                        <a href="/shop/{{ $store_settings->url_slug }}/{{ $product->url_slug }}" aria-current="page" class="card job-opening-v1 w-inline-block w--current" style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;">
                            <div class="top-content job-opening-v1">
                               <div class="split-content job-opening-v1-left">
                                  <div class="image-wrapper icon-style-guide">
@@ -148,7 +157,7 @@
                   <div role="list" class="more-openings-grid w-dyn-items">
                   @foreach($product_roles->where('access', 3) as $product)
                      <div data-w-id="8116e32d-45f9-b5ec-fa48-53777bb1af4d" style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); opacity: 1; transform-style: preserve-3d;" role="listitem" class="w-dyn-item">
-                        <a href="/shop/{{ $discord_store->url }}/{{ Str::title(str_replace(' ', '-', $product->title))}}" aria-current="page" class="card job-opening-v1 w-inline-block w--current" style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;">
+                        <a href="/shop/{{ $store_settings->url_slug }}/{{ $product->url_slug }}" aria-current="page" class="card job-opening-v1 w-inline-block w--current" style="transform: translate3d(0px, 0px, 0px) scale3d(1, 1, 1) rotateX(0deg) rotateY(0deg) rotateZ(0deg) skew(0deg, 0deg); transform-style: preserve-3d;">
                            <div class="top-content job-opening-v1">
                               <div class="split-content job-opening-v1-left">
                                  <div class="image-wrapper icon-style-guide">
@@ -264,6 +273,7 @@
 
 
          </div>
+         @if($store_settings->referrals_enabled != 0)
          <div class="related-integrations-section store-block" id="store-referalls-block" style="display:none;">
 
                <div class="styleguide-seccion">
@@ -315,6 +325,7 @@
             </div>
 
          </div>
+         @endif
       </div>
 </div>
 

@@ -28,12 +28,15 @@ Route::get('/welcome/{store_slug}', 'StoreController@getStoreWelcome'); // * pag
 /* Auths */
 
 Route::group(['middleware' => ['auth', 'web']], function () {
-    Route::get('/checkout-subscription-success/{id}', 'StoreController@checkoutSuccess');
+    //Route::get('/checkout-subscription-success/{id}', 'StoreController@checkoutSuccess');
+    
     // Store Page
     Route::get('/shop/{shop_title}', 'StoreController@getStoreFront'); // * page //
     // Store Product Page
     Route::get('/shop/{shop_title}/{product_title}', 'StoreController@getStoreProduct'); // * page //
     // Store Product Page Setup Order
     Route::post('/bknd00/setup-order', 'StoreCustomerController@setupOrder'); // * post bknd00 //
+    // Store User Redirect Order
+    Route::get('/checkout-subscription-success/{id}/{cus_id}/{prod_id}', 'StoreCustomerController@checkoutSubscriptionSuccessRole');
 });
 

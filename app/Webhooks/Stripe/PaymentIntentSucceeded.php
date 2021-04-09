@@ -103,7 +103,9 @@ class PaymentIntentSucceeded implements ShouldQueue {
       Log::info("Here 1");
       $role_id = $product_role->role_id;
       Log::info("Here 2");
-      $owner_id = $discord_store->user_id;
+      $owner_discord_id = $discord_store->user_id;
+      $owner = DiscordOAuth::where('discord_id', $owner_discord_id)->first();
+      $owner_id = $owner->user_id;
       Log::info("Here 3");
       Log::info($owner_id);
       $discord_helper = new \App\DiscordHelper(User::find($owner_id));
@@ -112,7 +114,7 @@ class PaymentIntentSucceeded implements ShouldQueue {
       //$owner = DiscordOAuth::where('discord_id', $owner_discord_id)->first();
       //$owner_id = $owner->id;
       //$owner_discord = DiscordOAuth::where('user_id', $owner_id)->first();
-      $owner_discord_id = $subscription->owner_id;
+      //$owner_discord_id = $discord_store->owner_id;
       Log::info("Here 5");
       //$guild = $discord_helper->getGuild($guild_id);// repeat, moved below
 
@@ -183,7 +185,7 @@ class PaymentIntentSucceeded implements ShouldQueue {
 
           
 
-          if (!$isMember) { //TODO2: this area results in error
+          if($isMember != 1) { //TODO2: this area results in error
             $discord_client->guild->addGuildMember([
               'guild.id' => intval($guild_id),
               'user.id' => intval($customer_discord_id)
@@ -208,6 +210,7 @@ class PaymentIntentSucceeded implements ShouldQueue {
           Log::info($e->getMessage());
           Log::info($guild_id);
           Log::info($role_id);
+          Log::info($customer_discord_id);
           Log::info($user_id);
           
          /* $discord_error = new \App\DiscordError();
