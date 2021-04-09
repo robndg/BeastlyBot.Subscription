@@ -262,6 +262,7 @@ class StoreController extends Controller {
         if ($subscription == null) {
             AlertHelper::alertError('Subscription invalid.');
             return redirect('/dashboard');
+            //return redirect('/welcome'.'/'.$store_settings->url_slug);
         }
 
         $store = DiscordStore::where('id', $subscription->store_id)->first();

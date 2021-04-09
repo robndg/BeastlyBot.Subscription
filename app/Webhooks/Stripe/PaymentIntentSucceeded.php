@@ -31,30 +31,62 @@ class PaymentIntentSucceeded implements ShouldQueue {
         Log::info($webhookCall->payload);
         
         $paid = $webhookCall->payload['data']['object']['charges']['data'][0]['paid'];
-        $latest_invoice_id = $webhookCall->payload['data']['object']['charges']['data'][0]['invoice'];
+        $latest_invoice_id = $webhookCall->payload['data']['object']['invoice'];
         //$type = $webhookCall->payload['data']['object']['lines']['data'][0]['plan']['metadata']['type'];
         $type = 'discord_subscription'; // TODO Colby, error "lines" -> has no type
-        $subscription = Subscription::where('latest_invoice_id', $latest_invoice_id)->first();
 
-        if($paid == true || $paid == 1) {
-          if ($subscription->status !== Subscription::$PAID) {
-            Log::info("Updating Subscription to Paid");
-            $subscription->first_invoice_paid_at = $webhookCall->payload['created'];
-            $subscription->status = Subscription::$PAID;
-            $subscription->save();
-
-            switch ($type) {
-              case 'discord_subscription': $this->handleDiscord($subscription);
+      
+        $iteration_counter = 0;
+        $continue = false;
+        if(Subscription::where('latest_invoice_id', $latest_invoice_id)->exists()){
+          $continue = true;
+          $subscription = Subscription::where('latest_invoice_id', $latest_invoice_id)->first();
+        }else{
+          $continue = false; // TODO: make this better code, useing timers or getting notice from SubscriptionStarted the table has been made
+          while($iteration_counter <= 31 && $continue == false){
+            try{
+              $subscription = Subscription::where('latest_invoice_id', $latest_invoice_id)->first();
+            }catch(\Exception $e) {
+              $iteration_counter += 1;
+              Log::info("Iterating to find Subscription Call to continue");
+              Log::info($iteration_counter);
+              if($iteration_counter > 30){
+                $continue = "fail";
+                Log::info("Failed to find Subscription for Call");
+              }
             }
           }
         }
+        
+        if($continue == true){ // found subscription row
+          if($paid == true || $paid == 1) {
+            if ($subscription->status !== Subscription::$PAID) {
+              Log::info("Updating Subscription to Paid");
+              $subscription->first_invoice_paid_at = $webhookCall->payload['created'];
+              $subscription->status = Subscription::$PAID;
+              $subscription->save();
+
+              Log::info($type);
+              Log::info($subscription);
+              switch ($type) {
+                case 'discord_subscription': $this->handleDiscord($subscription);
+              }
+            }
+          }
+        }
+  
+        
 
     }
 
     private function handleDiscord ($subscription) {
-      Log::info("Adding Role and Store Stats");
+      Log::info("subscription handleDiscord");
+      Log::info($subscription);
 
       $user_id = $subscription->user_id;
+      $discord_helper_user = new \App\DiscordHelper(User::find($user_id));
+      Log::info("user_id handleDiscord");
+      Log::info($user_id);
      
       $product_role = ProductRole::where('id', $subscription->product_id)->first(); // store product
       $product_price = Price::where('id', $subscription->price_id); // product price
@@ -63,18 +95,26 @@ class PaymentIntentSucceeded implements ShouldQueue {
       $store_customer = StoreCustomer::where('user_id', $user_id)->where('discord_store_id', $discord_store->id)->first();
       $store_customer->enabled = 1;
       $store_customer->save();
-      //$discord_store = DiscordStore::where("guild_id", $guild_id)->first(); // might leave for store transfers
+      
 
       $guild_id = $discord_store->guild_id;
+      Log::info($guild_id);
+      
+      Log::info("Here 1");
       $role_id = $product_role->role_id;
-
-      $owner_discord_id = $discord_store->user_id;
-      //$owner_discord_id = DiscordOAuth::where('user_id', $owner_id)->first()->discord_id;
-      $owner_id = DiscordOAuth::where('discord_id', $owner_discord_id)->first()->user_id;
-
+      Log::info("Here 2");
+      $owner_id = $discord_store->user_id;
+      Log::info("Here 3");
+      Log::info($owner_id);
       $discord_helper = new \App\DiscordHelper(User::find($owner_id));
-     
-      //$guild = $discord_helper->getGuild($guild_id); repeat, moved below
+      Log::info("Here 4");
+
+      //$owner = DiscordOAuth::where('discord_id', $owner_discord_id)->first();
+      //$owner_id = $owner->id;
+      //$owner_discord = DiscordOAuth::where('user_id', $owner_id)->first();
+      $owner_discord_id = $subscription->owner_id;
+      Log::info("Here 5");
+      //$guild = $discord_helper->getGuild($guild_id);// repeat, moved below
 
 
       $bad_guild = false;
@@ -103,9 +143,9 @@ class PaymentIntentSucceeded implements ShouldQueue {
           Log::info($e);
           $bad_role = true;
       }
-
+      Log::info("Here 6");
       if(!$bad_guild && !$bad_role) {
-
+        Log::info("Adding Role and Store Stats");
         $stats = Stat::where('type', 1)->where('type_id', $discord_store->id)->first();
         $subscribers_active = $stats->data['subscribers']['active'];
         $subscribers_total = $stats->data['subscribers']['total'];
@@ -127,16 +167,21 @@ class PaymentIntentSucceeded implements ShouldQueue {
         try{
 
           //$subscription = Subscription::where('latest_invoice_id', $latest_invoice_id)->first();
-        
+          Log::info("User_Id");
+          Log::info($user_id);
+          Log::info("Getting Customer Discord Id");
+          
           $customer_discord_id = DiscordOAuth::where('user_id', $user_id)->first()->discord_id;
 
           $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
 
           // add role php
-
-          $isMember = $discord_helper->isMember($guild_id, $discord_helper->getID());
-
           Log::info("Checking Member and adding if not");
+
+          $isMember = $discord_helper_user->isMember($guild->id, $customer_discord_id);
+          Log::info($isMember);
+
+          
 
           if (!$isMember) { //TODO2: this area results in error
             $discord_client->guild->addGuildMember([
@@ -154,11 +199,11 @@ class PaymentIntentSucceeded implements ShouldQueue {
           $subscription->status = 2;
           $subscription->save();
 
-          $discord_helper->sendMessage('You have successfully subscribed to ' . $role->name . ' role in the ' . $guild->name . ' server!');
+          //$discord_helper->sendMessage('You have successfully subscribed to ' . $role->name . ' role in the ' . $guild->name . ' server!');
 
         }catch(\Exception $e) {
           Log::info($e);
-          $discord_helper->sendMessage('Uh-oh! I couldn\'t add the role your account. Please contact server owner.');
+          $discord_helper_user->sendMessage('Uh-oh! I couldn\'t add the role your account. Please contact server owner.');
           Log::info("Discord Error");
           Log::info($e->getMessage());
           Log::info($guild_id);
@@ -172,6 +217,7 @@ class PaymentIntentSucceeded implements ShouldQueue {
               $discord_error->message = $e->getMessage();*/
 
         }
+
 
       }
     }
