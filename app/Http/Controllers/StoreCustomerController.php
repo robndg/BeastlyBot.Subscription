@@ -17,6 +17,7 @@ use App\DiscordOAuth;
 use App\Processors;
 use App\StoreCustomer;
 use App\Subscription;
+use App\StoreSettings;
 
 use Illuminate\Support\Facades\Cache;
 
@@ -80,8 +81,9 @@ class StoreCustomerController extends Controller
                 
         }
 
+
         $discord_store = DiscordStore::where('UUID', $product_role->discord_store_id)->first();
-        $store_settings = StoreSettings::where('id', $discord_store->id)->first();
+        $store_settings = StoreSettings::where('store_id', $discord_store->id)->first();
         $discord_o_auth = DiscordOAuth::where('discord_id', $discord_store->user_id)->first();
         $discord_helper = new \App\DiscordHelper(User::where('id', $discord_o_auth->user_id)->first());
 

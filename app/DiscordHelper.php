@@ -99,12 +99,12 @@ class DiscordHelper
     }
 
     public function guildHasBot($guild_id) {
-        return $this->isMember($guild_id, 798659745883357214);
+        return $this->isMember(intval($guild_id), 798659745883357214);
     }
 
     public function isUserBanned($guild_id, $user_id) {
         $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
-        foreach($discord_client->guild->getGuildBans(['guild.id' => $guild_id]) as $ban) {
+        foreach($discord_client->guild->getGuildBans(['guild.id' => intval($guild_id)]) as $ban) {
             if($ban->user->id == $user_id) return true;
         }
         return false;
@@ -114,7 +114,7 @@ class DiscordHelper
         $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
 
         try {
-            $result = $discord_client->guild->getGuildMember(['guild.id' => $guild_id, 'user.id' => $user_id]);
+            $result = $discord_client->guild->getGuildMember(['guild.id' => intval($guild_id), 'user.id' => intval($user_id)]);
             if($result != NULL){
                 return true;
             }
@@ -136,7 +136,7 @@ class DiscordHelper
         }
 
         $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
-        Cache::put('roles_' . $guild_id, $discord_client->guild->getGuildRoles(['guild.id' => $guild_id]), 60 * $this->minutes_to_cache);
+        Cache::put('roles_' . $guild_id, $discord_client->guild->getGuildRoles(['guild.id' => intval($guild_id)]), 60 * $this->minutes_to_cache);
         return Cache::get('roles_' . $guild_id);
     }
 
@@ -150,7 +150,7 @@ class DiscordHelper
         }
 
         $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
-        Cache::put('roles_' . $guild_id, $discord_client->guild->getGuildRoles(['guild.id' => $guild_id]), 60 * $this->minutes_to_cache);
+        Cache::put('roles_' . $guild_id, $discord_client->guild->getGuildRoles(['guild.id' => intval($guild_id)]), 60 * $this->minutes_to_cache);
 
         foreach(Cache::get('roles_' . $guild_id) as $role) {
             if($role->id == $role_id) {
@@ -167,7 +167,7 @@ class DiscordHelper
         }
 
         $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
-        Cache::put('guild_' . $guild_id, $discord_client->guild->getGuild(['guild.id' => $guild_id]), 60 * $this->minutes_to_cache);
+        Cache::put('guild_' . $guild_id, $discord_client->guild->getGuild(['guild.id' => intval($guild_id)]), 60 * $this->minutes_to_cache);
         return Cache::get('guild_' . $guild_id);
     }
 
@@ -192,7 +192,7 @@ class DiscordHelper
             return Cache::get('discord_user_' . $discord_id);
         }
         $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
-        Cache::put('discord_user_' . $discord_id, $discord_client->user->getUser(['user.id' => $discord_id], 60 * 5));
+        Cache::put('discord_user_' . $discord_id, $discord_client->user->getUser(['user.id' => intval($discord_id)], 60 * 5));
         return Cache::get('discord_user_' . $discord_id);
     }
 

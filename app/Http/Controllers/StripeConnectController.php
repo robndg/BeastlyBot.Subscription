@@ -7,6 +7,7 @@ use App\AlertHelper;
 use App\StripeHelper;
 use App\Processors;
 use App\ProcessorsController;
+use App\DiscordOAuth;
 use Illuminate\Support\Facades\Log;
 
 class StripeConnectController extends Controller

@@ -68,10 +68,8 @@ class DashController extends Controller {
                     }
             
                     if(! DiscordStore::where('guild_id', $guild_id)->exists()) {
-                    
                         AlertHelper::alertError('Please retry adding the bot.');
                         return redirect('/dashboard');
-                        
                     } else {
 
                         $discord_store = DiscordStore::where('guild_id', $guild_id)->first();
@@ -147,6 +145,7 @@ class DashController extends Controller {
                 // return view('dash.dash-guild')->with('guilds', $discord_helper->getOwnedGuilds())->with('stripe_helper', $stripe_helper)->with('discord_helper', $discord_helper);
                 
                 } catch (\Exception $e){
+                    \Log::error($e);
                     AlertHelper::alertError('Please retry adding the bot.');
                     return redirect('/dashboard');
                 }
