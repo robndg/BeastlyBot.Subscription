@@ -98,11 +98,11 @@ class DiscordHelper
         return $guilds;
     }
 
-    public function guildHasBot(int $guild_id) {
+    public function guildHasBot($guild_id) {
         return $this->isMember($guild_id, 798659745883357214);
     }
 
-    public function isUserBanned(int $guild_id, int $user_id) {
+    public function isUserBanned($guild_id, $user_id) {
         $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
         foreach($discord_client->guild->getGuildBans(['guild.id' => $guild_id]) as $ban) {
             if($ban->user->id == $user_id) return true;
@@ -110,7 +110,7 @@ class DiscordHelper
         return false;
     }
 
-    public function isMember(int $guild_id, int $user_id) {
+    public function isMember($guild_id, $user_id) {
         $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
 
         try {
@@ -130,7 +130,7 @@ class DiscordHelper
     }
 
 
-    public function getRoles(int $guild_id) {
+    public function getRoles($guild_id) {
         if(Cache::has('roles_' . $guild_id)) {
             return Cache::get('roles_' . $guild_id);
         }
@@ -140,7 +140,7 @@ class DiscordHelper
         return Cache::get('roles_' . $guild_id);
     }
 
-    public function getRole(int $guild_id, int $role_id) {
+    public function getRole($guild_id, $role_id) {
         if(Cache::has('roles_' . $guild_id)) {
             foreach(Cache::get('roles_' . $guild_id) as $role) {
                 if($role->id == $role_id) {
@@ -161,7 +161,7 @@ class DiscordHelper
         return null;
     }
 
-    public function getGuild(int $guild_id) {
+    public function getGuild($guild_id) {
         if(Cache::has('guild_' . $guild_id)) {
             return Cache::get('guild_' . $guild_id);
         }
@@ -171,7 +171,7 @@ class DiscordHelper
         return Cache::get('guild_' . $guild_id);
     }
 
-    public function ownsGuild(int $guild_id): bool {
+    public function ownsGuild($guild_id): bool {
         if(Cache::has('guilds_' . $this->user->id)) {
             $guilds = Cache::get('guilds_' . $this->user->id);
         } else {
@@ -187,7 +187,7 @@ class DiscordHelper
         return false;
     }
 
-    public function getUser(int $discord_id) {
+    public function getUser($discord_id) {
         if(Cache::has('discord_user_' . $discord_id)) {
             return Cache::get('discord_user_' . $discord_id);
         }
@@ -202,7 +202,7 @@ class DiscordHelper
         $discord_client->channel->createMessage(['channel.id' => $channel->id, 'content' => $message]);
     }
 
-    public function isBotPositioned(int $guild_id) {
+    public function isBotPositioned($guild_id) {
         $discord_client = new DiscordClient(['token' => env('DISCORD_BOT_TOKEN')]); // Token is required
 
         foreach($discord_client->guild->getGuildMember(['guild.id' => intval($guild_id), 'user.id' => 798659745883357214])->roles as $role_id) {
