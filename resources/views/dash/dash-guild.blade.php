@@ -106,6 +106,7 @@
                                         <div id="note1" class="tab-pane fade active show">
                                             <div class="icon active animate__animated animate__fadeIn i-grid">
                                                 <div class="row">
+                                                
                                                 <!-- TODO; if plans have no prices or archived put in tab -->
                                                     @foreach($product_roles as $product)
 
@@ -149,7 +150,7 @@
                                                                     <li class="mb-2">
                                                                     <div class="btn-group btn-group-toggle btn-group-flat">
                                                                     @foreach($product->prices()->get()->where('status', 1) as $price) <!-- TODO Rob: going to move prices to ajax popup with edit fields, checking relationship -->
-                                                                        <span class="button btn button-icon bg-primary" target="_blank" href="#">${{ number_format(($price->price/100),2) }}</a>
+                                                                        <span class="button btn button-icon bg-outline-primary" target="_blank" href="#">${{ number_format(($price->price/100),2) }}</span>
                                                                     @endforeach
                                                                     </div>
                                                                     </li>
