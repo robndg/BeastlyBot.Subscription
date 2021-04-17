@@ -373,6 +373,14 @@
 
 @section('scripts')
 
+<script src="https://js.stripe.com/v3/"></script>
+
+@auth
+    <script type="text/javascript">
+        let stripe = Stripe('{{ \App\StripeHelper::getStripePublic() }}');
+    </script>
+@endauth
+
 
 <script>
 

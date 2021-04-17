@@ -44,11 +44,10 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8"></script>
 <script src="{{ asset('examples/js/apps/beast.js') }}"></script>
-<script src="https://js.stripe.com/v3/"></script>
 
 @auth
     <script type="text/javascript">
-        let stripe = Stripe('{{ \App\StripeHelper::getStripePublic() }}');
+       
 
         function timeDiff( tstart, tend ) {
             var diff = Math.floor((tend - tstart) / 1000), units = [
