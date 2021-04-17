@@ -4,7 +4,7 @@
                     <div class="iq-navbar-logo d-flex align-items-center justify-content-between">
                         <i class="ri-menu-line wrapper-menu"></i>
                         <a href="../backend/index.html" class="header-logo">
-                            <img src="../assets/images/logo.png" class="img-fluid rounded-normal light-logo" alt="logo">
+                            <img src="{{ asset('dash/assets/images/logo.png') }}" class="img-fluid rounded-normal light-logo" alt="logo">
 
                         </a>
                     </div>
@@ -44,7 +44,7 @@
                                                     <a href="#" class="iq-sub-card">
                                                         <div class="media align-items-center cust-card py-3 border-bottom">
                                                             <div class="">
-                                                                <img class="avatar-50 rounded-small" src="../assets/images/user/01.jpg" alt="01">
+                                                                <img class="avatar-50 rounded-small" src="{{ asset('dash/assets/images/user/01.jpg') }}" alt="01">
                                                             </div>
                                                             <div class="media-body ml-3">
                                                                 <div class="d-flex align-items-center justify-content-between">
@@ -58,7 +58,7 @@
                                                     <a href="#" class="iq-sub-card">
                                                         <div class="media align-items-center cust-card py-3 border-bottom">
                                                             <div class="">
-                                                                <img class="avatar-50 rounded-small" src="../assets/images/user/02.jpg" alt="02">
+                                                                <img class="avatar-50 rounded-small" src="{{ asset('dash/assets/images/user/02.jpg') }}" alt="02">
                                                             </div>
                                                             <div class="media-body ml-3">
                                                                 <div class="d-flex align-items-center justify-content-between">
@@ -72,7 +72,7 @@
                                                     <a href="#" class="iq-sub-card">
                                                         <div class="media align-items-center cust-card py-3">
                                                             <div class="">
-                                                                <img class="avatar-50 rounded-small" src="../assets/images/user/03.jpg" alt="03">
+                                                                <img class="avatar-50 rounded-small" src="{{ asset('dash/assets/images/user/03.jpg') }}" alt="03">
                                                             </div>
                                                             <div class="media-body ml-3">
                                                                 <div class="d-flex align-items-center justify-content-between">
@@ -108,7 +108,7 @@
                                                     <a href="#" class="iq-sub-card">
                                                         <div class="media align-items-center cust-card py-3 border-bottom">
                                                             <div class="">
-                                                                <img class="avatar-50 rounded-small" src="../assets/images/user/01.jpg" alt="01">
+                                                                <img class="avatar-50 rounded-small" src="{{ asset('dash/assets/images/user/01.jpg') }}" alt="01">
                                                             </div>
                                                             <div class="media-body ml-3">
                                                                 <div class="d-flex align-items-center justify-content-between">
@@ -122,7 +122,7 @@
                                                     <a href="#" class="iq-sub-card">
                                                         <div class="media align-items-center cust-card py-3 border-bottom">
                                                             <div class="">
-                                                                <img class="avatar-50 rounded-small" src="../assets/images/user/02.jpg" alt="02">
+                                                                <img class="avatar-50 rounded-small" src="{{ asset('dash/assets/images/user/02.jpg') }}" alt="02">
                                                             </div>
                                                             <div class="media-body ml-3">
                                                                 <div class="d-flex align-items-center justify-content-between">
@@ -136,7 +136,7 @@
                                                     <a href="#" class="iq-sub-card">
                                                         <div class="media align-items-center cust-card py-3">
                                                             <div class="">
-                                                                <img class="avatar-50 rounded-small" src="../assets/images/user/03.jpg" alt="03">
+                                                                <img class="avatar-50 rounded-small" src="{{ asset('dash/assets/images/user/03.jpg') }}" alt="03">
                                                             </div>
                                                             <div class="media-body ml-3">
                                                                 <div class="d-flex align-items-center justify-content-between">
@@ -157,7 +157,7 @@
                                 </li>
                                 <li class="caption-content">
                                     <a href="#" class="iq-user-toggle d-flex align-items-center justify-content-between" id="h-dropdownMenuButton001" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <img src="../assets/images/user/1.jpg" class="img-fluid rounded avatar-50" alt="user">
+                                        <img src="{{ asset('dash/assets/images/user/1.jpg') }}" class="img-fluid rounded avatar-50" alt="user">
                                     </a>
                                     <div class="dropdown-menu dropdown-menu-right w-100 border-0 py-2" aria-labelledby="h-dropdownMenuButton001">
                                         <a class="dropdown-item mb-2" href="../app/user-profile.html">
