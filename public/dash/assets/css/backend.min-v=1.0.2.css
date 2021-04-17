@@ -31690,7 +31690,7 @@ ul.todo-task-lists li.active-task {
 }
 
 .dark #loading-center {
-    background-image: url("../images/dark-loader.gif")
+    /* background-image: url("../images/dark-loader.gif") */
 }
 
 .dark h1,
@@ -32819,7 +32819,7 @@ button.close-popup {
 }
 
 .dark #loading-center {
-    background-image: url("../images/dark-loader.gif.html")
+    /* background-image: url("../images/dark-loader.gif.html") */
 }
 
 .dark h1,
